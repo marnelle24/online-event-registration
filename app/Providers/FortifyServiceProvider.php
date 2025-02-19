@@ -59,5 +59,11 @@ class FortifyServiceProvider extends ServiceProvider
                 return $user;
             }
         });
+
+        // Add this to handle post-login redirection
+        $this->app->singleton(
+            \Laravel\Fortify\Contracts\LoginResponse::class,
+            \App\Http\Responses\LoginResponse::class
+        );
     }
 }

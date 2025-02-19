@@ -7,62 +7,41 @@ use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvi
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Route;
 
 class RouteServiceProvider extends ServiceProvider
 {
     /**
      * The path to your application's "home" route.
      *
-     * Typically, users are redirected here after authentication.
+     * This is used by Laravel authentication to redirect users after login.
      *
      * @var string
      */
-    public const HOME = '/dashboard'; // We'll override this with our logic
-
-    /**
-     * Define your route model bindings, pattern filters, etc.
-     *
-     * @return void
-     */
-    public function boot(): void
+    public static function redirectTo()
     {
-        $this->configureRateLimiting();
-
-        $this->routes(function () {
-            $this->mapApiRoutes();
-
-            $this->mapWebRoutes();
-        });
-
-        $this->app->singleton('login.redirect', function ($app) {
-            return function () {
-                if (Auth::user()->isAdmin()) {
-                    return route('admin.dashboard');
-                }
-                return route('user.dashboard');
-            };
-        });
-
-        // Override the HOME constant based on user role
-        if (Auth::check()) {
-            if (Auth::user()->isAdmin()) {
-                static::$HOME = route('admin.dashboard');
-            } else {
-                static::$HOME = route('user.dashboard');
-            }
+        if (Auth::user()->isAdmin()) {
+            return '/admin';
         }
+        return '/user';
     }
 
     /**
-     * Configure the rate limiters for the application.
-     *
-     * @return void
+     * Define your route model bindings, pattern filters, etc.
      */
-    protected function configureRateLimiting(): void
+    public function boot(): void
     {
         RateLimiter::for('api', function (Request $request) {
             return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
         });
+
+        $this->routes(function () {
+            Route::middleware('api')
+                ->prefix('api')
+                ->group(base_path('routes/api.php'));
+
+            Route::middleware('web')
+                ->group(base_path('routes/web.php'));
+        });
     }
-}
+} 
