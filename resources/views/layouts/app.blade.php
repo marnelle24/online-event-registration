@@ -36,7 +36,7 @@
         <div class="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
             @include('partials.header')
             <main>
-                <div class="mx-auto min-h-screen p-4 md:p-6 2xl:p-10 bg-gradient-to-r from-zinc-400 via-zinc-400/50 to-zinc-300/50 dark:bg-gradient-to-r dark:from-slate-600 dark:via-slate-300 dark:to-slate-600">
+                <div class="mx-auto min-h-screen p-4 md:p-6 2xl:p-10 bg-zinc-100 dark:bg-zinc-300">
                     {{ $slot }}
                 </div>
             </main>
