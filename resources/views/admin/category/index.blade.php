@@ -5,7 +5,7 @@
         <div class="w-2/3">
             <livewire:category.category-list />
         </div>
-        <div class="w-1/3 border border-slate-400/70 rounded-lg bg-white dark:bg-slate-700 shadow-md min-h-[500px]">
+        <div class="w-1/3">
             <livewire:category.category-form />
         </div>
     </div>

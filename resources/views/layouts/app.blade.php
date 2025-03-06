@@ -24,53 +24,26 @@
 
     <body
         x-data="{ page: 'ecommerce', 'loaded': true, 'darkMode': true, 'stickyMenu': false, 'sidebarToggle': false, 'scrollTop': false }"
-        x-init="
-            darkMode = JSON.parse(localStorage.getItem('darkMode'));
+        x-init="darkMode = JSON.parse(localStorage.getItem('darkMode'));
             $watch('darkMode', value => localStorage.setItem('darkMode', JSON.stringify(value)))"
         :class="{'dark text-bodydark bg-boxdark-2': darkMode === true}"
     >
 
-
-    <div class="flex h-screen overflow-hidden">
-        @include('partials.sidebar')
-        <div class="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
-            @include('partials.header')
-            <main>
-                <div class="mx-auto min-h-screen p-4 md:p-6 2xl:p-10 bg-zinc-100 dark:bg-zinc-300">
-                    {{ $slot }}
-                </div>
-            </main>
-        </div>
-    </div>
-
-
-
-
-
-
-    {{-- <body class="font-sans antialiased"> --}}
-        {{-- <x-banner />
-
-        <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
-            @livewire('navigation-menu')
-
-            <!-- Page Heading -->
-            @if (isset($header))
-                <header class="bg-white dark:bg-gray-800 shadow">
-                    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                        {{ $header }}
+        <div class="flex h-screen overflow-hidden">
+            @include('partials.sidebar')
+            <div class="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
+                @include('partials.header')
+                <main>
+                    <div class="mx-auto min-h-screen p-4 md:p-6 2xl:p-10 bg-zinc-100 dark:bg-zinc-300">
+                        {{ $slot }}
                     </div>
-                </header>
-            @endif
+                </main>
+            </div>
+        </div>
 
-            <!-- Page Content -->
-            <main>
-                {{ $slot }}
-            </main>
-        </div> --}}
 
         @stack('modals')
-
+        <x-toaster-hub />
         @livewireScripts
     </body>
 </html>
