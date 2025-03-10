@@ -38,19 +38,27 @@ class CategoryForm extends Component
             ]
         );
 
+        
         // Data to be updated or created
-        $category = Category::updateOrCreate(
-            [ 
-                'id' => $this->categoryId
-            ], 
-            [
-                'name' => $this->name,
-                'slug' => ($this->slug) ? $this->slug : null
-            ]
-        );
-        $this->dispatch('category-saved');
-        Toaster::success('Saved changes successfully!');
-        $this->cancelEdit();
+        try {
+            $category = Category::updateOrCreate(
+                [ 
+                    'id' => $this->categoryId
+                ], 
+                [
+                    'name' => $this->name,
+                    'slug' => ($this->slug) ? $this->slug : null
+                ]
+            );
+            $this->dispatch('category-saved');
+
+            Toaster::success('Saved changes successfully!');
+            
+            $this->cancelEdit();
+        } 
+        catch (\Exception $e) {
+            Toaster::error('Failed to save changes!');
+        }
     }
 
     public function cancelEdit()

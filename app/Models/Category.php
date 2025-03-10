@@ -18,4 +18,10 @@ class Category extends Model
             ->saveSlugsTo('slug')
             ->doNotGenerateSlugsOnUpdate();
     }
+
+    public function programmes()
+    {
+        return $this->belongsToMany(Programme::class, 'category_programme', 'category_id', 'programme_id');
+    }
+
 }

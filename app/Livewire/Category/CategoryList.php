@@ -23,10 +23,12 @@ class CategoryList extends Component
 
     public function deleteCategory($categoryId)
     {
-        $category = Category::find($categoryId);
-        if ($category) {
+        try {
+            $category = Category::find($categoryId);
             $category->delete();
-            Toaster::error('Category deleted successfully!');
+            Toaster::success('Category deleted successfully!');
+        } catch (\Exception $e) {
+            Toaster::error('Failed to delete category!');
         }
     }
 

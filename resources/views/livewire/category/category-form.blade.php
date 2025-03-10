@@ -30,14 +30,19 @@
         </div>
 
         <div class="flex items-center justify-between">
-            <button type="submit"
-                class="flex items-center justify-center rounded-full bg-teal-600 hover:bg-teal-700 py-2 px-6 font-medium text-white">
-                {{ $isEditing ? 'Update' : 'Save' }}
-            </button>
+            <div>
+                <button type="submit" wire:loading.attr="disabled" wire:loading.class="opacity-50 cursor-not-allowed"
+                    class="flex items-center justify-center rounded-full bg-teal-600 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-teal-700 py-2 px-6 font-medium text-white">
+                    {{ $isEditing ? 'Update' : 'Save' }}
+                </button>
+                <span wire:loading.delay.longest class="ml-2">
+                    saving...
+                </span>
+            </div>
 
             @if($isEditing)
                 <button type="button" wire:click="cancelEdit"
-                    class="flex items-center justify-center text-danger font-mediumwhite">
+                    class="flex items-center justify-center text-red-400 font-medium border border-red-400 rounded-full py-2 px-6">
                     Cancel
                 </button>
             @endif
