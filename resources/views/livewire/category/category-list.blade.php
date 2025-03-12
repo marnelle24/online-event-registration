@@ -16,6 +16,9 @@
                             <th class="p-6 font-bold text-slate-600 dark:text-white">
                                 Slug
                             </th>
+                            <th class="p-6 font-bold text-slate-600 dark:text-white text-center">
+                                Programmes
+                            </th>
                             <th class="p-6 font-bold text-slate-600 dark:text-white">
                                 &nbsp;
                             </th>
@@ -29,7 +32,12 @@
                                         <h5 class="font-medium text-neutral-700 dark:text-neutral-300">{{ $category->name }}</h5>
                                     </td>
                                     <td class="px-4 py-5 dark:border-strokedark">
-                                        <p class="font-medium dark:text-neutral-300 text-neutral-700 italic">/{{ $category->slug }}</p>
+                                        <p class="font-medium dark:text-neutral-300 text-neutral-700 italic">{{ $category->slug }}</p>
+                                    </td>
+                                    <td class="px-4 py-5 dark:border-strokedark">
+                                        <p class="font-medium dark:text-neutral-300 text-neutral-700 text-center">
+                                            {{ $category->programmes_count }}
+                                        </p>
                                     </td>
                                     <td class="px-4 py-5 dark:border-strokedark">
                                         <div class="flex justify-end items-center space-x-3.5">

@@ -12,10 +12,10 @@ Route::middleware(['admin'])->prefix('admin')->group(function () {
     Route::get('/ministries', [MinistryController::class, 'index'])->name('admin.ministries');
     Route::get('/ministries/create', [MinistryController::class, 'create'])->name('admin.ministries.create');
     Route::post('/ministries', [MinistryController::class, 'store'])->name('admin.ministries.store');
-    Route::get('/ministries/{ministry}', [MinistryController::class, 'show'])->name('admin.ministries.show');
-    Route::get('/ministries/{ministry}/edit', [MinistryController::class, 'edit'])->name('admin.ministries.edit');
-    Route::put('/ministries/{ministry}', [MinistryController::class, 'update'])->name('admin.ministries.update');
-    Route::put('/ministries/{ministry}', [MinistryController::class, 'destroy'])->name('admin.ministries.destroy');
+    Route::get('/ministry/{id}', [MinistryController::class, 'show'])->name('admin.ministry.show');
+    Route::get('/ministry/{id}/edit', [MinistryController::class, 'edit'])->name('admin.ministry.edit');
+    Route::put('/ministry/{ministry}', [MinistryController::class, 'update'])->name('admin.ministry.update');
+    Route::put('/ministry/{ministry}', [MinistryController::class, 'destroy'])->name('admin.ministry.destroy');
 
     Route::get('/categories', [CategoryController::class, 'index'])->name('admin.categories');
 });

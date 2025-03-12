@@ -36,6 +36,7 @@ class CategoryList extends Component
     {
         $categories = Category::latest()
             ->where('name', 'like', "%{$this->search}%")
+            ->withCount('programmes')
             ->paginate(10);
 
         return view('livewire.category.category-list', [

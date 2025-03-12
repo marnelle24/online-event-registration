@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 
 class Programme extends Model
 {
@@ -50,7 +51,7 @@ class Programme extends Model
     {
         static::addGlobalScope('active', function (Builder $builder) {
             $builder->where('soft_delete', false);
-            $builder->where('status', 'active');
+            $builder->where('status', 'published');
             $builder->where('publishable', true);
             $builder->where('searchable', true);
             $builder->where('private_only', false);

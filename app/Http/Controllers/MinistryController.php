@@ -7,16 +7,31 @@ use Illuminate\Http\Request;
 
 class MinistryController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $ministries = Ministry::all();
-        return view('admin.ministry.index', compact('ministries'));
+        $searchQuery = $request->get('search');
+
+        $ministries = Ministry::when($searchQuery, function ($query) use ($searchQuery) {
+            $query->where('name', 'like', "%{$searchQuery}%");
+        })
+        ->latest()
+        ->paginate(10);
+
+        return view('admin.ministry.index', compact('searchQuery', 'ministries'));
     }
 
-    // public function create()
-    // {
-    //     return view('admin.ministries.create');
-    // }
+    public function show($id)
+    {
+        try 
+        {
+            $ministry = Ministry::find($id);
+            return view('admin.ministry.show', compact('ministry'));
+        } 
+        catch (\Exception $e) 
+        {
+            return redirect()->back()->with('error', 'Ministry not found');
+        }
+    }
     
     
 }
