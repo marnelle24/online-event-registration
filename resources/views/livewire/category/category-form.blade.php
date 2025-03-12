@@ -1,11 +1,9 @@
-<div class="p-6 border border-slate-400/70 rounded-lg bg-white dark:bg-slate-700 shadow-md">
-    <div class="mb-6">
-        <h4 class="text-xl font-semibold text-black dark:text-white">
-            {{ $isEditing ? 'Edit Category' : 'Create New Category' }}
-        </h4>
-    </div>
+<div class="border border-slate-400/70 rounded-lg bg-white dark:bg-slate-700 shadow-md">
+    <h4 class="text-2xl font-bold text-slate-700 dark:text-white capitalize rounded-t-lg p-4 bg-slate-100 dark:bg-slate-600 border-b border-slate-400/20">
+        {{ $isEditing ? 'Edit Category' : 'Create New Category' }}
+    </h4>
 
-    <form wire:submit="save">
+    <form wire:submit="save" class="p-6">
     {{-- <form wire:submit="{{ $isEditing ? 'update' : 'create' }}"> --}}
         <div class="mb-4">
             <label for="name" class="mb-2.5 block font-medium text-black dark:text-white">Name</label>

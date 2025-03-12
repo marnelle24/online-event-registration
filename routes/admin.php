@@ -15,7 +15,7 @@ Route::middleware(['admin'])->prefix('admin')->group(function () {
     Route::get('/ministry/{id}', [MinistryController::class, 'show'])->name('admin.ministry.show');
     Route::get('/ministry/{id}/edit', [MinistryController::class, 'edit'])->name('admin.ministry.edit');
     Route::put('/ministry/{ministry}', [MinistryController::class, 'update'])->name('admin.ministry.update');
-    Route::put('/ministry/{ministry}', [MinistryController::class, 'destroy'])->name('admin.ministry.destroy');
+    Route::delete('/ministry/{ministry}', [MinistryController::class, 'destroy'])->name('admin.ministry.destroy');
 
     Route::get('/categories', [CategoryController::class, 'index'])->name('admin.categories');
 });
