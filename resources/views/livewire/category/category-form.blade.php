@@ -30,7 +30,7 @@
         <div class="flex items-center justify-between">
             <div>
                 <button type="submit" wire:loading.attr="disabled" wire:loading.class="opacity-50 cursor-not-allowed"
-                    class="flex items-center justify-center rounded-full bg-teal-600 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-teal-700 py-2 px-6 font-medium text-white">
+                    class="flex items-center justify-center rounded-full bg-slate-600 dark:bg-slate-500 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-700 dark:hover:bg-slate-400 hover:-translate-y-1 duration-300 py-2 px-6 font-medium text-white">
                     {{ $isEditing ? 'Update' : 'Save' }}
                 </button>
                 <span wire:loading.delay.longest class="ml-2">
@@ -40,7 +40,7 @@
 
             @if($isEditing)
                 <button type="button" wire:click="cancelEdit"
-                    class="flex items-center justify-center text-red-400 font-medium border border-red-400 rounded-full py-2 px-6">
+                    class="flex items-center justify-center text-red-400 font-medium border border-red-400 hover:bg-red-400/70 hover:text-white hover:-translate-y-1 duration-300 rounded-full py-2 px-6">
                     Cancel
                 </button>
             @endif

@@ -2,7 +2,7 @@
     <div class="border border-slate-400/70 rounded-lg bg-white dark:bg-slate-700 shadow-md ">
         <div class="flex p-6">
             <div class="w-1/2">
-                <input wire:model.live.debounce.500ms="search" type="search" class="w-full py-3 border-slate-500 rounded-none font-thin placeholder:text-gray-300 focus:outline-none focus:ring-0" placeholder="Search Category">
+                <input wire:model.live.debounce.500ms="search" type="search" class="text-slate-900 dark:text-white w-full py-3 border-slate-500 bg-slate-100 dark:bg-slate-600 rounded-none font-thin placeholder:text-gray-300 focus:outline-none focus:ring-0" placeholder="Search Category">
             </div>
         </div>
         <div class="rounded-sm border border-stroke dark:border-strokedark">

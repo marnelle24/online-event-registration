@@ -70,13 +70,13 @@ class MinistryController extends Controller
             $validated['publishabled'] = $request->publishabled;
             $validated['status'] = $request->status;
 
-            $inserted = Ministry::create($validated);
+            $ministry = Ministry::create($validated);
 
-            if($inserted)
+            if($ministry)
             {
                 Toaster::success('Ministry created successfully');
                 return redirect()
-                    ->route('admin.ministries')
+                    ->route('admin.ministry.edit', $ministry->id)
                     ->with('success', 'Ministry created successfully');
             }
 
