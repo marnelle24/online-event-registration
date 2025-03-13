@@ -94,12 +94,17 @@ class MinistryController extends Controller
 
     public function edit($id)
     {
-        try {
-            $ministry = Ministry::findOrFail($id);
+        try 
+        {
+            $ministry = Ministry::where('id', $id)->with('users')->first();
             return view('admin.ministry.edit', compact('ministry'));
-        } catch (\Exception $e) {
+        } 
+        catch (\Exception $e) 
+        {
+            Log::error('Ministry not found: ' . $e->getMessage());
+            Toaster::error('Ministry not found');
             return redirect()
-                ->route('admin.ministries.index')
+                ->route('admin.ministries')
                 ->with('error', 'Ministry not found');
         }
     }

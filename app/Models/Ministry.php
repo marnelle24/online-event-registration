@@ -35,6 +35,11 @@ class Ministry extends Model
         return 'slug';
     }
 
+    public function users()
+    {
+        return $this->belongsToMany(User::class);
+    }
+
     public function getSlugOptions() : SlugOptions
     {
         return SlugOptions::create()

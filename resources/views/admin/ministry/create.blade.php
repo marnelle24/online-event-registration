@@ -27,7 +27,7 @@
     @endif
 
     <div class="flex gap-4">
-        <form action="{{ route('admin.ministries.store') }}" method="POST" class="w-2/3">
+        <form action="{{ route('admin.ministries.store') }}" method="POST" class="w-full">
             <div class="border border-slate-400/70 rounded-lg bg-white dark:bg-slate-700 shadow-md p-6">
                 @csrf
                 <div class="flex gap-4">
@@ -40,7 +40,7 @@
                                 id="name" 
                                 placeholder="Name"
                                 value="{{ old('name') }}" 
-                                class="w-full rounded-none bg-transparent py-3 px-5 font-medium outline-none ring-0 border border-neutral-300 dark:border-neutral-600 focus:outline-none dark:focus:outline-none focus:ring-1 focus:ring-slate-50/50 dark:focus:ring-slate-50/50 transition disabled:cursor-default disabled:bg-whiter dark:bg-form-input">
+                                class="w-full rounded-none bg-zinc-50 py-3 px-5 font-medium outline-none ring-0 border border-neutral-300 dark:border-neutral-600 focus:outline-none dark:focus:outline-none focus:ring-1 focus:ring-slate-50/50 dark:focus:ring-slate-50/50 transition disabled:cursor-default disabled:bg-whiter dark:bg-form-input">
                         </div>
                         <div class="mb-4">
                             <label for="contactPerson" class="block text-gray-700 text-sm font-bold mb-2">Contact Person</label>
@@ -50,7 +50,7 @@
                                 id="contactPerson" 
                                 placeholder="Contact Person"
                                 value="{{ old('contactPerson') }}" 
-                                class="w-full rounded-none bg-transparent py-3 px-5 font-medium outline-none ring-0 border border-neutral-300 dark:border-neutral-600 focus:outline-none dark:focus:outline-none focus:ring-1 focus:ring-slate-50/50 dark:focus:ring-slate-50/50 transition disabled:cursor-default disabled:bg-whiter dark:bg-form-input">
+                                class="w-full rounded-none bg-zinc-50 py-3 px-5 font-medium outline-none ring-0 border border-neutral-300 dark:border-neutral-600 focus:outline-none dark:focus:outline-none focus:ring-1 focus:ring-slate-50/50 dark:focus:ring-slate-50/50 transition disabled:cursor-default disabled:bg-whiter dark:bg-form-input">
                         </div>
                         <div class="mb-4">
                             <label for="contactNumber" class="block text-gray-700 text-sm font-bold mb-2">Contact Number</label>
@@ -60,7 +60,7 @@
                                 id="contactNumber" 
                                 placeholder="Contact Number"
                                 value="{{ old('contactNumber') }}" 
-                                class="w-full rounded-none bg-transparent py-3 px-5 font-medium outline-none ring-0 border border-neutral-300 dark:border-neutral-600 focus:outline-none dark:focus:outline-none focus:ring-1 focus:ring-slate-50/50 dark:focus:ring-slate-50/50 transition disabled:cursor-default disabled:bg-whiter dark:bg-form-input">
+                                class="w-full rounded-none bg-zinc-50 py-3 px-5 font-medium outline-none ring-0 border border-neutral-300 dark:border-neutral-600 focus:outline-none dark:focus:outline-none focus:ring-1 focus:ring-slate-50/50 dark:focus:ring-slate-50/50 transition disabled:cursor-default disabled:bg-whiter dark:bg-form-input">
                         </div>
                         <div class="mb-4">
                             <label for="contactEmail" class="block text-gray-700 text-sm font-bold mb-2">Contact Email</label>
@@ -70,7 +70,7 @@
                                 id="contactEmail" 
                                 placeholder="Email Address"
                                 value="{{ old('contactEmail') }}" 
-                                class="w-full rounded-none bg-transparent py-3 px-5 font-medium outline-none ring-0 border border-neutral-300 dark:border-neutral-600 focus:outline-none dark:focus:outline-none focus:ring-1 focus:ring-slate-50/50 dark:focus:ring-slate-50/50 transition disabled:cursor-default disabled:bg-whiter dark:bg-form-input">
+                                class="w-full rounded-none bg-zinc-50 py-3 px-5 font-medium outline-none ring-0 border border-neutral-300 dark:border-neutral-600 focus:outline-none dark:focus:outline-none focus:ring-1 focus:ring-slate-50/50 dark:focus:ring-slate-50/50 transition disabled:cursor-default disabled:bg-whiter dark:bg-form-input">
                         </div>
                         <div class="mb-4">
                             <label for="websiteUrl" class="block text-gray-700 text-sm font-bold mb-2">Website</label>
@@ -80,7 +80,7 @@
                                 id="websiteUrl" 
                                 placeholder="https://mywebsite.com"
                                 value="{{ old('websiteUrl') }}" 
-                                class="w-full rounded-none bg-transparent py-3 px-5 font-medium outline-none ring-0 border border-neutral-300 dark:border-neutral-600 focus:outline-none dark:focus:outline-none focus:ring-1 focus:ring-slate-50/50 dark:focus:ring-slate-50/50 transition disabled:cursor-default disabled:bg-whiter dark:bg-form-input">
+                                class="w-full rounded-none bg-zinc-50 py-3 px-5 font-medium outline-none ring-0 border border-neutral-300 dark:border-neutral-600 focus:outline-none dark:focus:outline-none focus:ring-1 focus:ring-slate-50/50 dark:focus:ring-slate-50/50 transition disabled:cursor-default disabled:bg-whiter dark:bg-form-input">
                         </div>
                         <div>
                             {{-- <h4 class="text-lg font-bold text-black dark:text-slate-600 capitalize border-b-4 border-slate-500 mb-3 py-1">Settings</h4> --}}
@@ -88,7 +88,7 @@
                                 <div class="mb-4 w-1/3">
                                     <label for="publishabled" class="block text-gray-700 text-sm font-bold mb-2">Make it Publishable</label>
                                     <select name="publishabled" id="publishabled" 
-                                        class="w-full rounded-none bg-transparent py-3 px-5 font-medium outline-none ring-0 border border-neutral-300 dark:border-neutral-600 focus:outline-none dark:focus:outline-none focus:ring-1 focus:ring-slate-50/50 dark:focus:ring-slate-50/50 transition disabled:cursor-default disabled:bg-whiter dark:bg-form-input">
+                                        class="w-full rounded-none bg-zinc-50 py-3 px-5 font-medium outline-none ring-0 border border-neutral-300 dark:border-neutral-600 focus:outline-none dark:focus:outline-none focus:ring-1 focus:ring-slate-50/50 dark:focus:ring-slate-50/50 transition disabled:cursor-default disabled:bg-whiter dark:bg-form-input">
                                         <option value="1" {{ old('publishabled') == '1' ? 'selected' : '' }}>Yes</option>
                                         <option value="0" {{ old('publishabled') == '0' ? 'selected' : '' }}>No</option>
                                     </select>
@@ -96,7 +96,7 @@
                                 <div class="mb-4 w-1/3">
                                     <label for="searcheable" class="block text-gray-700 text-sm font-bold mb-2">Make it Searchable</label>
                                     <select name="searcheable" id="searcheable" 
-                                        class="w-full rounded-none bg-transparent py-3 px-5 font-medium outline-none ring-0 border border-neutral-300 dark:border-neutral-600 focus:outline-none dark:focus:outline-none focus:ring-1 focus:ring-slate-50/50 dark:focus:ring-slate-50/50 transition disabled:cursor-default disabled:bg-whiter dark:bg-form-input">
+                                        class="w-full rounded-none bg-zinc-50 py-3 px-5 font-medium outline-none ring-0 border border-neutral-300 dark:border-neutral-600 focus:outline-none dark:focus:outline-none focus:ring-1 focus:ring-slate-50/50 dark:focus:ring-slate-50/50 transition disabled:cursor-default disabled:bg-whiter dark:bg-form-input">
                                         <option value="1" {{ old('searcheable') == '1' ? 'selected' : '' }}>Yes</option>
                                         <option value="0" {{ old('searcheable') == '0' ? 'selected' : '' }}>No</option>
                                     </select>
@@ -104,7 +104,7 @@
                                 <div class="mb-4 w-1/3">
                                     <label for="status" class="block text-gray-700 text-sm font-bold mb-2">Status</label>
                                     <select name="status" id="status" 
-                                        class="w-full rounded-none bg-transparent py-3 px-5 font-medium outline-none ring-0 border border-neutral-300 dark:border-neutral-600 focus:outline-none dark:focus:outline-none focus:ring-1 focus:ring-slate-50/50 dark:focus:ring-slate-50/50 transition disabled:cursor-default disabled:bg-whiter dark:bg-form-input">
+                                        class="w-full rounded-none bg-zinc-50 py-3 px-5 font-medium outline-none ring-0 border border-neutral-300 dark:border-neutral-600 focus:outline-none dark:focus:outline-none focus:ring-1 focus:ring-slate-50/50 dark:focus:ring-slate-50/50 transition disabled:cursor-default disabled:bg-whiter dark:bg-form-input">
                                         <option value="1" {{ old('status') == '1' ? 'selected' : '' }}>Active</option>
                                         <option value="0" {{ old('status') == '0' ? 'selected' : '' }}>Inactive</option>
                                     </select>
@@ -120,17 +120,13 @@
                                 id="bio" 
                                 rows="6" 
                                 placeholder="Description"
-                                class="w-full rounded-none bg-transparent py-3 h-100 px-5 font-medium outline-none ring-0 border border-neutral-300 dark:border-neutral-600 focus:outline-none dark:focus:outline-none focus:ring-1 focus:ring-slate-50/50 dark:focus:ring-slate-50/50 transition disabled:cursor-default disabled:bg-whiter dark:bg-form-input">{{ old('description') }}</textarea>
+                                class="w-full rounded-none bg-zinc-50 py-3 h-100 px-5 font-medium outline-none ring-0 border border-neutral-300 dark:border-neutral-600 focus:outline-none dark:focus:outline-none focus:ring-1 focus:ring-slate-50/50 dark:focus:ring-slate-50/50 transition disabled:cursor-default disabled:bg-whiter dark:bg-form-input">{{ old('description') }}</textarea>
                             @error('description')
                                 <p class="text-red-500 text-xs italic">{{ $message }}</p>
                             @enderror
                         </div>
                     </div>
                 </div>
-    
-    
-    
-                {{-- </form> --}}
             </div>
             <div class="flex items-center justify-end mt-4">
                 <a href="{{ route('admin.ministries') }}" class="text-slate-600 bg-slate-100 hover:bg-slate-200 dark:bg-slate-300 dark:hover:bg-slate-400 rounded-full hover:-translate-y-1 duration-300 border border-slate-600 hover:border-slate-700 font-bold py-3 px-5 mr-2">
@@ -148,15 +144,6 @@
 
             </div>
         </form>
-        <div class="w-1/3">
-            <div class="flex flex-col gap-4 pb-5 border border-slate-400/70 rounded-lg bg-white dark:bg-slate-700 shadow-md">
-                <h4 class="text-2xl font-bold text-slate-700 dark:text-white mb-4 capitalize rounded-t-lg p-4 bg-slate-100 dark:bg-slate-600 border-b border-slate-400/20">Assigned User</h4>
-                <ul class="list-none list-inside px-6">
-                    <li class="py-1">John Doe</li>
-                    <li class="py-1">Jane Doe</li>
-                </ul>
-            </div>
-        </div>
     </div>
 </x-app-layout> 
 

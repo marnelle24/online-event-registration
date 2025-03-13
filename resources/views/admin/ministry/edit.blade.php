@@ -41,7 +41,7 @@
                                 id="name" 
                                 placeholder="Name"
                                 value="{{ old('name', $ministry->name) }}" 
-                                class="w-full rounded-none bg-transparent py-3 px-5 font-medium outline-none ring-0 border border-neutral-300 dark:border-neutral-600 focus:outline-none dark:focus:outline-none focus:ring-1 focus:ring-slate-50/50 dark:focus:ring-slate-50/50 transition disabled:cursor-default disabled:bg-whiter dark:bg-form-input">
+                                class="w-full rounded-none bg-zinc-50 py-3 px-5 font-medium outline-none ring-0 border border-neutral-300 dark:border-neutral-600 focus:outline-none dark:focus:outline-none focus:ring-1 focus:ring-slate-50/50 dark:focus:ring-slate-50/50 transition disabled:cursor-default disabled:bg-whiter dark:bg-form-input">
                         </div>
                         <div class="mb-4">
                             <label for="contactPerson" class="block text-gray-700 text-sm font-bold mb-2">Contact Person</label>
@@ -51,7 +51,7 @@
                                 id="contactPerson" 
                                 placeholder="Contact Person"
                                 value="{{ old('contactPerson', $ministry->contactPerson) }}" 
-                                class="w-full rounded-none bg-transparent py-3 px-5 font-medium outline-none ring-0 border border-neutral-300 dark:border-neutral-600 focus:outline-none dark:focus:outline-none focus:ring-1 focus:ring-slate-50/50 dark:focus:ring-slate-50/50 transition disabled:cursor-default disabled:bg-whiter dark:bg-form-input">
+                                class="w-full rounded-none bg-zinc-50 py-3 px-5 font-medium outline-none ring-0 border border-neutral-300 dark:border-neutral-600 focus:outline-none dark:focus:outline-none focus:ring-1 focus:ring-slate-50/50 dark:focus:ring-slate-50/50 transition disabled:cursor-default disabled:bg-whiter dark:bg-form-input">
                         </div>
                         <div class="mb-4">
                             <label for="contactNumber" class="block text-gray-700 text-sm font-bold mb-2">Contact Number</label>
@@ -61,7 +61,7 @@
                                 id="contactNumber" 
                                 placeholder="Contact Number"
                                 value="{{ old('contactNumber', $ministry->contactNumber) }}" 
-                                class="w-full rounded-none bg-transparent py-3 px-5 font-medium outline-none ring-0 border border-neutral-300 dark:border-neutral-600 focus:outline-none dark:focus:outline-none focus:ring-1 focus:ring-slate-50/50 dark:focus:ring-slate-50/50 transition disabled:cursor-default disabled:bg-whiter dark:bg-form-input">
+                                class="w-full rounded-none bg-zinc-50 py-3 px-5 font-medium outline-none ring-0 border border-neutral-300 dark:border-neutral-600 focus:outline-none dark:focus:outline-none focus:ring-1 focus:ring-slate-50/50 dark:focus:ring-slate-50/50 transition disabled:cursor-default disabled:bg-whiter dark:bg-form-input">
                         </div>
                         <div class="mb-4">
                             <label for="contactEmail" class="block text-gray-700 text-sm font-bold mb-2">Contact Email</label>
@@ -71,7 +71,7 @@
                                 id="contactEmail" 
                                 placeholder="Email Address"
                                 value="{{ old('contactEmail', $ministry->contactEmail) }}" 
-                                class="w-full rounded-none bg-transparent py-3 px-5 font-medium outline-none ring-0 border border-neutral-300 dark:border-neutral-600 focus:outline-none dark:focus:outline-none focus:ring-1 focus:ring-slate-50/50 dark:focus:ring-slate-50/50 transition disabled:cursor-default disabled:bg-whiter dark:bg-form-input">
+                                class="w-full rounded-none bg-zinc-50 py-3 px-5 font-medium outline-none ring-0 border border-neutral-300 dark:border-neutral-600 focus:outline-none dark:focus:outline-none focus:ring-1 focus:ring-slate-50/50 dark:focus:ring-slate-50/50 transition disabled:cursor-default disabled:bg-whiter dark:bg-form-input">
                         </div>
                         <div class="mb-4">
                             <label for="websiteUrl" class="block text-gray-700 text-sm font-bold mb-2">Website</label>
@@ -81,7 +81,7 @@
                                 id="websiteUrl" 
                                 placeholder="https://mywebsite.com"
                                 value="{{ old('websiteUrl', $ministry->website) }}" 
-                                class="w-full rounded-none bg-transparent py-3 px-5 font-medium outline-none ring-0 border border-neutral-300 dark:border-neutral-600 focus:outline-none dark:focus:outline-none focus:ring-1 focus:ring-slate-50/50 dark:focus:ring-slate-50/50 transition disabled:cursor-default disabled:bg-whiter dark:bg-form-input">
+                                class="w-full rounded-none bg-zinc-50 py-3 px-5 font-medium outline-none ring-0 border border-neutral-300 dark:border-neutral-600 focus:outline-none dark:focus:outline-none focus:ring-1 focus:ring-slate-50/50 dark:focus:ring-slate-50/50 transition disabled:cursor-default disabled:bg-whiter dark:bg-form-input">
                         </div>
                         <div>
                             {{-- <h4 class="text-lg font-bold text-black dark:text-slate-600 capitalize border-b-4 border-slate-500 mb-3 py-1">Settings</h4> --}}
@@ -89,7 +89,7 @@
                                 <div class="mb-4 w-1/3">
                                     <label for="publishabled" class="block text-gray-700 text-sm font-bold mb-2">Make it Publishable</label>
                                     <select name="publishabled" id="publishabled" 
-                                        class="w-full rounded-none bg-transparent py-3 px-5 font-medium outline-none ring-0 border border-neutral-300 dark:border-neutral-600 focus:outline-none dark:focus:outline-none focus:ring-1 focus:ring-slate-50/50 dark:focus:ring-slate-50/50 transition disabled:cursor-default disabled:bg-whiter dark:bg-form-input">
+                                        class="w-full rounded-none bg-zinc-50 py-3 px-5 font-medium outline-none ring-0 border border-neutral-300 dark:border-neutral-600 focus:outline-none dark:focus:outline-none focus:ring-1 focus:ring-slate-50/50 dark:focus:ring-slate-50/50 transition disabled:cursor-default disabled:bg-whiter dark:bg-form-input">
                                         <option value="1" {{ old('publishabled', $ministry->publishabled) == '1' ? 'selected' : '' }}>Yes</option>
                                         <option value="0" {{ old('publishabled', $ministry->publishabled) == '0' ? 'selected' : '' }}>No</option>
                                     </select>
@@ -97,7 +97,7 @@
                                 <div class="mb-4 w-1/3">
                                     <label for="searcheable" class="block text-gray-700 text-sm font-bold mb-2">Make it Searchable</label>
                                     <select name="searcheable" id="searcheable" 
-                                        class="w-full rounded-none bg-transparent py-3 px-5 font-medium outline-none ring-0 border border-neutral-300 dark:border-neutral-600 focus:outline-none dark:focus:outline-none focus:ring-1 focus:ring-slate-50/50 dark:focus:ring-slate-50/50 transition disabled:cursor-default disabled:bg-whiter dark:bg-form-input">
+                                        class="w-full rounded-none bg-zinc-50 py-3 px-5 font-medium outline-none ring-0 border border-neutral-300 dark:border-neutral-600 focus:outline-none dark:focus:outline-none focus:ring-1 focus:ring-slate-50/50 dark:focus:ring-slate-50/50 transition disabled:cursor-default disabled:bg-whiter dark:bg-form-input">
                                         <option value="1" {{ old('searcheable', $ministry->searcheable) == '1' ? 'selected' : '' }}>Yes</option>
                                         <option value="0" {{ old('searcheable', $ministry->searcheable) == '0' ? 'selected' : '' }}>No</option>
                                     </select>
@@ -105,7 +105,7 @@
                                 <div class="mb-4 w-1/3">
                                     <label for="status" class="block text-gray-700 text-sm font-bold mb-2">Status</label>
                                     <select name="status" id="status" 
-                                        class="w-full rounded-none bg-transparent py-3 px-5 font-medium outline-none ring-0 border border-neutral-300 dark:border-neutral-600 focus:outline-none dark:focus:outline-none focus:ring-1 focus:ring-slate-50/50 dark:focus:ring-slate-50/50 transition disabled:cursor-default disabled:bg-whiter dark:bg-form-input">
+                                        class="w-full rounded-none bg-zinc-50 py-3 px-5 font-medium outline-none ring-0 border border-neutral-300 dark:border-neutral-600 focus:outline-none dark:focus:outline-none focus:ring-1 focus:ring-slate-50/50 dark:focus:ring-slate-50/50 transition disabled:cursor-default disabled:bg-whiter dark:bg-form-input">
                                         <option value="1" {{ old('status', $ministry->status) == '1' ? 'selected' : '' }}>Active</option>
                                         <option value="0" {{ old('status', $ministry->status) == '0' ? 'selected' : '' }}>Inactive</option>
                                     </select>
@@ -121,7 +121,7 @@
                                 id="bio" 
                                 rows="6" 
                                 placeholder="Description"
-                                class="w-full rounded-none bg-transparent py-3 h-100 px-5 font-medium outline-none ring-0 border border-neutral-300 dark:border-neutral-600 focus:outline-none dark:focus:outline-none focus:ring-1 focus:ring-slate-50/50 dark:focus:ring-slate-50/50 transition disabled:cursor-default disabled:bg-whiter dark:bg-form-input">{{ old('bio', $ministry->bio) }}</textarea>
+                                class="w-full rounded-none bg-zinc-50 py-3 h-100 px-5 font-medium outline-none ring-0 border border-neutral-300 dark:border-neutral-600 focus:outline-none dark:focus:outline-none focus:ring-1 focus:ring-slate-50/50 dark:focus:ring-slate-50/50 transition disabled:cursor-default disabled:bg-whiter dark:bg-form-input">{{ old('bio', $ministry->bio) }}</textarea>
                         </div>
                     </div>
                 </div>
@@ -147,13 +147,7 @@
             </div>
         </form>
         <div class="w-1/3">
-            <div class="flex flex-col gap-4 pb-5 border border-slate-400/70 rounded-lg bg-white dark:bg-slate-700 shadow-md">
-                <h4 class="text-2xl font-bold text-slate-700 dark:text-white mb-4 capitalize rounded-t-lg p-4 bg-slate-100 dark:bg-slate-600 border-b border-slate-400/20">Assigned User</h4>
-                <ul class="list-none list-inside px-6">
-                    <li class="py-1">John Doe</li>
-                    <li class="py-1">Jane Doe</li>
-                </ul>
-            </div>
+            <livewire:ministry.add-user-to-ministry :ministry="$ministry" />
         </div>
     </div>
 </x-app-layout> 
