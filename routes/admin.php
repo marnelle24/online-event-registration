@@ -5,6 +5,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\MinistryController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\SpeakerController;
 
 Route::middleware(['admin'])->prefix('admin')->group(function () {
 
@@ -18,5 +19,16 @@ Route::middleware(['admin'])->prefix('admin')->group(function () {
     Route::delete('/ministry/{ministry}', [MinistryController::class, 'destroy'])->name('admin.ministry.destroy');
 
     Route::get('/categories', [CategoryController::class, 'index'])->name('admin.categories');
+
+    // Speaker routes
+    Route::prefix('speakers')->group(function () {
+        Route::get('/', [SpeakerController::class, 'index'])->name('admin.speakers');
+        Route::get('/create', [SpeakerController::class, 'create'])->name('admin.speakers.create');
+        Route::post('/', [SpeakerController::class, 'store'])->name('admin.speakers.store');
+        Route::get('/{id}', [SpeakerController::class, 'show'])->name('admin.speakers.show');
+        Route::get('/{id}/edit', [SpeakerController::class, 'edit'])->name('admin.speakers.edit');
+        Route::put('/{id}', [SpeakerController::class, 'update'])->name('admin.speakers.update');
+        Route::delete('/{id}', [SpeakerController::class, 'destroy'])->name('admin.speakers.destroy');
+    });
 });
     
