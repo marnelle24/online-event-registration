@@ -19,6 +19,7 @@ class MinistryController extends Controller
         ->latest()
         ->paginate(10);
 
+        
         return view('admin.ministry.index', compact('searchQuery', 'ministries'));
     }
 
@@ -158,4 +159,5 @@ class MinistryController extends Controller
                 ->with('error', 'Failed to update ministry. Please try again.');
         }
     }
+
 }

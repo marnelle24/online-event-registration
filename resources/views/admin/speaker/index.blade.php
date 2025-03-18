@@ -36,14 +36,14 @@
                             </tr>
                         </table>
                         <div>
-                            <p class="text-xs text-slate-600 dark:text-white italic">About the speaker</p>
+                            <p class="text-xs text-slate-600 dark:text-white italic">About:</p>
                             <p class="text-sm text-slate-600 dark:text-white">
                                 {{ $speaker->about ? Str::words($speaker->about, 15) : 'N/A' }}
                             </p>
                         </div>
                         @if ($speaker->socials)
                             <div class="mt-4">
-                                <p class="text-xs text-slate-600 dark:text-white italic">Social</p>
+                                <p class="text-xs text-slate-600 dark:text-white italic">Socials:</p>
                                 @foreach ($speaker->socials as $social)
                                     <a href="{{ $social['url'] }}" target="_blank" class="text-xs border border-slate-400/70 bg-slate-300 rounded-full mr-1 py-0.5 px-2 text-slate-600">
                                         {{ $social['name'] }}

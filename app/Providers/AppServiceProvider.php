@@ -2,8 +2,9 @@
 
 namespace App\Providers;
 
+use Illuminate\Foundation\AliasLoader;
 use Illuminate\Support\ServiceProvider;
-
+use App\Helpers\Helper;
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -11,7 +12,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $loader = AliasLoader::getInstance();
+        $loader->alias('Helper', Helper::class);
     }
 
     /**
