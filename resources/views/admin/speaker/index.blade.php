@@ -1,7 +1,7 @@
 @section('title', 'Speaker Management')
 <x-app-layout>
     <div class="flex justify-between items-center gap-3 mb-8">
-        <h4 class="lg:text-2xl text-xl font-bold text-black dark:text-slate-600 capitalize">Speaker Management</h4>
+        <h4 class="lg:text-2xl text-xl font-bold text-black dark:text-slate-600 capitalize">Professionals Management</h4>
         <a wire:navigate href="{{ route('admin.speakers.create') }}" 
             class="text-slate-100 bg-slate-600 hover:bg-slate-700 dark:bg-slate-700 dark:hover:bg-slate-800 rounded-full hover:-translate-y-1 duration-300 border border-slate-600 hover:border-slate-700 font-bold lg:py-3 py-2 px-5 mr-2">
             Add New

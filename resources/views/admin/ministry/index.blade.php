@@ -15,8 +15,6 @@
                     <p class="w-14 h-14 border border-zinc-800/40 dark:border-zinc-100/40 text-xl font-bold rounded-full text-slate-700 dark:text-slate-100 text-center flex items-center justify-center bg-slate-100 dark:bg-slate-400">
                         {{ Helper::getInitials($ministry->name) }}
                     </p>
-                    {{-- <img class="w-14 h-14 border border-zinc-800/40 rounded-full object-cover" src="{{ Auth::user()->profile_photo_url }}" alt="{{ $ministry->name }}" /> --}}
-                    {{-- <img src="https://placehold.co/400x400/lightgray/white" alt="{{ $ministry->name }}" class="w-14 h-14 border border-zinc-800/40 rounded-full"> --}}
                     <h4 class="text-xl font-bold text-slate-700 dark:text-slate-100 mb-3 capitalize leading-none">{{ $ministry->name }}</h4>
                 </div>
                 <div class="p-6">
@@ -63,7 +61,7 @@
                         </tr>
                     </table>
 
-                    <div class="mt-4 flex gap-3">
+                    <div class="mt-4 flex gap-1">
                         <button class="bg-slate-700 dark:bg-slate-100 hover:-translate-y-0.5 hover:bg-slate-500 dark:hover:bg-slate-300 transition-all duration-300 shadow text-xs text-white dark:text-slate-600 px-4 py-2 rounded-full">
                             <a href="{{ route('admin.ministry.show', $ministry->id) }}">View</a>   
                         </button>

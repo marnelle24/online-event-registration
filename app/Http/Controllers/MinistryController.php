@@ -27,12 +27,16 @@ class MinistryController extends Controller
     {
         try 
         {
-            $ministry = Ministry::find($id);
+            $ministry = Ministry::where('id', $id)
+                ->with('programmes')
+                ->first();
             return view('admin.ministry.show', compact('ministry'));
         } 
         catch (\Exception $e) 
         {
-            return redirect()->back()->with('error', 'Ministry not found');
+            Toaster::error('Ministry not found');
+            Log::error('Ministry not found: ' . $e->getMessage());
+            return redirect()->route('admin.ministries');
         }
     }
 

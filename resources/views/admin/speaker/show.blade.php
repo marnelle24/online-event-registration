@@ -61,11 +61,12 @@
                         <a href="#">
                             <div class="border border-slate-300 {{ $loop->last ? '' : 'border-b-0' }} dark:border-slate-600 hover:-translate-y-0.5 rounded-none p-4 hover:bg-slate-100 dark:hover:bg-slate-600 duration-300">
                                 <div class="flex justify-between items-start">
-                                    <div class="flex gap-1">
-                                        <img src="{{ $programme->thumbnail ? Storage::url($programme->thumbnail) : 'https://placehold.co/400x400/lightgray/white' }}" alt="{{ $programme->title }}" class="w-15 h-15 object-cover border border-slate-200 dark:border-slate-600">
+                                    <div class="flex gap-3">
+                                        <img src="{{ $programme->thumbnail ? Storage::url($programme->thumbnail) : 'https://placehold.co/400x400/lightgray/white' }}" alt="{{ $programme->title }}" class="w-18 h-18 object-cover border border-slate-200 dark:border-slate-600">
                                         <div>
                                             <h3 class="font-bold text-slate-800 dark:text-slate-200">{{ $programme->title }}</h3>
-                                            <p class="text-xs text-slate-600 dark:text-slate-400">{{ Carbon\Carbon::parse($programme->startDate)->format('F j, Y') }}</p>
+                                            <p class="text-xs text-slate-600 dark:text-slate-400">{{ 'By: ' . $programme->ministry->name }}</p>
+                                            <p class="text-xs text-slate-600 dark:text-slate-400">{{ 'Date: ' . Carbon\Carbon::parse($programme->startDate)->format('F j, Y') }}</p>
                                             <p class="text-xs text-slate-600 dark:text-slate-400">
                                                 @php
                                                     $random_string = ['zoom', 'Bible House, Singapore City', 'Marina Bay Sands'];

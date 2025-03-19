@@ -30,5 +30,14 @@ Route::middleware(['admin'])->prefix('admin')->group(function () {
         Route::put('/{id}', [SpeakerController::class, 'update'])->name('admin.speakers.update');
         Route::delete('/{id}', [SpeakerController::class, 'destroy'])->name('admin.speakers.destroy');
     });
+
+    Route::prefix('users')->group(function () {
+        Route::get('/', [AdminController::class, 'index'])->name('admin.users');
+        Route::get('/create', [AdminController::class, 'create'])->name('admin.users.create');
+        Route::post('/', [AdminController::class, 'store'])->name('admin.users.store');
+        Route::get('/{id}', [AdminController::class, 'show'])->name('admin.users.show');
+        Route::get('/{id}/edit', [AdminController::class, 'edit'])->name('admin.users.edit');
+        Route::put('/{id}', [AdminController::class, 'update'])->name('admin.users.update');
+    });
 });
     

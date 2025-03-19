@@ -87,7 +87,9 @@ class SpeakerController extends Controller
     public function show($id)
     {
         try {
-            $speaker = Speaker::where('id', $id)->with('programmes')->first();
+            $speaker = Speaker::where('id', $id)
+                ->with('programmes')
+                ->first();
             return view('admin.speaker.show', compact('speaker'));
         } catch (\Exception $e) {
             Toaster::error('Speaker not found');
