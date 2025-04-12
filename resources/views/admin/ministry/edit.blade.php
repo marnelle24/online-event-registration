@@ -131,7 +131,7 @@
                 {{-- </form> --}}
             </div>
             <div class="flex items-center justify-end mt-4">
-                <a href="{{ route('admin.ministries') }}" class="text-slate-600 bg-slate-100 hover:bg-slate-200 dark:bg-slate-300 dark:hover:bg-slate-400 rounded-full hover:-translate-y-1 duration-300 border border-slate-600 hover:border-slate-700 font-bold py-3 px-5 mr-2">
+                <a href="{{ route('admin.ministry') }}" class="text-slate-600 bg-slate-100 hover:bg-slate-200 dark:bg-slate-300 dark:hover:bg-slate-400 rounded-full hover:-translate-y-1 duration-300 border border-slate-600 hover:border-slate-700 font-bold py-3 px-5 mr-2">
                     Cancel
                 </a>
                 <div>

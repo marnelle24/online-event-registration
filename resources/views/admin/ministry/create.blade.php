@@ -27,7 +27,7 @@
     @endif
 
     <div class="flex gap-4">
-        <form action="{{ route('admin.ministries.store') }}" method="POST" class="w-full">
+        <form action="{{ route('admin.ministry.store') }}" method="POST" class="w-full">
             <div class="border border-slate-400/70 rounded-lg bg-white dark:bg-slate-700 shadow-md p-6">
                 @csrf
                 <div class="flex gap-4">
@@ -129,7 +129,7 @@
                 </div>
             </div>
             <div class="flex items-center justify-end mt-4">
-                <a href="{{ route('admin.ministries') }}" class="text-slate-600 bg-slate-100 hover:bg-slate-200 dark:bg-slate-300 dark:hover:bg-slate-400 rounded-full hover:-translate-y-1 duration-300 border border-slate-600 hover:border-slate-700 font-bold py-3 px-5 mr-2">
+                <a href="{{ route('admin.ministry') }}" class="text-slate-600 bg-slate-100 hover:bg-slate-200 dark:bg-slate-300 dark:hover:bg-slate-400 rounded-full hover:-translate-y-1 duration-300 border border-slate-600 hover:border-slate-700 font-bold py-3 px-5 mr-2">
                     Cancel
                 </a>
                 <div>
