@@ -7,6 +7,11 @@ use Illuminate\Database\Eloquent\Builder;
 
 class Programme extends Model
 {
+    protected $casts = [
+        'settings' => 'array',
+        'extraFields' => 'array'
+    ]; 
+
     protected $fillable = [
         'ministry_id',
         'type',

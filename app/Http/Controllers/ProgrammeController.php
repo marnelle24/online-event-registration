@@ -31,8 +31,43 @@ class ProgrammeController extends Controller
     
     public function store(Request $request)
     {
-        dd($request->all());
-        
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'programmeCode' => 'required|unique:programmes,programmeCode',
+            'type' => 'required|in:course,event',
+            'excerpt' => 'nullable|max:255',
+            'description' => 'nullable',
+            'startDate' => 'nullable|date',
+            'endDate' => 'nullable|date|after:startDate',
+            'startTime' => 'nullable',
+            'endTime' => 'nullable',
+            'customDate' => 'nullable',
+            'address' => 'nullable',
+            'city' => 'nullable',
+            'state' => 'nullable',
+            'postalCode' => 'nullable',
+            'country' => 'nullable',
+            'latLong' => 'nullable',
+            'price' => 'nullable|numeric|min:0|max:100',
+            'adminFee' => 'nullable|numeric|min:0|max:100',
+            'thumb' => 'nullable|image|mimes:jpeg,png,jpg|max:5120',
+            'a3_poster' => 'nullable|image|mimes:jpeg,png,jpg|max:10240',
+            'contactNumber' => 'nullable',
+            'contactPerson' => 'nullable',
+            'contactEmail' => 'nullable|email',
+            'limit' => 'nullable|numeric|min:0|max:100',
+            'settings' => 'nullable|json',
+            'extraFields' => 'nullable|json',
+            'searchable' => 'nullable|boolean',
+            'publishable' => 'nullable|boolean',
+            'private_only' => 'nullable|boolean',
+            'externalUrl' => 'nullable|string',
+            'status' => 'nullable|in:draft,published',
+        ]);
+
+        dd($validated, $request->all());
+
+
         return view('admin.programme.store');
     }
 
