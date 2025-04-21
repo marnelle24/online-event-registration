@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use App\Models\Programme;
 use Illuminate\Http\Request;
 
@@ -24,11 +25,14 @@ class ProgrammeController extends Controller
 
     public function create()
     {
-        return view('admin.programme.create');
+        $categories = Category::all();
+        return view('admin.programme.create', compact('categories'));
     }
     
-    public function store()
+    public function store(Request $request)
     {
+        dd($request->all());
+        
         return view('admin.programme.store');
     }
 

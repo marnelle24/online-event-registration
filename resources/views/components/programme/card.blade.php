@@ -1,7 +1,7 @@
     <div class="flex flex-col border border-slate-400/70 rounded-lg bg-zinc-100 dark:bg-slate-700 hover:bg-neutral-200/70 hover:-translate-y-0.5 dark:hover:bg-slate-800/90 duration-300 shadow-md h-full">
         <div 
             class="relative min-h-[250px] flex justify-center p-4 border-b border-slate-400/70 dark:bg-slate-800 rounded-t-lg items-center bg-zinc-200"
-            style="background-position:center;object-fit:cover;background-image:linear-gradient( rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1) ), url('{{ $programme->thumb }}');"
+            style="background-position:center;object-fit:cover;background-image:linear-gradient( rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2) ), url('{{ $programme->thumb }}');"
         >
             @if(!$programme->thumb)
                 <p class="text-6xl font-normal rounded-full text-slate-400 drop-shadow text-center tracking-widest">
@@ -9,13 +9,13 @@
                 </p>
             @endif
 
-            <div class="absolute bottom-3 right-3 mt-8 flex gap-1 pt-4">
+            <div class="absolute bottom-3 right-3 mt-8 flex gap-1 pt-4 z-30">
                 <a href="{{ route('admin.programmes.show', $programme->id) }}" 
-                    class="bg-orange-500 dark:bg-slate-100 hover:-translate-y-0.5 hover:bg-slate-500 dark:hover:bg-slate-300 transition-all duration-300 shadow text-sm text-white dark:text-slate-600 px-3 py-1 rounded-lgs">
+                    class="bg-orange-500 dark:bg-slate-100 hover:-translate-y-0.5 hover:bg-orange-400 dark:hover:bg-slate-300 transition-all duration-300 shadow text-sm text-white dark:text-slate-600 px-3 py-1 rounded-lgs">
                     View
                 </a>
                 <a href="{{ route('admin.programmes.edit', $programme->id) }}" 
-                    class="bg-sky-500 dark:bg-slate-100 hover:-translate-y-0.5 hover:bg-slate-500 dark:hover:bg-slate-300 transition-all duration-300 shadow text-sm text-white dark:text-slate-600 px-3 py-1 rounded-lgs">
+                    class="bg-sky-600 dark:bg-slate-100 hover:-translate-y-0.5 hover:bg-sky-500 dark:hover:bg-slate-300 transition-all duration-300 shadow text-sm text-white dark:text-slate-600 px-3 py-1 rounded-lgs">
                     Edit
                 </a>
             </div>
@@ -57,7 +57,7 @@
                             </svg>
                         </td>
                         <td class="text-sm px-1 text-slate-600 dark:text-white">
-                            <p class="text-sm text-black capitalize">
+                            <p class="text-sm capitalize">
                                 {{ $programmeTimes }}
                             </p>
                         </td>
@@ -69,7 +69,7 @@
                             </svg>
                         </td>
                         <td class="text-sm px-1 text-slate-600 dark:text-white">
-                            <p class="text-sm text-black uppercase">
+                            <p class="text-sm uppercase">
                                 {{ $programmePrice }}
                             </p>
                         </td>
@@ -81,7 +81,7 @@
                         </svg>
                         </td>
                         <td class="text-sm px-1 text-slate-600 dark:text-white">
-                            <p class="text-sm text-black">
+                            <p class="text-sm">
                                 100 / {{ $programme->limit > 0 ? $programme->limit : 'No limit' }}
                             </p>
                         </td>

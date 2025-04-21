@@ -10,7 +10,7 @@
 
     <form method="GET" action="{{ route('admin.programmes') }}" class="mb-4 lg:px-0 px-2">
         <input 
-            type="text" 
+            type="search" 
             name="search" 
             value="{{ request('search') }}" 
             placeholder="Search programmes..." 
