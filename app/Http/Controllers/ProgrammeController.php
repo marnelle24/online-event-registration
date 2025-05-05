@@ -5,9 +5,29 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Models\Programme;
 use Illuminate\Http\Request;
+use App\Http\Requests\StoreProgrammeRequest;
 
 class ProgrammeController extends Controller
 {
+
+    public function uploadImage(Request $request)
+    {
+        $request->validate([
+            'upload' => 'required|image|max:2048',
+        ]);
+
+        $programme = Programme::first() ?? Programme::create(['programmeCode' => '1232131', 'title' => 'temp']); // Just attach to any post for now
+
+        $media = $programme->addMediaFromRequest('upload')->toMediaCollection('images');
+
+        return response()->json([
+            'url' => $media->getUrl(),
+            'uploaded' => 1,
+            'fileName' => $media->file_name,
+        ]);
+        
+    }
+
     public function index(Request $request)
     {
         $searchQuery = $request->get('search');
@@ -28,44 +48,12 @@ class ProgrammeController extends Controller
         $categories = Category::all();
         return view('admin.programme.create', compact('categories'));
     }
-    
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'programmeCode' => 'required|unique:programmes,programmeCode',
-            'type' => 'required|in:course,event',
-            'excerpt' => 'nullable|max:255',
-            'description' => 'nullable',
-            'startDate' => 'nullable|date',
-            'endDate' => 'nullable|date|after:startDate',
-            'startTime' => 'nullable',
-            'endTime' => 'nullable',
-            'customDate' => 'nullable',
-            'address' => 'nullable',
-            'city' => 'nullable',
-            'state' => 'nullable',
-            'postalCode' => 'nullable',
-            'country' => 'nullable',
-            'latLong' => 'nullable',
-            'price' => 'nullable|numeric|min:0|max:100',
-            'adminFee' => 'nullable|numeric|min:0|max:100',
-            'thumb' => 'nullable|image|mimes:jpeg,png,jpg|max:5120',
-            'a3_poster' => 'nullable|image|mimes:jpeg,png,jpg|max:10240',
-            'contactNumber' => 'nullable',
-            'contactPerson' => 'nullable',
-            'contactEmail' => 'nullable|email',
-            'limit' => 'nullable|numeric|min:0|max:100',
-            'settings' => 'nullable|json',
-            'extraFields' => 'nullable|json',
-            'searchable' => 'nullable|boolean',
-            'publishable' => 'nullable|boolean',
-            'private_only' => 'nullable|boolean',
-            'externalUrl' => 'nullable|string',
-            'status' => 'nullable|in:draft,published',
-        ]);
 
-        dd($validated, $request->all());
+    public function store(StoreProgrammeRequest $request)
+    {
+        // $validated = $request->validated();
+
+        dd($validated);
 
 
         return view('admin.programme.store');

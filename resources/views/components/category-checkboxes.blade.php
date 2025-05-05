@@ -16,7 +16,7 @@
                     :value="category.id" 
                     :checked="selected.includes(category.id)"
                     @change="toggleSelection(category.id)"
-                    class="form-checkbox text-blue-600 rounded"
+                    class="form-checkbox text-blue-600 rounded-none focus:outline-none focus:ring-0"
                 >
                 <span x-text="category.name"></span>
             </label>

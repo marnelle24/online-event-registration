@@ -43,6 +43,7 @@
 
 
         @stack('modals')
+        @stack('scripts')
         <x-toaster-hub />
         @livewireScripts
     </body>

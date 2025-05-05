@@ -2,11 +2,15 @@
 
 namespace App\Models;
 
+use Spatie\MediaLibrary\HasMedia;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
-class Programme extends Model
+class Programme extends Model implements HasMedia
 {
+    use InteractsWithMedia;
+    
     protected $casts = [
         'settings' => 'array',
         'extraFields' => 'array'
