@@ -11,9 +11,6 @@ Route::get('/', function () {
 
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])->group(function () {
 
-    // upload media in the programme editor
-    Route::post('/programme/uploadImage', [ProgrammeController::class, 'uploadImage'])->name('programme.uploadImage');
-
     Route::get('/admin', function () {
         return redirect()->route('admin.dashboard');
     });

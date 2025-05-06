@@ -53,6 +53,7 @@ class StoreProgrammeRequest extends FormRequest
             'private_only' => 'nullable|boolean',
             'externalUrl' => 'nullable|string',
             'status' => 'nullable|in:draft,published,archive',
+            'media_ids' => 'nullable'
         ];
     }
 

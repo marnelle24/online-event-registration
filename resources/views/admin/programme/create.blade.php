@@ -14,48 +14,57 @@
         @csrf
         <div class="flex xl:flex-row flex-col gap-4 justify-between">
             <div class="xl:w-3/4 w-full flex flex-col gap-4">
-                <div class="shadow-md p-6 border border-slate-400/70 rounded bg-white flex w-full">
-                    <input 
-                        name="programmeCode" 
-                        value="{{old('programmeCode')}}" 
-                        class="focus:border-neutral-700 border-r-0 w-full focus:ring-0 flex items-center whitespace-nowrap rounded-none bg-zinc-50 border border-solid border-neutral-400 px-3 py-2 text-base font-normal text-surface" 
-                        type="text" 
-                        placeholder="Programme Code" 
-                    />
-                    <button type="button" class="flex gap-2 whitespace-nowrap justify-center items-center bg-neutral-200 hover:bg-neutral-300 duration-300 border border-neutral-400 px-3 py-2 text-base font-normal text-surface">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
-                        </svg>
-                        <span class="text-sm">Auto-Generate</span>
-                    </button>
+                <div class="shadow-md p-6 border border-slate-400/70 rounded bg-white flex lg:flex-row flex-col w-full gap-4 justify-between">
+                    <div class="flex flex-col w-full">
+                        <p class="text-md text-slate-500 capitalize mb-1">Programme Code <span class="text-md italic text-red-400">*</span></p>
+                        <div class="flex">
+                            <input 
+                                name="programmeCode" 
+                                value="{{old('programmeCode')}}" 
+                                class="focus:border-neutral-700 border-r-0 w-full focus:ring-0 flex items-center whitespace-nowrap rounded-none bg-zinc-50 border border-solid border-neutral-400 px-3 py-2 text-base font-normal text-surface" 
+                                type="text" 
+                                placeholder="Programme Code" 
+                            />
+                            <button type="button" class="flex gap-2 whitespace-nowrap justify-center items-center bg-neutral-200 hover:bg-neutral-300 duration-300 border border-neutral-400 px-3 py-2 text-base font-normal text-surface">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
+                                </svg>
+                                <span class="text-sm">Generate</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="flex flex-col lg:w-1/2 w-full">
+                        <p class="text-md text-slate-500 capitalize mb-1">Ministry <span class="text-md italic text-red-400">*</span></p>
+                        <select 
+                            name="ministry_id"
+                            class="focus:border-neutral-400 focus:ring-0 flex items-center whitespace-nowrap rounded-none bg-zinc-50 border border-solid border-neutral-400 px-3 py-2 text-base font-normal text-surface">
+                            <option value="" style="color:gray">Select Ministry</option>
+                            @foreach ($ministries as $key => $value)
+                                <option {{ old('ministry_id') === $key ? 'selected' : '' }} value="{{$key}}">{{$value}}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="flex flex-col lg:w-1/3 w-full">
+                        <p class="text-md text-slate-500 capitalize mb-1">Type <span class="text-md italic text-red-400">*</span></p>
+                        <select 
+                            name="type"
+                            class="focus:border-neutral-400 focus:ring-0 flex items-center whitespace-nowrap rounded-none bg-zinc-50 border border-solid border-neutral-400 px-3 py-2 text-base font-normal text-surface">
+                            <option value="" style="color:gray">Event/Course</option>
+                            <option {{ old('type') === 'event' ? 'selected' : '' }} value="event">Event</option>
+                            <option {{ old('type') === 'course' ? 'selected' : '' }} value="course">Course</option>
+                        </select>
+                    </div>
                 </div>
                 <div class="shadow-md p-6 border border-slate-400/70 rounded bg-white flex gap-4 w-full">
-                    <div class="w-2/3 flex flex-col">
-                        {{-- <p class="text-md text-slate-500 capitalize mb-1">Title <span class="text-md italic text-red-400">*</span></p> --}}
+                    <div class="flex flex-col w-full">
+                        <p class="text-md text-slate-500 capitalize mb-1">Title <span class="text-md italic text-red-400">*</span></p>
                         <textarea 
                             name="title" 
                             value="{{old('title')}}"
                             class="focus:border-neutral-400 flex items-center whitespace-nowrap rounded-none border-solid border-neutral-400 px-3 py-2 text-md font-normal text-surface border p-2 bg-zinc-50 focus:outline-none focus:ring-0" 
                             placeholder="Title of the Programme"></textarea>
                     </div>
-                    <div class="w-1/3 flex flex-col gap-4">
-                        {{-- <div class="flex flex-col"> --}}
-                            {{-- <p class="text-md text-slate-500 capitalize mb-1">Program Code <span class="text-md italic text-red-400">*</span></p> --}}
-                            {{-- <input 
-                                name="programmeCode" value="{{old('programmeCode')}}"
-                                class="focus:border-neutral-400 focus:ring-0 flex items-center whitespace-nowrap rounded-none bg-zinc-50 border border-solid border-neutral-400 px-3 py-2 text-base font-normal text-surface" type="text" placeholder="Programme Code" /> --}}
-                        {{-- </div> --}}
-                        <div class="flex flex-col">
-                            {{-- <p class="text-md text-slate-500 capitalize mb-1">Type <span class="text-md italic text-red-400">*</span></p> --}}
-                            <select 
-                                name="type" value="{{old('type')}}"
-                                class="focus:border-neutral-400 focus:ring-0 flex items-center whitespace-nowrap rounded-none bg-zinc-50 border border-solid border-neutral-400 px-3 py-2 text-base font-normal text-surface">
-                                <option value="" style="color:gray">Select event, course, etc.</option>
-                                <option {{ old('type') === 'event' ? 'selected' : '' }} value="event">Event</option>
-                                <option {{ old('type') === 'course' ? 'selected' : '' }} value="course">Course</option>
-                            </select>
-                        </div>
-                    </div>
+                    
                 </div>
                 <div class="shadow-md p-6 border border-slate-400/70 rounded bg-white flex flex-col gap-4">
                     <div class="flex flex-col">
@@ -305,53 +314,48 @@
     </form>
 
     @push('scripts')
-        {{-- <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script> --}}
-        <script src="https://cdn.ckeditor.com/ckeditor5/35.1.0/classic/ckeditor.js"></script>
+        <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
+        
         <script>
-            class MyUploadAdapter {
-                constructor(loader) {
-                    this.loader = loader;
-                }
-
-                upload() {
-                    return this.loader.file.then(file => new Promise((resolve, reject) => {
-                        const formData = new FormData();
-                        formData.append('upload', file);
-
-                        fetch('{{ route('programme.uploadImage') }}', {
-                            method: 'POST',
-                            headers: {
-                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                            },
-                            body: formData
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            resolve({ default: data.url });
-                        })
-                        .catch(error => {
-                            reject(error.message);
-                        });
-                    }));
-                }
-
-                abort() {}
-            }
-
-            function MyCustomUploadAdapterPlugin(editor) {
-                editor.plugins.get('FileRepository').createUploadAdapter = (loader) => {
-                    return new MyUploadAdapter(loader);
-                };
-            }
-
             ClassicEditor
                 .create(document.querySelector('#description'), {
-                    extraPlugins: [MyCustomUploadAdapterPlugin]
+                    removePlugins: ['ImageUpload', 'EasyImage', 'CKFinder', 'CKFinderUploadAdapter', 'Base64UploadAdapter'],
+                    toolbar: [
+                        'heading', '|',
+                        'undo', 'redo', '|',
+                        'bold', 'italic', 'link',
+                        'bulletedList', 'numberedList', '|'
+                    ],
+                    
+                    
                 })
                 .catch(error => {
                     console.error(error);
                 });
         </script>
     @endpush
+    <style>
+        .ck-content {
+            min-height:300px;
+            background-color: #fafafa !important;
+        }
+        .ck-content a {
+            color:#3989f1 !important;
+            text-decoration: underline !important;
+        }
+        .ck-content ol, .ck-content ul {
+            padding-inline: 30px !important;
+        }
+
+        .ck-content h2 {
+            font-size: 40px !important;
+        } 
+        .ck-content h3 {
+            font-size: 30px !important;
+        }
+        .ck-content h4 {
+            font-size: 20px !important;
+        }
+    </style>
 </x-app-layout> 
 

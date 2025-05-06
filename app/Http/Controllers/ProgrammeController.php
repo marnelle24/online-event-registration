@@ -3,30 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Models\Ministry;
 use App\Models\Programme;
+use App\Models\EditorUpload;
 use Illuminate\Http\Request;
 use App\Http\Requests\StoreProgrammeRequest;
 
 class ProgrammeController extends Controller
 {
-
-    public function uploadImage(Request $request)
-    {
-        $request->validate([
-            'upload' => 'required|image|max:2048',
-        ]);
-
-        $programme = Programme::first() ?? Programme::create(['programmeCode' => '1232131', 'title' => 'temp']); // Just attach to any post for now
-
-        $media = $programme->addMediaFromRequest('upload')->toMediaCollection('images');
-
-        return response()->json([
-            'url' => $media->getUrl(),
-            'uploaded' => 1,
-            'fileName' => $media->file_name,
-        ]);
-        
-    }
 
     public function index(Request $request)
     {
@@ -45,22 +29,35 @@ class ProgrammeController extends Controller
 
     public function create()
     {
+        $ministries = Ministry::pluck('name', 'id');
         $categories = Category::all();
-        return view('admin.programme.create', compact('categories'));
+        return view('admin.programme.create', compact(['categories', 'ministries']));
     }
 
     public function store(StoreProgrammeRequest $request)
     {
-        // $validated = $request->validated();
 
-        dd($validated);
+        $validated = $request->validated();
+        $validated['ministry_id'] = 1;
+
+        $programme = Programme::create($validated);
+        $programme->addMediaFromRequest('thumb')->toMediaCollection('thumbnail');
+        $programme->addMediaFromRequest('a3_poster')->toMediaCollection('banner');
+
+        return back();
 
 
-        return view('admin.programme.store');
+        // return view('admin.programme.store');
     }
 
-    public function show()
+    public function show($id)
     {
+        $programme = Programme::whereId($id)->first();
+        $thumbnail = $programme->getFirstMedia('thumbnail')->getUrl();
+        $banner = $programme->getFirstMedia('banner')->getUrl();
+        
+        dd($programme, $thumbnail, $banner);
+
         return view('admin.programme.show');
     }
 
