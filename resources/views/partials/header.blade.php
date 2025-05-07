@@ -32,11 +32,11 @@
             </span>
         </button>
         <!-- Hamburger Toggle BTN -->
-        <a class="block flex-shrink-0 lg:hidden" href="index.html">
+        <a class="block flex-shrink-0 lg:hidden" href="{{route('admin.dashboard')}}">
             <div class="h-5 w-5">
                 <x-application-mark></x-application-mark>
             </div>
-            <span class="darl:text-neutral-400 text-neutral-200 text-lg font-bold">SOL</span>
+            <span class="dark:text-neutral-400 text-neutral-500 text-lg font-bold">SOL</span>
         </a>
         </div>
         <div class="hidden sm:block">

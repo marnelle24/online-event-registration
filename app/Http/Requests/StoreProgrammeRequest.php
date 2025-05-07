@@ -48,12 +48,9 @@ class StoreProgrammeRequest extends FormRequest
             'limit' => 'nullable|numeric|min:0|max:100',
             'settings' => 'nullable|json',
             'extraFields' => 'nullable|json',
-            'searchable' => 'nullable|boolean',
-            'publishable' => 'nullable|boolean',
-            'private_only' => 'nullable|boolean',
             'externalUrl' => 'nullable|string',
             'status' => 'nullable|in:draft,published,archive',
-            'media_ids' => 'nullable'
+            'categories' => 'nullable|array'
         ];
     }
 

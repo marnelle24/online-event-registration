@@ -30,24 +30,28 @@ class ProgrammeController extends Controller
     public function create()
     {
         $ministries = Ministry::pluck('name', 'id');
-        $categories = Category::all();
+        $categories = Category::pluck('name', 'id');
         return view('admin.programme.create', compact(['categories', 'ministries']));
     }
 
     public function store(StoreProgrammeRequest $request)
     {
-
         $validated = $request->validated();
-        $validated['ministry_id'] = 1;
+        
+        $validated['private_only'] = $request->has('private_only') ? 1 : 0;
+        $validated['searchable'] = $request->has('searchable') ? 1 : 0;
+        $validated['publishable'] = $request->has('publishable') ? 1 : 0;
+        $validated['isOnline'] = $request->has('isOnline') ? 1 : 0;
+        $validated['onlineDetails'] = $request->has('onlineDetails') ? $request->input('onlineDetails') : null;
+        
+        dd($validated);
 
         $programme = Programme::create($validated);
+
         $programme->addMediaFromRequest('thumb')->toMediaCollection('thumbnail');
         $programme->addMediaFromRequest('a3_poster')->toMediaCollection('banner');
 
-        return back();
-
-
-        // return view('admin.programme.store');
+        return redirect()->route('admin.programmes.show', $programme->id);
     }
 
     public function show($id)
@@ -55,10 +59,7 @@ class ProgrammeController extends Controller
         $programme = Programme::whereId($id)->first();
         $thumbnail = $programme->getFirstMedia('thumbnail')->getUrl();
         $banner = $programme->getFirstMedia('banner')->getUrl();
-        
-        dd($programme, $thumbnail, $banner);
-
-        return view('admin.programme.show');
+        return view('admin.programme.show', compact(['$programme', 'thumbnail', 'banner']));
     }
 
     public function edit()
