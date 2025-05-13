@@ -62,7 +62,7 @@ class Programme extends Model implements HasMedia
     {
         static::addGlobalScope('active', function (Builder $builder) {
             $builder->where('soft_delete', false);
-            $builder->where('status', 'published');
+            // $builder->where('status', 'published');
             $builder->where('publishable', true);
             $builder->where('searchable', true);
             $builder->where('private_only', false);

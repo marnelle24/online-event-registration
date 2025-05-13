@@ -2,9 +2,10 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreProgrammeRequest extends FormRequest
+class UpdateProgrammeRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,9 +23,8 @@ class StoreProgrammeRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'ministry_id' => 'required',
             'title' => 'required|string|max:255',
-            'programmeCode' => 'required|unique:programmes,programmeCode',
+            'programmeCode' => 'required|'.Rule::unique('programmes')->ignore($this->id),
             'type' => 'required|in:course,event',
             'excerpt' => 'nullable|string|max:300',
             'description' => 'nullable',
@@ -55,22 +55,6 @@ class StoreProgrammeRequest extends FormRequest
             'categories' => 'nullable|array',
             'categories.*' => 'exists:categories,id',
             'status' => 'nullable',
-        ];
-    }
-
-    public function messages()
-    {
-        return [
-            'title.required' => 'Title must not be empty',
-            'programmeCode.required' => 'Programme Code must not be empty',
-            'programmeCode.unique' => 'Programme Code inputed already exists.',
-            'type.required' => 'Programme type must not be empty.',
-            'startDate.required' => 'Start Date must not be empty.',
-            'endDate.required' => 'End Date must not be empty.',
-            'endDate.after' => 'End Date must not be lesser than starting date.',
-            'price.required' => 'Price must not be empty. Set it to 0 if its free programme.',
-            'thumb.max' => 'Thumbnal must not greater than 1.50MB',
-            'a3_poster.max' => 'Banner poster must not greater than 1.50MB',
         ];
     }
 }

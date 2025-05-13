@@ -1,4 +1,11 @@
-<div class="flex flex-col" x-data="inputImage()">
+@props([
+    'label' => 'Image',
+    'name' => 'image',
+    'emptyLabel' => 'No Image',
+    'defaultImage' => null,
+])
+
+<div class="flex flex-col" x-data="inputImage('{{$defaultImage}}')">
     <!-- Preview -->
     <label class="block mb-1 font-semibold">{{ $label }}</label>
     <div 
@@ -14,10 +21,10 @@
 </div>
 
 <script>
-    function inputImage() 
+    function inputImage(defaultImage = NULL) 
     {
         return {
-            imagePreview: null,
+            imagePreview: defaultImage,
             previewImage(event) {
                 const file = event.target.files[0];
                 if (file) {

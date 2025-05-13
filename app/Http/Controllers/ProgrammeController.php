@@ -8,6 +8,7 @@ use App\Models\Programme;
 use App\Models\EditorUpload;
 use Illuminate\Http\Request;
 use App\Http\Requests\StoreProgrammeRequest;
+use App\Http\Requests\UpdateProgrammeRequest;
 
 class ProgrammeController extends Controller
 {
@@ -41,34 +42,83 @@ class ProgrammeController extends Controller
         $validated['private_only'] = $request->has('private_only') ? 1 : 0;
         $validated['searchable'] = $request->has('searchable') ? 1 : 0;
         $validated['publishable'] = $request->has('publishable') ? 1 : 0;
-        $validated['isOnline'] = $request->has('isOnline') ? 1 : 0;
-        $validated['onlineDetails'] = $request->has('onlineDetails') ? $request->input('onlineDetails') : null;
-        
-        dd($validated);
+        $validated['settings'] = $this->programmeSettings($request);
 
         $programme = Programme::create($validated);
+        $programme->categories()->sync($validated['categories'] ?? []);
 
-        $programme->addMediaFromRequest('thumb')->toMediaCollection('thumbnail');
-        $programme->addMediaFromRequest('a3_poster')->toMediaCollection('banner');
+        if($request->has('thumb'))
+            $programme->addMediaFromRequest('thumb')->toMediaCollection('thumbnail');
 
-        return redirect()->route('admin.programmes.show', $programme->id);
+        if($request->has('a3_poster'))
+            $programme->addMediaFromRequest('a3_poster')->toMediaCollection('banner');
+
+        return redirect()->route('admin.programmes.edit', $programme->id);
     }
 
-    public function show($id)
+    public function edit($id)
     {
-        $programme = Programme::whereId($id)->first();
-        $thumbnail = $programme->getFirstMedia('thumbnail')->getUrl();
-        $banner = $programme->getFirstMedia('banner')->getUrl();
-        return view('admin.programme.show', compact(['$programme', 'thumbnail', 'banner']));
+        $categories = Category::pluck('name', 'id');
+        $programme = Programme::whereId($id)
+            ->with('categories')
+            ->with('ministry')
+            ->first();
+
+        $programme['onlineHybrid'] = $this->settingsData(json_decode($programme->settings, true), 'onlineHybrid');
+        $programme['onlineDetails'] = $this->settingsData(json_decode($programme->settings, true), 'onlineDetails');
+        
+        $programme['thumbnail'] = $programme->getFirstMediaUrl('thumbnail');
+        $programme['banner'] = $programme->getFirstMediaUrl('banner');
+
+        return view('admin.programme.edit', compact(['programme', 'categories']));
+        
     }
 
-    public function edit()
+    // convert additional data into json forwat then cnovert to string and store in the settings field
+    public function programmeSettings($request)
     {
-        return view('admin.programme.edit');
+        $settings = [];
+        $settings['onlineHybrid'] = $request->has('isOnline') ? true : false;
+        $settings['onlineDetails'] = ($request->has('isOnline') && $request->has('onlineDetails')) ?  $request->get('onlineDetails') : null;
+        return json_encode($settings);
     }
 
-    public function update()
+    // convert the string array to array variables
+    public function settingsData($settingsData, $key)
     {
+
+        return (!is_null($settingsData) && array_key_exists($key, $settingsData)) ? $settingsData[$key] : NULL;
+    }
+
+    public function show($programmeCode)
+    {
+        return view('admin.programme.show');
+    }
+
+    public function update($id, UpdateProgrammeRequest $request)
+    {
+        $validated = $request->validated();
+        
+        $programme = Programme::find($id);
+        $programme->update($validated);
+
+        $programme->categories()->sync($validated['categories'] ?? []);
+
+        if($request->has('thumb'))
+        {
+            $programme->clearMediaCollection('thumbnail');
+            $programme->addMediaFromRequest('thumb')->toMediaCollection('thumbnail');
+        }
+
+        if($request->has('a3_poster'))
+        {
+            $programme->clearMediaCollection('a3_poster');
+            $programme->addMediaFromRequest('a3_poster')->toMediaCollection('banner');
+        }
+
+        dd($programme, $id, $request->all());
+
+
         return view('admin.programme.update');
     }
 

@@ -30,7 +30,7 @@ Route::middleware(['admin'])->prefix('admin')->group(function () {
         Route::get('/', [ProgrammeController::class, 'index'])->name('admin.programmes');
         Route::get('/create', [ProgrammeController::class, 'create'])->name('admin.programmes.create');
         Route::post('/', [ProgrammeController::class, 'store'])->name('admin.programmes.store');
-        Route::get('/{id}', [ProgrammeController::class, 'show'])->name('admin.programmes.show');
+        Route::get('/{programmeCode}', [ProgrammeController::class, 'show'])->name('admin.programmes.show');
         Route::get('/{id}/edit', [ProgrammeController::class, 'edit'])->name('admin.programmes.edit');
         Route::put('/{id}', [ProgrammeController::class, 'update'])->name('admin.programmes.update');
         Route::delete('/{id}', [ProgrammeController::class, 'destroy'])->name('admin.programmes.destroy');
