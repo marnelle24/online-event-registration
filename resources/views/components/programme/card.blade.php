@@ -10,7 +10,7 @@
             @endif
 
             <div class="absolute bottom-3 right-3 mt-8 flex gap-1 pt-4 z-30">
-                <a href="{{ route('admin.programmes.show', $programme->id) }}" 
+                <a href="{{ route('admin.programmes.show', $programme->programmeCode) }}" 
                     class="bg-orange-500 dark:bg-slate-100 hover:-translate-y-0.5 hover:bg-orange-400 dark:hover:bg-slate-300 transition-all duration-300 shadow text-sm text-white dark:text-slate-600 px-3 py-1 rounded-lgs">
                     View
                 </a>
@@ -30,13 +30,13 @@
                 </div>
                 <table class="my-2">
                     <tr>
-                        <td class="text-sm text-slate-600 dark:text-white">
+                        <td class="text-sm text-slate-600 dark:text-white flex items-start">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
                             </svg>
                         </td>
-                        <td class="text-sm px-1 text-slate-600 dark:text-white capitalize">
+                        <td class="text-sm px-1 text-slate-600 dark:text-white capitalize overflow-ellipsis">
                             {{ $programmeLocation }}
                         </td>
                     </tr>

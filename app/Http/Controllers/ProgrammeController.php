@@ -92,7 +92,14 @@ class ProgrammeController extends Controller
 
     public function show($programmeCode)
     {
-        return view('admin.programme.show');
+        $programme = Programme::where('programmeCode', $programmeCode)->first();
+        $programme['thumbnail'] = $programme->getFirstMediaUrl('thumbnail');
+        $programme['banner'] = $programme->getFirstMediaUrl('banner');
+        $programme['programmeLocation'] = $this->programmeLocation($programme);
+        $programme['programmeDates'] = $this->programmeDates($programme);
+        $programme['programmeTimes'] = $this->programmeTimes($programme);
+        $programme['programmePrice'] = $this->programmePrice($programme);
+        return view('admin.programme.show', compact('programme'));
     }
 
     public function update($id, UpdateProgrammeRequest $request)
@@ -112,15 +119,57 @@ class ProgrammeController extends Controller
 
         if($request->has('a3_poster'))
         {
-            $programme->clearMediaCollection('a3_poster');
+            $programme->clearMediaCollection('banner');
             $programme->addMediaFromRequest('a3_poster')->toMediaCollection('banner');
         }
 
-        dd($programme, $id, $request->all());
-
-
-        return view('admin.programme.update');
+        return redirect()->route('admin.programmes.show', $programme->programmeCode);
     }
+
+
+        // Proccess the date formatting
+    public function programmeDates($programme)
+    {
+        $date = '';
+
+        if(!empty($programme->customDate))
+            return $programme->customDate;
+        else
+        {
+            $date = $programme->endDate ? \Carbon\Carbon::parse($programme->startDate)->format('M j') : \Carbon\Carbon::parse($programme->startDate)->format('F j ,Y');
+            $date .= $programme->endDate ? '-' : '';
+            $date .= $programme->endDate ? \Carbon\Carbon::parse($programme->endDate)->format('j, Y') : '';
+        }
+        return $date;
+    }
+
+    // Process the schedule time formatting
+    public function programmeTimes($programme)
+    {
+        $time = '';
+        $time = \Carbon\Carbon::parse($programme->startTime)->format('g:i A');
+        $time .= $programme->endTime ? '-' : '';
+        $time .= $programme->endTime ? \Carbon\Carbon::parse($programme->endTime)->format('g:i A') : '';
+        return $time;
+    }
+    
+    // Process programme address & location
+    public function programmeLocation($programme)
+    {
+        $location = '';
+        $location = $programme->address ? $programme->address : '';
+        $location .= $programme->city ? ' ,'.$programme->city : '';
+        $location .= $programme->postalCode ? ' '.$programme->postalCode : '';
+        return $location;
+    }
+
+    // process the programme price and currency
+    public function programmePrice($programme)
+    {
+        $currency = 'SGD';
+        return $programme->price > 0 ? $currency.' '.number_format($programme->price, 2) : 'Free';
+    }
+
 
     public function destroy()
     {
