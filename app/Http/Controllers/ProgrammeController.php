@@ -53,7 +53,9 @@ class ProgrammeController extends Controller
         if($request->has('a3_poster'))
             $programme->addMediaFromRequest('a3_poster')->toMediaCollection('banner');
 
-        return redirect()->route('admin.programmes.edit', $programme->id);
+        return redirect()
+            ->route('admin.programmes.show', $programme->programmeCode)
+            ->with('success', 'Programme created successfully.');
     }
 
     public function edit($id)
@@ -64,8 +66,11 @@ class ProgrammeController extends Controller
             ->with('ministry')
             ->first();
 
-        $programme['onlineHybrid'] = $this->settingsData(json_decode($programme->settings, true), 'onlineHybrid');
-        $programme['onlineDetails'] = $this->settingsData(json_decode($programme->settings, true), 'onlineDetails');
+        if(isset($programme->settings))
+        {
+            $programme['onlineHybrid'] = $this->settingsData(json_decode($programme->settings, true), 'onlineHybrid');
+            $programme['onlineDetails'] = $this->settingsData(json_decode($programme->settings, true), 'onlineDetails');
+        }
         
         $programme['thumbnail'] = $programme->getFirstMediaUrl('thumbnail');
         $programme['banner'] = $programme->getFirstMediaUrl('banner');
@@ -93,12 +98,15 @@ class ProgrammeController extends Controller
     public function show($programmeCode)
     {
         $programme = Programme::where('programmeCode', $programmeCode)->first();
+
         $programme['thumbnail'] = $programme->getFirstMediaUrl('thumbnail');
         $programme['banner'] = $programme->getFirstMediaUrl('banner');
+
         $programme['programmeLocation'] = $this->programmeLocation($programme);
         $programme['programmeDates'] = $this->programmeDates($programme);
         $programme['programmeTimes'] = $this->programmeTimes($programme);
         $programme['programmePrice'] = $this->programmePrice($programme);
+        
         return view('admin.programme.show', compact('programme'));
     }
 
@@ -107,6 +115,7 @@ class ProgrammeController extends Controller
         $validated = $request->validated();
         
         $programme = Programme::find($id);
+        
         $programme->update($validated);
 
         $programme->categories()->sync($validated['categories'] ?? []);
@@ -127,7 +136,7 @@ class ProgrammeController extends Controller
     }
 
 
-        // Proccess the date formatting
+    // Proccess the date formatting
     public function programmeDates($programme)
     {
         $date = '';

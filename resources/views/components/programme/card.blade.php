@@ -1,9 +1,9 @@
     <div class="flex flex-col border border-slate-400/70 rounded-lg bg-zinc-100 dark:bg-slate-700 hover:bg-neutral-200/70 hover:-translate-y-0.5 dark:hover:bg-slate-800/90 duration-300 shadow-md h-full">
         <div 
             class="relative min-h-[250px] flex justify-center p-4 border-b border-slate-400/70 dark:bg-slate-800 rounded-t-lg items-center bg-zinc-200"
-            style="background-position:center;object-fit:cover;background-image:linear-gradient( rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2) ), url('{{ $programme->thumb }}');"
+            style="background-position:center;object-fit:cover;background-image:linear-gradient( rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2) ), url('{{ $programme->getFirstMediaUrl('thumbnail') }}');"
         >
-            @if(!$programme->thumb)
+            @if($programme->getFirstMediaUrl('thumbnail') === '')
                 <p class="text-6xl font-normal rounded-full text-slate-400 drop-shadow text-center tracking-widest">
                     {{ Helper::getInitials($programme->title) }}
                 </p>
