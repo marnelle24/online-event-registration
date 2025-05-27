@@ -34,7 +34,7 @@
             <div class="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
                 @include('partials.header')
                 <main>
-                    <div class="mx-auto min-h-screen p-4 md:p-6 2xl:p-10 bg-zinc-100 dark:bg-zinc-300">
+                    <div class="mx-auto min-h-screen p-4 md:p-6 2xl:p-10 bg-slate-100 dark:bg-zinc-300">
                         {{ $slot }}
                     </div>
                 </main>

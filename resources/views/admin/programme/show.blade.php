@@ -242,9 +242,7 @@
             @endif
 
             @if(request('p') === 'speaker-trainer')
-                <div>
-                    This is Speaker & Trainer Area
-                </div>
+                @livewire('speaker.index', ['programmeSpeakers' => $programme->speakers])
             @endif
 
             @if(request('p') === 'promotion')

@@ -1,6 +1,7 @@
-    <div class="flex flex-col border border-slate-400/70 rounded-lg bg-zinc-100 dark:bg-slate-700 hover:bg-neutral-200/70 hover:-translate-y-0.5 dark:hover:bg-slate-800/90 duration-300 shadow-md h-full">
+    {{-- <div class="flex flex-col border border-slate-400/70 rounded-lg bg-zinc-100 dark:bg-slate-700 hover:bg-neutral-200/70 hover:-translate-y-0.5 dark:hover:bg-slate-800/90 duration-300 shadow-md h-full"> --}}
+    <div class="flex flex-col rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
         <div 
-            class="relative min-h-[250px] flex justify-center p-4 border-b border-slate-400/70 dark:bg-slate-800 rounded-t-lg items-center bg-zinc-200"
+            class="relative min-h-[250px] flex justify-center p-4 border-b border-slate-400/70 dark:bg-slate-800 items-center bg-zinc-200"
             style="background-position:center;object-fit:cover;background-image:linear-gradient( rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2) ), url('{{ $programme->getFirstMediaUrl('thumbnail') }}');"
         >
             @if($programme->getFirstMediaUrl('thumbnail') === '')
@@ -20,7 +21,7 @@
                 </a>
             </div>
         </div>
-        <div class="flex flex-col flex-grow p-6">
+        <div class="flex flex-col flex-grow px-5 pb-2 pt-6 sm:px-7.5 xl:pb-1">
             <div class="flex-grow">
                 <h4 class="text-xl font-bold text-slate-600 dark:text-slate-100 capitalize leading-0 mb-2">
                     {{ Str::words($programme->title, 6, '...') }}
@@ -94,7 +95,7 @@
                 </div>
             </div>
 
-            <div class="mt-4 flex flex-wrap gap-2">
+            <div class="my-4 flex flex-wrap gap-2">
                 @if($programme->categories->count() > 0)
                     @foreach ($programme->categories as $category)
                         <span class="border bg-zinc-200 text-zinc-600 py-1 px-2 text-xs">{{$category->name}}</span>

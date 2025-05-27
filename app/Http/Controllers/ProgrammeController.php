@@ -97,7 +97,7 @@ class ProgrammeController extends Controller
 
     public function show($programmeCode)
     {
-        $programme = Programme::where('programmeCode', $programmeCode)->first();
+        $programme = Programme::where('programmeCode', $programmeCode)->with('speakers')->first();
 
         $programme['thumbnail'] = $programme->getFirstMediaUrl('thumbnail');
         $programme['banner'] = $programme->getFirstMediaUrl('banner');
