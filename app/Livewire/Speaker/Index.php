@@ -14,7 +14,7 @@ class Index extends Component
     use WithPagination;
 
     #[Url(history: true)]
-    public ?string $search;
+    public ?string $search = '';
 
     public $programmeSpeakers;
     public $programmeId;
@@ -57,13 +57,13 @@ class Index extends Component
 
     public function render()
     {
-        $speakers = [];
+        $speakers = collect();
 
-        if($this->programmeSpeakers)
-            $spkrs = $this->programmeSpeakers;
+        if (isset($this->programmeSpeakers))
+            $speakers = $this->programmeSpeakers->load('media');
         else
         {
-            $spkrs = Speaker::query()
+            $speakers = Speaker::query()
                 ->with('media')
                 ->when($this->search, function ($query) {
                     $query->where('name', 'like', "%{$this->search}%");
@@ -73,8 +73,6 @@ class Index extends Component
                 ->latest('created_at')
                 ->get();
         }
-
-        $speakers = $spkrs;
 
         return view('livewire.speaker.index', [
             'speakers' => $speakers,

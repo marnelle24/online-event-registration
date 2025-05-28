@@ -72,7 +72,7 @@ class SpeakerFormData extends Component
         $validatedData['form']['socials'] = array_values($validatedData['form']['socials']);
         
         // Convert socials to JSON
-        $socials = json_encode($validatedData['form']['socials']);
+        $socials = count($validatedData['form']['socials']) > 0 ? json_encode($validatedData['form']['socials']) : NULL;
         
         $speaker = Speaker::create([
             'title' => $validatedData['form']['title'],
