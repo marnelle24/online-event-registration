@@ -242,7 +242,7 @@
             @endif
 
             @if(request('p') === 'speaker-trainer')
-                @livewire('speaker.index', ['programmeSpeakers' => $programme->speakers])
+                @livewire('speaker.index', ['programmeSpeakers' => $programme->speakers, 'programmeId' => $programme->id])
             @endif
 
             @if(request('p') === 'promotion')

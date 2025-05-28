@@ -41,16 +41,19 @@
                                 {{ $speaker->about ? Str::words($speaker->about, 15) : 'N/A' }}
                             </p>
                         </div>
-                        @if ($speaker->socials)
+                        @if (count(json_decode($speaker->socials)) > 0)
                             <div class="mt-4">
                                 <p class="text-xs text-slate-600 dark:text-white italic">Socials:</p>
-                                @foreach ($speaker->socials as $social)
-                                    <a href="{{ $social['url'] }}" target="_blank" class="text-xs border border-slate-400/70 bg-slate-300 rounded-full mr-1 py-0.5 px-2 text-slate-600">
-                                        {{ $social['name'] }}
-                                    </a>
+                                @foreach (json_decode($speaker->socials) as $social)
+                                    @if(!empty($social->url) || !empty($social->platform))
+                                        <a href="{{ $social->url }}" target="_blank" class="text-xs border border-slate-400/70 bg-slate-300 rounded-full mr-1 py-0.5 px-2 text-slate-600">
+                                            {{ $social->platform }}
+                                        </a>
+                                    @endif
                                 @endforeach
                             </div>
                         @endif
+                        {{-- @dump($speaker->socials) --}}
                     </div>
 
                     <div class="mt-8 flex gap-1 pt-4">

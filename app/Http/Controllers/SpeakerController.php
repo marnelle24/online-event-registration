@@ -14,11 +14,12 @@ class SpeakerController extends Controller
     {
         $searchQuery = $request->get('search');
 
-        $speakers = Speaker::when($searchQuery, function ($query) use ($searchQuery) {
-            $query->where('name', 'like', "%{$searchQuery}%");
-        })
-        ->latest()
-        ->paginate(10);
+        $speakers = Speaker::with('media')
+            ->when($searchQuery, function ($query) use ($searchQuery) {
+                    $query->where('name', 'like', "%{$searchQuery}%");
+            })
+            ->latest()
+            ->paginate(10);
 
         return view('admin.speaker.index', compact('searchQuery', 'speakers'));
     }

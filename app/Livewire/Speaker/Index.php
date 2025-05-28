@@ -4,8 +4,10 @@ namespace App\Livewire\Speaker;
 
 use App\Models\Speaker;
 use Livewire\Component;
+use App\Models\Programme;
 use Livewire\Attributes\Url;
 use Livewire\WithPagination;
+use Masmerise\Toaster\Toaster;
 
 class Index extends Component
 {
@@ -13,7 +15,45 @@ class Index extends Component
 
     #[Url(history: true)]
     public ?string $search;
+
     public $programmeSpeakers;
+    public $programmeId;
+
+    protected $listeners = [
+        'selectedSpeaker' => 'getSelectedSpeaker',
+        'newSpeakerCreated' => 'getSelectedSpeaker'
+    ];
+    
+    public function getSelectedSpeaker($speakerId)
+    {
+        $programme = Programme::find($this->programmeId);
+        if($programme->speakers()->where('speaker_id', $speakerId)->exists())
+        {
+            // $programme->speakers()->detach($speakerId);
+            Toaster::error('Speaker already assigned in this programme');
+        }
+        else
+        {
+            $programme->speakers()->attach($speakerId, [
+                'type' => 'speaker',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+            Toaster::success('Speaker assigned to programme successfully');
+        }
+        $this->programmeSpeakers = $programme->speakers()->with('media')->get();
+    }
+
+    public function removeSpeaker($speakerId)
+    {
+        $programme = Programme::find($this->programmeId);
+        if($programme->speakers()->where('speaker_id', $speakerId)->exists())
+        {
+            $programme->speakers()->detach($speakerId);
+            Toaster::error('Speaker removed successfully in this programme.');
+        }
+        $this->programmeSpeakers = $programme->speakers()->with('media')->get();
+    }
 
     public function render()
     {
@@ -24,6 +64,7 @@ class Index extends Component
         else
         {
             $spkrs = Speaker::query()
+                ->with('media')
                 ->when($this->search, function ($query) {
                     $query->where('name', 'like', "%{$this->search}%");
                     $query->orWhere('email', 'like', "%{$this->search}%");
