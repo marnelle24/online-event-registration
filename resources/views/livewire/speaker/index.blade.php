@@ -8,7 +8,7 @@
                 @livewire('speaker.speaker-slide-form')
             </div>
         @else
-            <div class="px-4 py-6 md:px-6 xl:px-7.5 flex">
+            <div class="px-4 py-6 md:px-6 xl:px-7.5 flex justify-between">
                 <input type="search" 
                     wire:model.live.debounce.500ms="search" 
                     class="focus:ring-0 lg:w-1/4 w-full rounded-md bg-light border border-slate-300 rounded-r-none" 

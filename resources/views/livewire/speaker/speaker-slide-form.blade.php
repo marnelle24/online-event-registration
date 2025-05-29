@@ -1,6 +1,10 @@
 <div class="relative z-50">
     <!-- Trigger button -->
-    <button wire:click="openModal" type="button" class="inline-flex items-center bg-slate-300 hover:bg-slate-400 duration-300 rounded-l-none justify-center rounded-md border py-2.5 text-center border-slate-400 font-medium text-slate-600 text-sm border-l-none hover:bg-opacity-90 lg:px-2">
+    <button 
+        wire:click="openModal" 
+        type="button" 
+        class="{{$class}}"
+    >
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
         </svg>
@@ -16,7 +20,7 @@
             </div>
 
             <!-- Slide-over Modal -->
-            <div class="absolute inset-y-0 right-0 w-1/4 bg-white shadow-lg z-50 transform transition-transform duration-300 overflow-auto" style="transform: translateX(0%)">
+            <div class="absolute inset-y-0 right-0 lg:w-1/4 w-full bg-white shadow-lg z-50 transform transition-transform duration-300 overflow-auto" style="transform: translateX(0%)">
                 <!-- Header -->
                 <div class="flex justify-end items-center p-4">
                     <button wire:click="closeModal" class="text-gray-600 hover:text-gray-900 text-xl">
