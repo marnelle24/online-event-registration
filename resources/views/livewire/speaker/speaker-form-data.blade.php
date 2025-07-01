@@ -7,6 +7,21 @@
             </div>
             <form wire:submit.prevent="save" class="flex flex-col gap-4 p-5">
                 <div>
+                    <label class="mb-1 block text-sm font-medium text-black">Assign as</label>
+                    <select 
+                        wire:model="form.role"
+                        class="focus:ring-0 w-full rounded p-2 border-slate-300 bg-transparent px-2 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary">
+                        <option value="" disabled selected>Select</option>
+                        <option value="Speaker">Speaker</option>
+                        <option value="Trainer">Trainer</option>
+                        <option value="Facilitator">Facilitator</option>
+                        <option value="Other">Other</option>
+                    </select>
+                    @error('form.title') 
+                        <span class="text-red-500 text-xs">{{ $message }}</span>
+                    @enderror
+                </div>
+                <div>
                     <label class="mb-1 block text-sm font-medium text-black">Title</label>
                     <select 
                         wire:model="form.title"

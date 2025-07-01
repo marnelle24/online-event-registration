@@ -7,18 +7,17 @@ use Livewire\Component;
 class SpeakerSlideForm extends Component
 {
     public string $class;
+    public $show = false;
 
     public function mount()
     {
         // Set the class based on your requirements
-        $this->class = 'inline-flex items-center bg-slate-300 hover:bg-slate-400 duration-300 justify-center rounded-md border border-l-none border-slate-400 py-2.5 px-4 text-center font-medium text-slate-600 text-sm hover:bg-opacity-90';
+        $this->class = 'tracking-widest font-thin uppercase inline-flex items-center bg-slate-200 hover:scale-105 hover:bg-slate-200 duration-300 justify-center rounded-md border border-slate-400 py-2 px-3 text-center text-slate-500 drop-shadow text-xs';
     }
     protected $listeners = [
         'selectedSpeaker' => 'closeModal',
         'newSpeakerCreated' => 'closeModal'
     ];
-
-    public $show = false;
 
     public function openModal()
     {

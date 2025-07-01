@@ -22,9 +22,10 @@
             <!-- Slide-over Modal -->
             <div class="absolute inset-y-0 right-0 lg:w-1/4 w-full bg-white shadow-lg z-50 transform transition-transform duration-300 overflow-auto" style="transform: translateX(0%)">
                 <!-- Header -->
-                <div class="flex justify-end items-center p-4">
+                <div class="flex justify-between items-center p-4 border-b-2 border-slate-500/60 bg-slate-400">
+                    <h2 class="text-white text-2xl uppercase font-light">Assign Speaker</h2>
                     <button wire:click="closeModal" class="text-gray-600 hover:text-gray-900 text-xl">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8 stroke-slate-400 hover:stroke-slate-500 hover:-translate-y-1 duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8 stroke-slate-800 hover:stroke-slate-500 hover:-translate-y-1 duration-300">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
                         </svg>
                     </button>

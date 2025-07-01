@@ -12,6 +12,7 @@ class SpeakerFormData extends Component
     use WithFileUploads;
     
     public $form = [
+        'role' => 'Speaker',
         'title' => 'Mr',
         'name' => 'marnelle apat',
         'profession' => 'IT professional',
@@ -39,20 +40,21 @@ class SpeakerFormData extends Component
     public function save()
     {
         $validatedData = $this->validate([
-            'form.title' => 'sometimes|required|string|max:255',
+            'form.role' => 'sometimes|string|max:255',
+            'form.title' => 'sometimes|string|max:255',
             'form.name' => 'required|string|max:255',
-            'form.profession' => 'sometimes|required|string|max:255',
-            'form.email' => 'sometimes|required|email|max:255',
+            'form.profession' => 'required|string|max:255',
+            'form.email' => 'sometimes|email|max:255',
             'form.about' => 'sometimes|string',
             'form.socials.*.platform' => 'nullable|string|max:255',
             'form.socials.*.url' => 'nullable|max:255',
             'thumbnail' => 'nullable|image|max:2024|mimes:png,jpg,jpeg',
             
         ], [
-            'form.title.required' => 'Title is required.',
+            // 'form.title.required' => 'Title is required.',
             'form.name.required' => 'Name is required.',
             'form.profession.required' => 'Professional is required.',
-            'form.email.required' => 'Email is required.',
+            // 'form.email.required' => 'Email is required.',
             'form.about.required' => 'About section is required.',
             'form.socials.*.url.url' => 'Please provide a valid URL for the social media account.',
             'thumbnail.image' => 'The thumbnail must be an image file.',
@@ -91,7 +93,7 @@ class SpeakerFormData extends Component
                 ->toMediaCollection('speaker');
         }
         $this->reset(['form', 'thumbnail']);
-        $this->dispatch('newSpeakerCreated', $speaker->id);
+        $this->dispatch('newSpeakerCreated', [$speaker->id, $validatedData['form']['role']]);
     }
 
     public function resetForm()

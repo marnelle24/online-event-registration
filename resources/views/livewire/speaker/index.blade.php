@@ -1,6 +1,6 @@
 <div>
     <div class="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-        @if($speakers->count() == 0)
+        @if($this->filteredSpeakers->count() == 0)
             <div class="flex flex-col gap-4 justify-center items-center border-t border-stroke px-4 py-4.5 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
                 <p class="text-center italic text-slate-500">
                     No Speakers Found
@@ -10,7 +10,6 @@
         @else
             <div class="px-4 py-6 md:px-6 xl:px-7.5 flex justify-between">
                 <input type="search" 
-                    wire:model.live.debounce.500ms="search" 
                     class="focus:ring-0 lg:w-1/4 w-full rounded-md bg-light border border-slate-300 rounded-r-none" 
                     placeholder="Search by name or email" 
                 />
@@ -21,7 +20,7 @@
                     <p class="font-medium">Name</p>
                 </div>
                 <div class="col-span-2 hidden items-center sm:flex">
-                    <p class="font-medium">Email</p>
+                    <p class="font-medium">Role</p>
                 </div>
                 <div class="col-span-1 flex items-center">
                     <p class="font-medium">Socials</p>
@@ -30,10 +29,10 @@
                     <p class="font-medium">&nbsp;</p>
                 </div>
             </div>
-            @foreach ($speakers as $speaker)
+            @foreach ($this->filteredSpeakers as $speaker)
                 <div class="hover:bg-slate-100/50 duration-300 grid grid-cols-6 border-t border-stroke px-4 py-4.5 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
                     <div class="col-span-3 flex items-center">
-                        <a href="#" class="flex flex-col gap-4 sm:flex-row sm:items-center">
+                        <a href="#" class="group flex flex-col gap-4 sm:flex-row sm:items-center">
                             <div class="rounded-md">
                                 @if(!$speaker->hasMedia('speaker'))
                                     <p class="text-sm flex justify-center items-center font-normal rounded-full text-slate-400 bg-slate-200 border border-slate-400 w-10 h-10 drop-shadow tracking-widest">
@@ -44,14 +43,14 @@
                                 @endif
                             </div>
                             <div class="flex flex-col">
-                                <p class="text-md font-medium text-black dark:text-white">{{ ($speaker->title ? $speaker->title.'. ' : '') . $speaker->name }}</p>
+                                <p class="group-hover:text-green-600 duration-300 text-md font-medium text-black dark:text-white">{{ ($speaker->title ? $speaker->title.'. ' : '') . $speaker->name }}</p>
                                 <p class="text-sm text-slate-500">{{ $speaker->profession }}</p>
                             </div>
                         </a>
 
                     </div>
                     <div class="col-span-2 hidden items-center sm:flex">
-                        <p class="text-sm font-medium text-black dark:text-white">{{ $speaker->email }}</p>
+                        <p class="text-sm font-medium text-black dark:text-white capitalize">{{ $speaker->pivot->type }}</p>
                     </div>
                     <div class="col-span-2 flex items-center">
                         <div class="text-sm flex lg:flex-row flex-col gap-1 font-medium text-black dark:text-white">

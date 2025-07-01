@@ -1,7 +1,7 @@
     {{-- <div class="flex flex-col border border-slate-400/70 rounded-lg bg-zinc-100 dark:bg-slate-700 hover:bg-neutral-200/70 hover:-translate-y-0.5 dark:hover:bg-slate-800/90 duration-300 shadow-md h-full"> --}}
     <div class="flex flex-col rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
         <div 
-            class="relative min-h-[250px] flex justify-center p-4 border-b border-slate-400/70 dark:bg-slate-800 items-center bg-zinc-200"
+            class="relative min-h-[200px] flex justify-center p-4 border-b border-slate-400/70 dark:bg-slate-800 items-center bg-zinc-200"
             style="background-position:center;object-fit:cover;background-image:linear-gradient( rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2) ), url('{{ $programme->getFirstMediaUrl('thumbnail') }}');"
         >
             @if($programme->getFirstMediaUrl('thumbnail') === '')

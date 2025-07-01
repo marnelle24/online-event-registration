@@ -246,9 +246,7 @@
             @endif
 
             @if(request('p') === 'promotion')
-                <div>
-                    This is Promotion Area
-                </div>
+                @livewire('promotion.index', ['programmeId' => $programme->id])
             @endif
             
             @if(request('p') === 'promocode')
