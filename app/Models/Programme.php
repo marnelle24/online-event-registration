@@ -88,4 +88,9 @@ class Programme extends Model implements HasMedia
     {
         return $this->hasMany(Promotion::class);
     }
+
+    public function promocodes()
+    {
+        return $this->hasMany(Promocode::class);
+    }
 }
