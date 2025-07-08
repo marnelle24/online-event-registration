@@ -252,6 +252,10 @@
             @if(request('p') === 'promocode')
                 @livewire('promocode.index', ['programmeId' => $programme->id])
             @endif
+
+            @if(request('p') === 'registrants')
+                @livewire('registrant.index', ['programmeId' => $programme->id])
+            @endif
             
         </div>
     </div>

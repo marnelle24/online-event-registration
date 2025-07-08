@@ -17,8 +17,12 @@
                          class="w-14 h-14 object-cover border border-zinc-800/40 rounded-full">
                     <div>
                         <h4 class="text-xl font-bold text-slate-700 dark:text-slate-100 capitalize">
-                            {{ $speaker->title ?? '' }}
-                            {{ $speaker->name }}
+                            {{-- {{ $speaker->title ?? '' }}
+                            {{ $speaker->name }} --}}
+                             @php
+                                 $sp = $speaker->title . ' ' . $speaker->name
+                             @endphp
+                            {!! Str::words($sp, 3, '...')  !!}
                         </h4>
                         <p class="text-sm text-slate-600 dark:text-slate-300">{{ $speaker->profession ?? 'No profession listed' }}</p>
                     </div>
@@ -41,7 +45,10 @@
                                 {{ $speaker->about ? Str::words($speaker->about, 15) : 'N/A' }}
                             </p>
                         </div>
-                        @if (count(json_decode($speaker->socials)) > 0)
+                        @php
+                            $socials = $speaker->socials ? json_decode($speaker->socials) : []
+                        @endphp
+                        @if (count($socials) > 0)
                             <div class="mt-4">
                                 <p class="text-xs text-slate-600 dark:text-white italic">Socials:</p>
                                 @foreach (json_decode($speaker->socials) as $social)
@@ -52,8 +59,11 @@
                                     @endif
                                 @endforeach
                             </div>
+                        @else
+                            <div class="mt-4">
+                                <p class="text-sm text-slate-600 dark:text-white italic">No social accounts</p>
+                            </div>
                         @endif
-                        {{-- @dump($speaker->socials) --}}
                     </div>
 
                     <div class="mt-8 flex gap-1 pt-4">
