@@ -1,25 +1,8 @@
 <div>
-    {{-- @php
-        $registrants = array(
-            ['id' => 1, 'name' => 'Marnelle Apat', 'email' => 'marnelle24@gmail.com', 'payment' => '100', 'status' => 'paid'],
-            ['id' => 2, 'name' => 'Keneth Baguimat', 'email' => 'jb@gmail.com', 'payment' => '100', 'status' => 'pending'],
-            ['id' => 3, 'name' => 'Karl Godinez', 'email' => 'kg@gmail.com', 'payment' => '100', 'status' => 'unpaid'],
-            ['id' => 4, 'name' => 'John Doe', 'email' => 'jd@gmail.com', 'payment' => '100', 'status' => 'paid'],
-            ['id' => 4, 'name' => 'John Doe', 'email' => 'jd@gmail.com', 'payment' => '100', 'status' => 'paid'],
-            ['id' => 4, 'name' => 'John Doe', 'email' => 'jd@gmail.com', 'payment' => '100', 'status' => 'paid'],
-            ['id' => 4, 'name' => 'John Doe', 'email' => 'jd@gmail.com', 'payment' => '100', 'status' => 'paid'],
-            ['id' => 4, 'name' => 'John Doe', 'email' => 'jd@gmail.com', 'payment' => '100', 'status' => 'paid'],
-            ['id' => 4, 'name' => 'John Doe', 'email' => 'jd@gmail.com', 'payment' => '100', 'status' => 'paid'],
-            ['id' => 4, 'name' => 'John Doe', 'email' => 'jd@gmail.com', 'payment' => '100', 'status' => 'paid'],
-            ['id' => 4, 'name' => 'John Doe', 'email' => 'jd@gmail.com', 'payment' => '100', 'status' => 'paid'],
-            ['id' => 4, 'name' => 'John Doe', 'email' => 'jd@gmail.com', 'payment' => '100', 'status' => 'paid'],
-            ['id' => 4, 'name' => 'John Doe', 'email' => 'jd@gmail.com', 'payment' => '100', 'status' => 'paid'],
-            ['id' => 4, 'name' => 'John Doe', 'email' => 'jd@gmail.com', 'payment' => '100', 'status' => 'paid'],
-        );
-    @endphp --}}
     <div class="rounded-sm border border-stroke bg-white shadow-default w-full overflow-x-scroll">
         <div class="px-4 py-6 md:px-6 xl:px-7.5">
             <input type="search" 
+                wire:model.live.debounce.500ms="search"
                 class="focus:ring-0 lg:w-1/4 w-full rounded-md bg-light border border-slate-300 rounded-r-none" 
                 placeholder="Search by name or email" 
             />
@@ -40,7 +23,10 @@
                                 Name
                             </th>
                             <th class="min-w-[150px] px-4 py-4 font-medium text-black dark:text-white">
-                                Registered Date
+                                Email
+                            </th>
+                            <th class="min-w-[150px] px-4 py-4 font-medium text-black dark:text-white">
+                                Date Registered
                             </th>
                             <th class="min-w-[120px] px-4 py-4 font-medium text-black dark:text-white">
                                 Status
@@ -50,15 +36,20 @@
                         </thead>
                         <tbody>
                             @foreach ($registrants as $registrant)
-                                <tr wire:key="{{ $registrant['id'] }}">
+                                <tr wire:key="{{ $registrant->id }}">
                                     <td class="flex gap-2 border-b border-[#eee] px-4 py-5 pl-9 dark:border-strokedark xl:pl-11">
                                         <p class="text-sm flex justify-center items-center font-normal rounded-full text-slate-400 bg-slate-200 border border-slate-400 w-10 h-10 drop-shadow tracking-widest">
                                             {{ Helper::getInitials($registrant->firstName.' '.$registrant->lastName) }}
                                         </p>
                                         <div>
                                             <h5 class="font-medium text-black dark:text-white">{{$registrant->firstName.' '.$registrant->lastName}}</h5>
-                                            <p class="text-sm">{{$registrant['email']}}</p>
+                                            <p class="text-[0.7rem] font-mono font-thin"><span>Reg Code: </span>{{$registrant->regCode}}</p>
                                         </div>
+                                    </td>
+                                    <td class="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
+                                        <p class="text-black dark:text-white text-sm">
+                                            {{ $registrant->email }}
+                                        </p>
                                     </td>
                                     <td class="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
                                         <p class="text-black dark:text-white text-sm">
@@ -76,59 +67,17 @@
                                     </td>
                                     <td class="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
                                         <div class="flex items-center space-x-3.5 justify-end">
-                                            <button 
-                                                x-data="{ showToolTip: false }" 
-                                                @mouseover="showToolTip = true" 
-                                                @mouseleave="showToolTip = false"
-                                                class="hover:text-blue-500 hover:-translate-y-0.5 duration-300"
-                                            >
-                                                <svg
-                                                    class="fill-current w-6 h-6"
-                                                    width="18"
-                                                    height="18"
-                                                    viewBox="0 0 18 18"
-                                                    fill="none"
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                >
-                                                    <path
-                                                    d="M8.99981 14.8219C3.43106 14.8219 0.674805 9.50624 0.562305 9.28124C0.47793 9.11249 0.47793 8.88749 0.562305 8.71874C0.674805 8.49374 3.43106 3.20624 8.99981 3.20624C14.5686 3.20624 17.3248 8.49374 17.4373 8.71874C17.5217 8.88749 17.5217 9.11249 17.4373 9.28124C17.3248 9.50624 14.5686 14.8219 8.99981 14.8219ZM1.85605 8.99999C2.4748 10.0406 4.89356 13.5562 8.99981 13.5562C13.1061 13.5562 15.5248 10.0406 16.1436 8.99999C15.5248 7.95936 13.1061 4.44374 8.99981 4.44374C4.89356 4.44374 2.4748 7.95936 1.85605 8.99999Z"
-                                                    fill=""
-                                                    />
-                                                    <path
-                                                    d="M9 11.3906C7.67812 11.3906 6.60938 10.3219 6.60938 9C6.60938 7.67813 7.67812 6.60938 9 6.60938C10.3219 6.60938 11.3906 7.67813 11.3906 9C11.3906 10.3219 10.3219 11.3906 9 11.3906ZM9 7.875C8.38125 7.875 7.875 8.38125 7.875 9C7.875 9.61875 8.38125 10.125 9 10.125C9.61875 10.125 10.125 9.61875 10.125 9C10.125 8.38125 9.61875 7.875 9 7.875Z"
-                                                    fill=""
-                                                    />
-                                                </svg>
-                                                <div 
-                                                    x-show="showToolTip" 
-                                                    x-transition 
-                                                    class="absolute top-full -left-1 mt-1 transition-all duration-300 ease-in-out hover:opacity-100 hover:translate-y-0 w-max bg-slate-800 text-white text-xs rounded px-2 py-1 shadow-lg z-50"
-                                                >
-                                                    View Profile
-                                            </button>
-                                            <button 
-                                                x-data="{ showToolTip: false }" 
-                                                @mouseover="showToolTip = true" 
-                                                @mouseleave="showToolTip = false" 
-                                                class="hover:text-blue-500 hover:-translate-y-0.5 duration-300"
-                                            >
-                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z" />
-                                                </svg>
-                                                <div 
-                                                    x-show="showToolTip" 
-                                                    x-transition 
-                                                    class="absolute top-full -left-6 mt-1 transition-all duration-300 ease-in-out hover:opacity-100 hover:translate-y-0 w-max bg-slate-800 text-white text-xs rounded px-2 py-1 shadow-lg z-[999]"
-                                                >
-                                                    View Payment
-                                                </div>
-                                            </button>
+                                            @livewire('registrant.details-slider-view', ['registrant' => $registrant], key($registrant->id))
+                                            @livewire('registrant.payment-slider-view', ['registrant' => $registrant], key($registrant->id))
                                         </div>
                                     </td>
                                 </tr>
                             @endforeach
                         </tbody>
                     </table>
+                    <div class="my-4">
+                        {{ $registrants->links('vendor.livewire.custom-pagination') }}
+                    </div>
                 </div>
             </div>
         @endif
