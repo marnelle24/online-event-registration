@@ -92,7 +92,7 @@
                 <a href="{{ url()->current() }}?p=promotion" class="@if(request('p') === 'promotion') bg-sky-200 border-b-1 border-sky-600 scale-105 @else bg-zinc-200 border-slate-500 @endif hover:bg-sky-200 duration-300 hover:scale-105 border border-b-0 px-3 py-2 rounded-tr-md rounded-tl-md text-md">Promotions</a>
                 <a href="{{ url()->current() }}?p=promocode" class="@if(request('p') === 'promocode') bg-sky-200 border-b-1 border-sky-600 scale-105 @else bg-zinc-200 border-slate-500 @endif hover:bg-sky-200 duration-300 hover:scale-105 border border-b-0 px-3 py-2 rounded-tr-md rounded-tl-md text-md">Promos</a>
                 <a href="{{ url()->current() }}?p=registrants" class="@if(request('p') === 'registrants') bg-sky-200 border-b-1 border-sky-600 scale-105 @else bg-zinc-200 border-slate-500 @endif hover:bg-sky-200 duration-300 hover:scale-105 border border-b-0 px-3 py-2 rounded-tr-md rounded-tl-md text-md">Registrants</a>
-                <a href="{{ url()->current() }}?p=activity-tools" class="@if(request('p') === 'activity-tools') bg-sky-200 border-b-1 border-sky-600 scale-105 @else bg-zinc-200 border-slate-500 @endif hover:bg-sky-200 duration-300 hover:scale-105 border border-b-0 px-3 py-2 rounded-tr-md rounded-tl-md text-md">Settings</a>
+                <a href="{{ url()->current() }}?p=settings" class="@if(request('p') === 'settings') bg-sky-200 border-b-1 border-sky-600 scale-105 @else bg-zinc-200 border-slate-500 @endif hover:bg-sky-200 duration-300 hover:scale-105 border border-b-0 px-3 py-2 rounded-tr-md rounded-tl-md text-md">Settings</a>
             </div>
             {{-- <hr class="border border-zinc-500/70" /> --}}
 
@@ -255,6 +255,10 @@
 
             @if(request('p') === 'registrants')
                 @livewire('registrant.index', ['programmeId' => $programme->id])
+            @endif
+
+            @if(request('p') === 'settings')
+                @livewire('programme.settings-section', ['programmeId' => $programme->id])
             @endif
             
         </div>
