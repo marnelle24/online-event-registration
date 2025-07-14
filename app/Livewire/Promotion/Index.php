@@ -12,6 +12,7 @@ class Index extends Component
 
     protected $listeners = [
         'newAddedPromotion' => 'render',
+        'updatedPromotion' => 'render',
     ];
 
     public function mount($programmeId)
@@ -32,8 +33,7 @@ class Index extends Component
 
     public function render()
     {
-        $promotions = Promotion::where('programme_id', $this->programmeId)->orderBy('startDate')->get();
-        // dump($promotions);
+        $promotions = Promotion::where('programme_id', $this->programmeId)->orderBy('arrangement', 'ASC')->get();
         return view('livewire.promotion.index', [
             'promotions' => $promotions
         ]);

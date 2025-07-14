@@ -26,9 +26,9 @@
                 </div>
                 <div class="col-span-2 hidden items-center sm:flex">
                     @if($promocode->isActive)
-                        <span class="uppercase inline-flex items-center justify-end py-1 px-3 text-[10px] drop-shadow text-white rounded-full bg-green-500">Active</span>
+                        <p class="inline-flex border border-success rounded-full bg-success bg-opacity-10 px-3 py-1 text-sm font-medium text-success">Active</p>
                     @else
-                        <span class="uppercase inline-flex items-center justify-end py-1 px-3 text-[10px] drop-shadow text-white rounded-full bg-red-500">Inactive</span>
+                        <p class="inline-flex border border-danger rounded-full bg-danger bg-opacity-10 px-3 py-1 text-sm font-medium text-danger">Inactive</p>
                     @endif
                 </div>
                 <div class="col-span-1 flex items-center gap-1 justify-end">

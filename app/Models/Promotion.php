@@ -25,6 +25,7 @@ class Promotion extends Model
         'startDate' => 'datetime',
         'endDate' => 'datetime',
         'counter' => 'integer',
+        'arrangement' => 'integer',
         'isActive' => 'boolean',
     ];
 

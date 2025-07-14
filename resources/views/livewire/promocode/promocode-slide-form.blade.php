@@ -116,7 +116,7 @@
                                 <span class="text-red-500 text-xs">{{ $message }}</span>
                             @enderror
                         </div>
-                        <div x-data="{ isActive: @entangle('form.isActive') }">
+                        <div x-data="{ isActive: @entangle('form.isActive') }" class="flex">
                             <label for="toggle4" class="flex cursor-pointer select-none items-center">
                                 <div class="relative">
                                     <input 

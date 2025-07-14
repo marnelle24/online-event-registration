@@ -6,8 +6,6 @@
             </p>
         </div>
         <div class="border-t border-stroke px-4 py-4.5 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
-            {{-- @dump($programmeId) --}}
-            {{-- @dump($programme->getAttributes()) --}}
             <table class="w-full">
                 <tr>
                     <td width="25%" class="py-2">Turn on invitation only mode</td>

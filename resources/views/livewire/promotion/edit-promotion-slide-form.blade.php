@@ -1,14 +1,25 @@
 <div class="relative">
-    <!-- Trigger button -->
     <button 
-        wire:click="openModal" 
-        type="button" 
-        class="{{$class}}"
+        x-data="{ showToolTip: false }"
+        wire:click="openModal"
+        @mouseover="showToolTip = true" 
+        @mouseleave="showToolTip = false"
+        class="flex items-center"
     >
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+        <svg 
+            class="w-6 h-6 stroke-blue-500 hover:scale-110 duration-300 hover:stroke-blue-600"
+            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
         </svg>
-        Promotion
+          
+        
+        <div 
+            x-show="showToolTip" 
+            x-transition 
+            class="absolute top-full -left-1 mt-1 transition-all duration-300 ease-in-out hover:opacity-100 hover:translate-y-0 w-max bg-slate-800 text-white text-xs rounded px-2 py-1 shadow-lg z-50"
+        >
+            Update
+        </div>
     </button>
 
     <!-- Backdrop and Slide-over Modal -->
@@ -23,7 +34,7 @@
             <div class="absolute inset-y-0 right-0 lg:w-1/4 w-full bg-white shadow-lg z-50 transform transition-transform duration-300 overflow-auto" style="transform: translateX(0%)">
                 <!-- Header -->
                 <div class="flex justify-between items-center p-4 border-b-2 border-slate-500/60 bg-slate-400">
-                    <h2 class="text-white text-2xl uppercase font-light">Add Promotion</h2>
+                    <h2 class="text-white text-2xl uppercase font-light">Update Promotion</h2>
                     <button wire:click="closeModal" class="text-gray-600 hover:text-gray-900 text-xl">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8 stroke-slate-800 hover:stroke-slate-500 hover:-translate-y-1 duration-300">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
@@ -41,27 +52,27 @@
                     <form wire:submit.prevent="save" class="flex flex-col gap-4 p-5 h-screen">
                         <div>
                             <p class="italic text-md text-slate-500">
-                                Create a new promotion for this programme.
-                                Newly created promotion will immediately applicable to the programme as long as
+                                Update the promotion for this programme.
+                                Any changes made to the promotion will immediately applicable to the programme as long as
                                 it is active and within the date range validity.
                             </p>
                         </div>
                         <div>
                             <label class="mb-1 block text-sm font-medium text-black">Name</label>
                             <input 
-                                wire:model="form.title"
+                                wire:model="title"
                                 type="text" placeholder="Name" class="focus:ring-0 w-full rounded p-2 border-slate-300 bg-transparent px-2 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary" />
-                            @error('form.title')
+                            @error('title')
                                 <span class="text-red-500 text-xs">{{ $message }}</span>
                             @enderror
                         </div>
                         <div>
                             <label class="mb-1 block text-sm font-medium text-black">Description</label>
                             <textarea 
-                                wire:model="form.description"
+                                wire:model="description"
                                 rows="3"
                                 placeholder="Description" class="focus:ring-0 w-full rounded p-2 border-slate-300 bg-transparent px-2 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary"></textarea>
-                            @error('form.description')
+                            @error('description')
                                 <span class="text-red-500 text-xs">{{ $message }}</span>
                             @enderror
                         </div>
@@ -72,7 +83,7 @@
                                 </label>
                                 <div class="relative">
                                     <input 
-                                        wire:model="form.startDate"
+                                        wire:model="startDate"
                                         type="datetime-local"
                                         class="w-full rounded border border-stroke bg-transparent py-3 font-normal outline-none transition focus:border-slate-500 active:border-slate-500 focus:ring-0" placeholder="mm/dd/yyyy" 
                                     />
@@ -82,7 +93,7 @@
                                         </svg>
                                     </div>
                                 </div>
-                                @error('form.startDate')
+                                @error('startDate')
                                     <span class="text-red-500 text-xs">{{ $message }}</span>
                                 @enderror
                             </div>
@@ -92,7 +103,7 @@
                                 </label>
                                 <div class="relative">
                                     <input 
-                                        wire:model="form.endDate"
+                                        wire:model="endDate"
                                         type="datetime-local"
                                         class="w-full rounded border border-stroke bg-transparent py-3 font-normal outline-none transition focus:border-slate-500 active:border-slate-500 focus:ring-0" placeholder="mm/dd/yyyy" 
                                     />
@@ -102,7 +113,7 @@
                                         </svg>
                                     </div>
                                 </div>
-                                @error('form.endDate')
+                                @error('endDate')
                                     <span class="text-red-500 text-xs">{{ $message }}</span>
                                 @enderror
                             </div>
@@ -111,9 +122,9 @@
                         <div class="w-full">
                             <label class="mb-3 block text-sm font-medium text-black" for="fullName">Price&nbsp;<em>(SGD$)</em></label>
                             <div class="relative">
-                                <span class="absolute left-4.5 top-3.5 flex text-slate-500">SGD$</span>
+                                <span class="absolute left-4.5 top-3.5 flex text-slate-500">SGD</span>
                                 <input 
-                                    wire:model="form.price"
+                                    wire:model="price"
                                     class="w-full rounded text-lg border border-stroke bg-gray/60 py-3 pl-16 font-medium placeholder:text-slate-500 text-black focus:ring-0" 
                                     type="number"
                                     step="0.01" 
@@ -121,20 +132,38 @@
                                     placeholder="0.00" 
                                  />
                             </div>
-                            @error('form.price')
+                            @error('price')
                                 <span class="text-red-500 text-xs">{{ $message }}</span>
                             @enderror
                         </div>
-                        <div x-data="{ isActive: @entangle('form.isActive') }" class="flex">
+                        <div class="w-full">
+                            <label class="mb-3 block text-sm font-medium text-black" for="fullName">Order&nbsp;<em>(Ordering in the display)</em></label>
+                            <input 
+                                wire:model="arrangement"
+                                class="w-full rounded text-lg border border-stroke py-3 font-medium placeholder:text-slate-500 text-black focus:ring-0" 
+                                type="number"
+                                step="1" 
+                                id="arrangement" 
+                                placeholder="Ex: 4" 
+                                />
+                            @error('arrangement')
+                                <span class="text-red-500 text-xs">{{ $message }}</span>
+                            @enderror
+                        </div>
+                        <div x-data="{ isActive: @entangle('isActive') }" class="flex">
                             <label for="toggle4" class="flex cursor-pointer select-none items-center">
                                 <div class="relative">
                                     <input 
-                                        wire:model="form.isActive"
+                                        wire:model="isActive"
                                         type="checkbox" id="toggle4" class="sr-only" />
                                     <div :class="isActive && '!bg-primary'" class="block h-8 w-14 rounded-full bg-black"></div>
                                     <div :class="isActive && '!right-1 !translate-x-full'" class="absolute left-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-white transition"></div>
                                 </div>
                             </label>
+                        </div>
+                        <div class="flex flex-col text-lg">
+                            <p>Total Promotion Usage: {{ $promotion->counter }}</p>
+                            <p>Created By <span class="italic text-slate-600">{{ $promotion->createdBy }}</span></p>
                         </div>
                         <div class="h-screen flex justify-between items-end gap-2 mb-18">
                             <button 
@@ -144,15 +173,15 @@
                                 class="disabled:cursor-not-allowed disabled:opacity-50 w-full flex justify-center p-4 items-center rounded-md text-md text-white drop-shadow uppercase bg-green-700 hover:bg-green-600 duration-300">
                                 
                                 <span wire:loading.remove wire:target="save">
-                                    Save
+                                    Update
                                 </span>
                                 <span wire:loading wire:target="save">
-                                    Saving...
+                                    Updating...
                                 </span>
 
                             </button>
-                            <button type="reset" class="w-full flex justify-center p-4 items-center rounded-md text-md text-white drop-shadow uppercase bg-slate-600 hover:bg-slate-500 duration-300">
-                                Reset
+                            <button type="button" wire:click="closeModal" class="w-full flex justify-center p-4 items-center rounded-md text-md text-white drop-shadow uppercase bg-slate-600 hover:bg-slate-500 duration-300">
+                                Close
                             </button>
                         </div>
                     </form>
