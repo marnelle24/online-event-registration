@@ -15,7 +15,7 @@ class SettingsSection extends Component
     public bool  $publishable;
     public string $externalUrl;
     public int $limit;
-    public int $adminFee;
+    public $adminFee;
     public $chequeNumber;
     public string $contactEmail;
     public string $programmeStatus;
@@ -29,7 +29,7 @@ class SettingsSection extends Component
         $this->publishable = $this->programme->publishable;
         $this->limit = $this->programme->limit;
         $this->adminFee = $this->programme->adminFee;
-        $this->chequeNumber = $this->programme->chequeCode ?? NULL;
+        $this->chequeNumber = $this->programme->chequeCode;
         $this->contactEmail = $this->programme->contactEmail;
         $this->externalUrl = $this->programme->externalUrl;
         $this->activeUntil = $this->programme->activeUntil;
@@ -80,6 +80,19 @@ class SettingsSection extends Component
         else
             Toaster::danger('Something\'s wrong, please try again later.');
     }
+
+    public function updateProgrammeInfo($colName, $model)
+    {
+        // dump($colName, $model);
+        $isUpdated = $this->programme->update([$colName => $model]);
+        if($isUpdated)
+            Toaster::success('Programme information changed successfully.');
+        else
+            Toaster::danger('Something\'s wrong, please try again later.');
+
+        $this->render();
+    }
+
 
     public function confirmedStatusChange()
     {
