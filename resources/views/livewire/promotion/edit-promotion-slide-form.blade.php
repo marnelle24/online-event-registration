@@ -53,7 +53,7 @@
                         <div>
                             <p class="italic text-md text-slate-500">
                                 Update the promotion for this programme.
-                                Any changes made to the promotion will immediately applicable to the programme as long as
+                                Any changes in the promotion will be applied immediately to the programme as long as
                                 it is active and within the date range validity.
                             </p>
                         </div>
@@ -120,7 +120,7 @@
                         </div>
 
                         <div class="w-full">
-                            <label class="mb-3 block text-sm font-medium text-black" for="fullName">Price&nbsp;<em>(SGD$)</em></label>
+                            <label class="mb-3 block text-sm font-medium text-black" for="fullName">Price</label>
                             <div class="relative">
                                 <span class="absolute left-4.5 top-3.5 flex text-slate-500">SGD</span>
                                 <input 

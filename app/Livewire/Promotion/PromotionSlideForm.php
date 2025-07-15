@@ -9,7 +9,6 @@ use Masmerise\Toaster\Toaster;
 
 class PromotionSlideForm extends Component
 {
-    public string $class;
     public $show = false;
     public $programmeId;
     public $form = [
@@ -26,7 +25,6 @@ class PromotionSlideForm extends Component
     {
         $this->programmeId = $programmeId;
         // Set the class based on your requirements
-        $this->class = 'tracking-widest font-thin uppercase inline-flex items-center bg-slate-200 hover:scale-105 hover:bg-slate-200 duration-300 justify-center rounded-md border border-slate-400 py-2 px-3 text-center text-slate-500 drop-shadow text-xs';
     }
 
     public function openModal()

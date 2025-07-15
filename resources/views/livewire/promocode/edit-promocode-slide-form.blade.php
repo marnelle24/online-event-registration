@@ -1,67 +1,69 @@
 <div class="relative">
     <!-- Trigger button -->
     <button 
-        wire:click="openModal" 
-        type="button" 
-        class="tracking-widest font-thin uppercase inline-flex items-center bg-green-600 hover:scale-105 hover:bg-green-500 duration-300 justify-center rounded-md border border-green-600 py-2 px-3 text-center text-white drop-shadow text-xs"
+        x-data="{ showToolTip: false }"
+        wire:click="openModal"
+        @mouseover="showToolTip = true" 
+        @mouseleave="showToolTip = false"
+        class="flex items-center"
     >
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+        <svg 
+            class="w-6 h-6 stroke-blue-500 hover:scale-110 duration-300 hover:stroke-blue-600"
+            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
         </svg>
-        Promotion
+          
+        
+        <div 
+            x-show="showToolTip" 
+            x-transition 
+            class="absolute top-full -left-1 mt-1 transition-all duration-300 ease-in-out hover:opacity-100 hover:translate-y-0 w-max bg-slate-800 text-white text-xs rounded px-2 py-1 shadow-lg z-50"
+        >
+            Update
+        </div>
     </button>
 
-    <!-- Backdrop and Slide-over Modal -->
     @if ($show)
         <div class="fixed inset-0 z-40">
             <!-- Backdrop -->
             <div class="absolute inset-0 bg-black/50"
-                 wire:click="closeModal">
+                wire:click="closeModal">
             </div>
-
-            <!-- Slide-over Modal -->
             <div class="absolute inset-y-0 right-0 lg:w-1/4 w-full bg-white shadow-lg z-50 transform transition-transform duration-300 overflow-auto" style="transform: translateX(0%)">
-                <!-- Header -->
                 <div class="flex justify-between items-center p-4 border-b-2 border-slate-500/60 bg-slate-400">
-                    <h2 class="text-white text-2xl uppercase font-light">Add Promotion</h2>
+                    <h2 class="text-white text-2xl uppercase font-light">Update Promo Code</h2>
                     <button wire:click="closeModal" class="text-gray-600 hover:text-gray-900 text-xl">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8 stroke-slate-800 hover:stroke-slate-500 hover:-translate-y-1 duration-300">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
                         </svg>
                     </button>
                 </div>
-
-                <div class="p-4 h-screen">
+                <div class="p-4">
                     <x-validation-errors :class="'p-5'" />
-                    
-                    @if (session()->has('message'))
-                        <div class="text-green-700 bg-green-300/40 border border-green-600/20 rounded-md p-3 text-sm">{{ session('message') }}</div> 
-                    @endif
-                    
-                    <form wire:submit.prevent="save" class="flex flex-col gap-4 p-5 h-screen">
+                    <form wire:submit.prevent="save" class="flex flex-col gap-4 p-5">
                         <div>
                             <p class="italic text-md text-slate-500">
-                                Create a new promotion for this programme.
-                                Newly created promotion will immediately applicable to the programme as long as
+                                Update the promo code information for this programme.
+                                Any changes in the promo code will be applied immediately to the programme as long as
                                 it is active and within the date range validity.
                             </p>
                         </div>
                         <div>
-                            <label class="mb-1 block text-sm font-medium text-black">Name</label>
+                            <label class="mb-1 block text-sm font-medium text-black">Promo Code</label>
                             <input 
-                                wire:model="form.title"
-                                type="text" placeholder="Name" class="focus:ring-0 w-full rounded p-2 border-slate-300 bg-transparent px-2 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary" />
-                            @error('form.title')
+                                wire:model="code"
+                                type="text" placeholder="Promo Code" class="focus:ring-0 w-full rounded p-2 border-slate-300 bg-transparent px-2 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary" />
+                            @error('code')
                                 <span class="text-red-500 text-xs">{{ $message }}</span>
                             @enderror
                         </div>
                         <div>
-                            <label class="mb-1 block text-sm font-medium text-black">Description</label>
+                            <label class="mb-1 block text-sm font-medium text-black">Remarks</label>
                             <textarea 
-                                wire:model="form.description"
+                                wire:model="remarks"
                                 rows="3"
-                                placeholder="Description" class="focus:ring-0 w-full rounded p-2 border-slate-300 bg-transparent px-2 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary"></textarea>
-                            @error('form.description')
+                                placeholder="Remarks" class="focus:ring-0 w-full rounded p-2 border-slate-300 bg-transparent px-2 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary"></textarea>
+                            @error('remarks')
                                 <span class="text-red-500 text-xs">{{ $message }}</span>
                             @enderror
                         </div>
@@ -72,7 +74,7 @@
                                 </label>
                                 <div class="relative">
                                     <input 
-                                        wire:model="form.startDate"
+                                        wire:model="startDate"
                                         type="datetime-local"
                                         class="w-full rounded border border-stroke bg-transparent py-3 font-normal outline-none transition focus:border-slate-500 active:border-slate-500 focus:ring-0" placeholder="mm/dd/yyyy" 
                                     />
@@ -82,7 +84,7 @@
                                         </svg>
                                     </div>
                                 </div>
-                                @error('form.startDate')
+                                @error('startDate')
                                     <span class="text-red-500 text-xs">{{ $message }}</span>
                                 @enderror
                             </div>
@@ -92,7 +94,7 @@
                                 </label>
                                 <div class="relative">
                                     <input 
-                                        wire:model="form.endDate"
+                                        wire:model="endDate"
                                         type="datetime-local"
                                         class="w-full rounded border border-stroke bg-transparent py-3 font-normal outline-none transition focus:border-slate-500 active:border-slate-500 focus:ring-0" placeholder="mm/dd/yyyy" 
                                     />
@@ -102,41 +104,59 @@
                                         </svg>
                                     </div>
                                 </div>
-                                @error('form.endDate')
+                                @error('endDate')
                                     <span class="text-red-500 text-xs">{{ $message }}</span>
                                 @enderror
                             </div>
                         </div>
-
                         <div class="w-full">
                             <label class="mb-3 block text-sm font-medium text-black" for="fullName">Price</label>
                             <div class="relative">
                                 <span class="absolute left-4.5 top-3.5 flex text-slate-500">SGD</span>
                                 <input 
-                                    wire:model="form.price"
+                                    wire:model="price"
                                     class="w-full rounded text-lg border border-stroke bg-gray/60 py-3 pl-16 font-medium placeholder:text-slate-500 text-black focus:ring-0" 
                                     type="number"
-                                    step="0.01" 
+                                    step="0.10" 
                                     id="price" 
                                     placeholder="0.00" 
-                                 />
+                                />
                             </div>
-                            @error('form.price')
+                            @error('price')
                                 <span class="text-red-500 text-xs">{{ $message }}</span>
                             @enderror
                         </div>
-                        <div x-data="{ isActive: @entangle('form.isActive') }" class="flex">
+                        <div>
+                            <label class="mb-1 block text-sm font-medium text-black">Maximum Promo Distribution</label>
+                            <input 
+                                wire:model="maxUses"
+                                type="number"
+                                step="1" 
+                                placeholder="Ex: 100" class="focus:ring-0 w-full rounded p-2 border-slate-300 bg-transparent px-2 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary" />
+                            @error('maxUses')
+                                <span class="text-red-500 text-xs">{{ $message }}</span>
+                            @enderror
+                        </div>
+                        <div x-data="{ isActive: @entangle('isActive') }" class="flex">
                             <label for="toggle4" class="flex cursor-pointer select-none items-center">
                                 <div class="relative">
                                     <input 
-                                        wire:model="form.isActive"
+                                        wire:model="isActive"
                                         type="checkbox" id="toggle4" class="sr-only" />
                                     <div :class="isActive && '!bg-primary'" class="block h-8 w-14 rounded-full bg-black"></div>
                                     <div :class="isActive && '!right-1 !translate-x-full'" class="absolute left-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-white transition"></div>
                                 </div>
                             </label>
                         </div>
-                        <div class="h-screen flex justify-between items-end gap-2 mb-18">
+                        <div class="flex flex-col text-lg">
+                            @if($promocode->usedCount > 0)
+                                <p>Total Code Distributed: {{ $promocode->usedCount }}{{$promocode->maxUses > 0 ? '/'.$promocode->maxUses : ''}}</p>
+                            @endif
+                            <p>Created By <span class="italic text-slate-600">{{ $promocode->createdBy }}</span></p>
+                        </div>
+                        <br />
+                        <br />
+                        <div class="flex justify-between items-end gap-2 mb-18">
                             <button 
                                 wire:target="save"
                                 wire:loading.attr="disabled"
@@ -151,8 +171,8 @@
                                 </span>
 
                             </button>
-                            <button type="reset" class="w-full flex justify-center p-4 items-center rounded-md text-md text-white drop-shadow uppercase bg-slate-600 hover:bg-slate-500 duration-300">
-                                Reset
+                            <button wire:click="closeModal" type="button" class="w-full flex justify-center p-4 items-center rounded-md text-md text-white drop-shadow uppercase bg-slate-600 hover:bg-slate-500 duration-300">
+                                Close
                             </button>
                         </div>
                     </form>

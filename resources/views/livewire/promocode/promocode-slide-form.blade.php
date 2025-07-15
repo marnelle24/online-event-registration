@@ -1,11 +1,11 @@
-<div class="relative z-50">
+<div class="relative">
     <!-- Trigger button -->
     <button 
         wire:click="openModal" 
         type="button" 
-        class="{{$class}}"
+        class="tracking-widest font-thin uppercase inline-flex items-center bg-orange-400 hover:scale-105 hover:bg-orange-300 duration-300 justify-center rounded-md border border-orange-300 py-2 px-3 text-center text-white drop-shadow text-xs"
     >
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
         </svg>
         Promo Codes
@@ -100,9 +100,9 @@
                             </div>
                         </div>
                         <div class="w-full">
-                            <label class="mb-3 block text-sm font-medium text-black" for="fullName">Price&nbsp;<em>(SGD$)</em></label>
+                            <label class="mb-3 block text-sm font-medium text-black" for="fullName">Price</label>
                             <div class="relative">
-                                <span class="absolute left-4.5 top-3.5 flex text-slate-500">SGD$</span>
+                                <span class="absolute left-4.5 top-3.5 flex text-slate-500">SGD</span>
                                 <input 
                                     wire:model="form.price"
                                     class="w-full rounded text-lg border border-stroke bg-gray/60 py-3 pl-16 font-medium placeholder:text-slate-500 text-black focus:ring-0" 

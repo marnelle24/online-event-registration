@@ -1,7 +1,7 @@
 <div>
     <div class="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
         <div class="flex justify-between items-center border-t border-stroke px-4 py-4.5 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
-            <p class="font-medium text-md text-slate-500">
+            <p class="text-md text-slate-500 uppercase tracking-wider font-thin">
                 {{ $promotions->count() > 0 ? 'Active Promotions' : 'No Active Promotions' }}
             </p>
             @livewire('promotion.promotion-slide-form', ['programmeId' => $programmeId])

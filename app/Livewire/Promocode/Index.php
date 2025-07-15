@@ -13,6 +13,7 @@ class Index extends Component
 
     protected $listeners = [
         'newAddedPromocode' => 'render',
+        'updatedPromocode' => 'render',
     ];
 
     public function mount($programmeId)
