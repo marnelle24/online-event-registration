@@ -3,7 +3,7 @@
     <button 
         wire:click="openModal" 
         type="button" 
-        class="{{$class}}"
+        class="tracking-widest font-thin uppercase inline-flex items-center bg-teal-600 hover:scale-105 hover:bg-teal-500 duration-300 justify-center rounded-md border border-teal-600 py-2 px-3 text-center text-white drop-shadow text-sm"
     >
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
@@ -32,9 +32,7 @@
                 </div>
 
                 <div class="p-4">
-                    <p class="text-xl text-slate-500 mb-1">Search Existing Speaker or Trainer</p>
-                    <br />
-                    @livewire('speaker.speaker-drop-down-list-select')
+                    @livewire('speaker.speaker-drop-down-list-select', ['programmeId' => $programmeId])
                 </div>
 
                 <div class="p-4">

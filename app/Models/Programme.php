@@ -81,7 +81,7 @@ class Programme extends Model implements HasMedia
 
     public function speakers()
     {
-        return $this->belongsToMany(Speaker::class, 'speaker_programme', 'programme_id', 'speaker_id')->withPivot('type');
+        return $this->belongsToMany(Speaker::class, 'speaker_programme', 'programme_id', 'speaker_id')->withPivot('type', 'details');
     }
 
     public function promotions()

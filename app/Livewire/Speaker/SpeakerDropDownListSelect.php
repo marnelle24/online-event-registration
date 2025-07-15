@@ -4,33 +4,52 @@ namespace App\Livewire\Speaker;
 
 use App\Models\Speaker;
 use Livewire\Component;
+use App\Models\Programme;
+use Masmerise\Toaster\Toaster;
 
 class SpeakerDropDownListSelect extends Component
 {
-    public $search;
-    public $label = 'Search for Speakers or Trainers';
-    public $speakers;
+    public $details = '';
+    public $type = '';
+    public $speakerID = '';
+    public $programmeId = '';
 
-    public function mount()
+    public function mount($programmeId)
     {
-        $this->search = ''; // Default search term
-        $this->speakers = Speaker::latest()
-        ->when($this->search, function ($query) {
-            $query->where('name', 'like', '%' . $this->search . '%')
-                  ->orWhere('email', 'like', '%' . $this->search . '%');
-        })
-        ->select('id', 'name', 'title', 'profession', 'thumbnail')
-        ->take(10)
-        ->get();
+        $this->programmeId = $programmeId;
+    }
+
+    public function saveChanges()
+    {
+        $validated = $this->validate([
+            'speakerID' => 'required',
+            'type' => 'required',
+            'details' => 'nullable|string',
+        ], [
+            'speakerID.required' => 'Please select professional',
+            'type.required' => 'Please assign role of the professional in the programme',
+        ]);
+
+        $programme = Programme::find($this->programmeId);
+        $programme->speakers()->attach(
+            $validated['speakerID'], 
+            [
+                'type' => $validated['type'], 
+                'details' => $validated['details']
+            ]
+        );
+
+        $msg = 'New '.$validated['type'].' added successfully.';
+        sleep(1);
+        Toaster::success($msg);
+        $this->dispatch('successAssignment');
     }
 
     public function render()
-    {       
-        return view('livewire.speaker.speaker-drop-down-list-select');
-    }
-
-    public function selectSpeaker($speakerId)
-    {
-        $this->dispatch('selectedSpeaker', $speakerId);
+    {      
+        $speakers = Speaker::orderBy('name', 'ASC')->get();
+        return view('livewire.speaker.speaker-drop-down-list-select', [
+            'speakers' => $speakers
+        ]);
     }
 }

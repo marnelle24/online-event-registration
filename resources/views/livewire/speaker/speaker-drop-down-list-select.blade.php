@@ -1,38 +1,46 @@
 <div>
-    <p class="text-md text-slate-600 mb-1">{{$label}}</p>
-    <input 
-        wire:model.live.debounce.300ms="search" 
-        type="search" 
-        class="focus:ring-0 focus:border-slate-600 min-h-12 text-lg w-full rounded-md bg-light border border-slate-500" 
-        placeholder="Search Speakers"
-    />
-    
-    @if($search)
-        <ul class="relative z-10 shadow-lg bg-white max-h-[260px] overflow-y-auto">
-            @foreach($speakers as $speaker)
-                <li class="flex justify-between border-x border-b border-slate-400 py-2 px-4 hover:bg-slate-100 cursor-pointer">
-                    <div class="flex items-center">
-                        <div class="flex-shrink-0">
-                            @if(is_null($speaker->thumbnail))
-                                <p class="text-sm flex justify-center items-center font-normal rounded-full text-slate-400 bg-slate-200 border border-slate-400 w-12 h-12 drop-shadow tracking-widest">
-                                    {{ Helper::getInitials($speaker->name) }}
-                                </p>
-                            @else
-                                <img src="{{ asset($speaker->thumbnail) }}" alt="{{ $speaker->name }}" class="w-10 h-10 rounded-full" />
-                            @endif
-                        </div>
-                        <div class="ml-3">
-                            <p class="text-md font-medium text-black dark:text-white">{{ $speaker->name }}</p>
-                            <p class="text-sm text-slate-500">{{ $speaker->profession }}</p>
-                        </div>
-                    </div>
-                    <button  type="button" wire:click.prevent="selectSpeaker({{ $speaker->id }})" class="text-sm text-blue-400 hover:text-blue-800 hover:-translate-y-1 duration-300">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                        </svg>
-                    </button>
-                </li>
-            @endforeach
-        </ul>
-    @endif
+    <x-validation-errors class="mb-4" />
+    <div class="flex flex-col gap-4">
+        <div>
+            <p class="text-sm mb-1">Find the existing speaker or professional</p>
+            <select wire:model="speakerID" class="focus:ring-0 focus:border-slate-600 min-h-12 w-full rounded-none bg-slate-100 border border-slate-400">
+                <option value="" selected>Select Professional</option>
+                @foreach($speakers as $speaker)
+                    <option value="{{$speaker->id}}" class="capitalize">
+                        {{$speaker->name}} - {{ $speaker->profession}}
+                    </option>
+                @endforeach
+            </select>
+        </div>
+        <div>
+            <p class="text-sm mb-1">What's the function of the professional in the programme?</p>
+            <select wire:model="type" class="focus:ring-0 focus:border-slate-600 min-h-12 w-full rounded-none bg-slate-100 border border-slate-400">
+                <option value="" selected>Assign as</option>
+                <option value="speaker">Speaker</option>
+                <option value="trainer">Trainer</option>
+                <option value="facilitator">Facilitator</option>
+                <option value="others">Other</option>
+            </select>
+        </div>
+        <div>
+            <p class="text-sm mb-1">What's the topic or short details of the role?</p>
+            <textarea 
+                wire:model="details"
+                rows="4" 
+                class="focus:ring-0 focus:border-slate-600 min-h-12 w-full rounded-none bg-slate-100 border border-slate-400" placeholder="Topic or short details of the role"></textarea>
+        </div>
+        <button 
+            type="button"
+            wire:target="saveChanges"
+            wire:loading.attr="disabled"
+            wire:click="saveChanges" 
+            class="disabled:cursor-not-allowed disabled:opacity-50 flex w-full justify-center items-center text-white bg-green-600 hover:bg-green-700 duration-300 drop-shadow bg-opacity-90 uppercase py-3 text-lg">
+            <span wire:loading.remove wire:target="saveChanges">
+                Save
+            </span>
+            <span wire:loading wire:target="saveChanges">
+                Saving...
+            </span>
+        </button>
+    </div>
 </div>

@@ -172,77 +172,34 @@
             @endif
             
             @if(request('p') === 'information')
-            <div>
-                @if($programme->excerpt)
-                    <div class="mt-4">
-                        <p class="text-sm italic text-slate-500 mb-1">Except:</p>
-                        <div class="p-4 border border-slate-600/70 bg-zinc-50 rounded-md text-sm">
-                            {{ $programme->excerpt }}
-                        </div>
-                    </div>
-                @endif
-    
-                @if($programme->description)
-                    <div class="mt-4">
-                        <p class="text-sm italic text-slate-500 mb-1">Description:</p>
-                        <div class="ck-content p-8 border border-slate-600/70 bg-zinc-200/30 rounded-md text-sm">
-                            {!! $programme->description !!}
-                        </div>
-                    </div>
-                @endif
-    
-                <div class="mt-8 bg-white/60 p-8 border border-slate-400">
-                    <p class="text-xl font-bold mb-1">Other Information</p>  
-                    <div class="flex lg:flex-row flex-col gap-3">
-                        <div class="lg:w-1/2 w-full">
-                            <div class="flex flex-col mt-4">
-                                <p class="text-sm font-bold text-slate-500">Admin Fee Applied</p>
-                                <p class="text-slate-700">{{$programme->adminFee > 0 ? 'SGD'.$programme->adminFee : 'No Admin Fee'}}</p>
+                <div class="rounded-sm border border-stroke bg-white shadow-default w-full overflow-x-scroll">
+                    <div class="rounded-sm border border-stroke bg-white p-8 shadow-default">
+                        @if($programme->excerpt)
+                            <p class="text-sm italic text-slate-500 mb-1 border-b py-2 border-slate-400">Except:</p>
+                            <p>{{ $programme->excerpt }}</p>
+                        @endif
+                        @if($programme->description)
+                            <div class="mt-4">
+                                <p class="text-sm italic text-slate-500 mb-2 border-b py-2 border-slate-400">Description:</p>
+                                <div class="ck-content text-sm py-2">
+                                    {!! $programme->description !!}
+                                </div>
                             </div>
-                            <div class="flex flex-col mt-4">
-                                <p class="text-sm font-bold text-slate-500">Registration Max Limit</p>
-                                <p class="text-slate-700">{{$programme->limit > 0 ? $programme->limit.' participants' : 'No limit'}}</p>
-                            </div>
-                            <div class="flex flex-col mt-4">
-                                <p class="text-sm font-bold text-slate-500">Registration Validiity</p>
-                                <p class="text-slate-700">{{ Carbon\Carbon::parse($programme->activeUntil)->format('F j, Y @ g:i a')}}</p>
-                            </div>
-                            <div class="flex flex-col mt-4">
-                                <p class="text-sm font-bold text-slate-500">External Link</p>
-                                <p class="text-xs italic text-slate-400 mb-1">3rd party registration form for this programme</p>
-                                <a href="{{$programme->externalUrl}}" class="text-blue-500 drop-shadow-sm hover:text-blue-400 hover:-translate-y-1 duration-300">{{$programme->externalUrl}}</a>
-                            </div>
-                        </div>
-                        <div class="lg:w-1/2 w-full">
-                            <div class="flex flex-col mt-4">
-                                <p class="text-sm font-bold text-slate-500">Contact Person</p>
-                                <p class="text-slate-700">{{$programme->contactPerson}}</p>
-                            </div>
-                            <div class="flex flex-col mt-4">
-                                <p class="text-sm font-bold text-slate-500">Contact Number</p>
-                                <p class="text-slate-700">{{$programme->contactNumber}}</p>
-                            </div>
-                            <div class="flex flex-col mt-4">
-                                <p class="text-sm font-bold text-slate-500">Contact Email</p>
-                                <p class="text-slate-700">{{$programme->contactEmail}}</p>
+                        @endif
+                        <div class="mt-4">
+                            <p class="text-sm italic text-slate-500 mb-2 border-b py-2 border-slate-400">Categories:</p>
+                            <div class="flex flex-wrap whitespace-normal gap-2 py-2">
+                                @foreach ($programme->categories as $category)
+                                    <p class="inline-flex rounded-full bg-warning bg-opacity-20 border border-warning drop-shadow px-3 py-1 text-sm font-medium text-warning">{{$category->name}}</p>
+                                @endforeach
                             </div>
                         </div>
                     </div>
                 </div>
-    
-                <div class="mt-4">
-                    <p class="text-sm italic text-slate-500 mb-1">Categories:</p>
-                    <div class="flex flex-wrap whitespace-normal gap-1">
-                        @foreach ($programme->categories as $category)
-                            <p class="py-1 px-3 rounded-full text-sm text-white bg-primary hover:bg-primary/90">{{$category->name}}</p>
-                        @endforeach
-                    </div>
-                </div>
-            </div>
             @endif
 
             @if(request('p') === 'speaker-trainer')
-                @livewire('speaker.index', ['programmeSpeakers' => $programme->speakers, 'programmeId' => $programme->id])
+                @livewire('speaker.index', ['programmeId' => $programme->id])
             @endif
 
             @if(request('p') === 'promotion')
@@ -266,7 +223,7 @@
     <style>
         .ck-content {
             min-height:300px;
-            background-color: #fafafa !important;
+            /* background-color: #fafafa !important; */
         }
         .ck-content a {
             color:#3989f1 !important;
