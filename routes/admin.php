@@ -33,7 +33,7 @@ Route::middleware(['admin'])->prefix('admin')->group(function () {
         Route::get('/{programmeCode}', [ProgrammeController::class, 'show'])->name('admin.programmes.show');
         Route::get('/{id}/edit', [ProgrammeController::class, 'edit'])->name('admin.programmes.edit');
         Route::put('/{id}', [ProgrammeController::class, 'update'])->name('admin.programmes.update');
-        Route::delete('/{id}', [ProgrammeController::class, 'destroy'])->name('admin.programmes.destroy');
+        Route::put('/soft-delete/{id}', [ProgrammeController::class, 'softDelete'])->name('admin.programmes.soft-delete');
     });
 
     // Speaker routes

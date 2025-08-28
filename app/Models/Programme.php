@@ -58,10 +58,48 @@ class Programme extends Model implements HasMedia
         'updated_at',
     ];
 
+    public function getLocationAttribute()
+    {
+        return $this->address . ', ' . $this->city . ', ' . $this->postalCode;
+    }
+
+    public function getProgrammeDatesAttribute()
+    {
+        if (!empty($this->customDate)) {
+            return $this->customDate;
+        }
+
+        $startDate = \Carbon\Carbon::parse($this->startDate);
+        $formattedStartDate = $startDate->format('M j');
+        
+        if ($this->endDate) {
+            $endDate = \Carbon\Carbon::parse($this->endDate);
+            
+            if ($startDate->year === $endDate->year && $startDate->month !== $endDate->month && $startDate->day !== $endDate->day) {
+                return $formattedStartDate . ' - ' . $endDate->format('j, Y');
+            }
+            if ($startDate->year === $endDate->year && $startDate->month === $endDate->month && $startDate->day === $endDate->day) {
+                return $startDate->format('M j, Y');
+            }
+            return $formattedStartDate . ', ' . $startDate->format('Y') . ' - ' . $endDate->format('M j, Y');
+        }
+        
+        return $startDate->format('M j, Y');
+    }
+
+    public function getProgrammeTimesAttribute()
+    {
+        $time = '';
+        $time = \Carbon\Carbon::parse($this->startTime)->format('g:i A');
+        $time .= $this->endTime ? '-' : '';
+        $time .= $this->endTime ? \Carbon\Carbon::parse($this->endTime)->format('g:i A') : '';
+        return $time;
+    }
+
     protected static function booted()
     {
         static::addGlobalScope('active', function (Builder $builder) {
-            // $builder->where('soft_delete', false);
+            $builder->where('soft_delete', false);
             // $builder->where('status', 'published');
             // $builder->where('publishable', true);
             // $builder->where('searchable', true);
@@ -72,6 +110,11 @@ class Programme extends Model implements HasMedia
     public function ministry()
     {
         return $this->belongsTo(Ministry::class);
+    }
+
+    public function registrations()
+    {
+        return $this->hasMany(Registrant::class);
     }
 
     public function categories()
@@ -92,5 +135,46 @@ class Programme extends Model implements HasMedia
     public function promocodes()
     {
         return $this->hasMany(Promocode::class);
+    }
+
+    public function getActivePromotionAttribute()
+    {
+        $now = now();
+        return $this->promotions()
+            ->where('startDate', '<=', $now)
+            ->where('endDate', '>=', $now)
+            ->where('isActive', true)
+            ->first();
+    }
+
+    public function getFormattedPriceAttribute()
+    {
+        if ($this->price <= 0) {
+            return 'Free';
+        }
+        return 'SGD ' . number_format($this->price, 2);
+    }
+
+    public function getDiscountedPriceAttribute()
+    {
+        $activePromo = $this->active_promotion;
+        if (!$activePromo) {
+            return null;
+        }
+
+        $discountAmount = 0;
+        if ($activePromo->discount_type === 'percentage') {
+            $discountAmount = $this->price * ($activePromo->discount_value / 100);
+        } else {
+            $discountAmount = $activePromo->discount_value;
+        }
+
+        $discountedPrice = $this->price - $discountAmount;
+        return $discountedPrice > 0 ? 'SGD ' . number_format($discountedPrice, 2) : 'Free';
+    }
+
+    public function getTotalRegistrationsAttribute()
+    {
+        return $this->registrations()->count();
     }
 }

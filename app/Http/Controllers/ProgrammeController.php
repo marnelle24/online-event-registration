@@ -106,7 +106,7 @@ class ProgrammeController extends Controller
         $programme['programmeDates'] = $this->programmeDates($programme);
         $programme['programmeTimes'] = $this->programmeTimes($programme);
         $programme['programmePrice'] = $this->programmePrice($programme);
-        
+
         return view('admin.programme.show', compact('programme'));
     }
 
@@ -179,10 +179,16 @@ class ProgrammeController extends Controller
         return $programme->price > 0 ? $currency.' '.number_format($programme->price, 2) : 'Free';
     }
 
-
-    public function destroy()
+    public function softDelete($id)
     {
-        return view('admin.programme.destroy');
+        $programme = Programme::find($id);
+        $programme->soft_delete = true;
+        $programme->save();
+        
+        // log the action to the log file
+        \Log::info('Programme with programme code ' . $programme->programmeCode . ' has been soft deleted by user_id: ' . auth()->user()->id);
+
+        return redirect()->route('admin.programmes')->with('success', 'Programme deleted successfully.');
     }
     
 }

@@ -86,13 +86,15 @@
                 </tr>
             </table>
             <div class="flex gap-3 pl-2 border-b-2 border-zinc-500/70">
-                <a href="{{ url()->current() }}?p=dashboard" class="@if(request('p') === 'dashboard') bg-sky-200 border-b-1 border-sky-600 scale-105 @else bg-zinc-200 border-slate-500 @endif hover:bg-sky-200 duration-300 hover:scale-105 border border-b-0 px-3 py-2 rounded-tr-md rounded-tl-md text-md">Dashboard</a>
+                <a 
+                    href="{{ url()->current() }}?p=dashboard" class="@if(request('p') === 'dashboard') bg-sky-200 border-b-1 border-sky-600 scale-105 @else bg-zinc-200 border-slate-500 @endif hover:bg-sky-200 duration-300 hover:scale-105 border border-b-0 px-3 py-2 rounded-tr-md rounded-tl-md text-md">Dashboard</a>
                 <a href="{{ url()->current() }}?p=information" class="@if(request('p') === 'information') bg-sky-200 border-b-1 border-sky-600 scale-105 @else bg-zinc-200 border-slate-500 @endif hover:bg-sky-200 duration-300 hover:scale-105 border border-b-0 px-3 py-2 rounded-tr-md rounded-tl-md text-md">Information</a>
                 <a href="{{ url()->current() }}?p=speaker-trainer" class="@if(request('p') === 'speaker-trainer') bg-sky-200 border-b-1 border-sky-600 scale-105 @else bg-zinc-200 border-slate-500 @endif hover:bg-sky-200 duration-300 hover:scale-105 border border-b-0 px-3 py-2 rounded-tr-md rounded-tl-md text-md">Speakers</a>
                 <a href="{{ url()->current() }}?p=promotion" class="@if(request('p') === 'promotion') bg-sky-200 border-b-1 border-sky-600 scale-105 @else bg-zinc-200 border-slate-500 @endif hover:bg-sky-200 duration-300 hover:scale-105 border border-b-0 px-3 py-2 rounded-tr-md rounded-tl-md text-md">Promotions</a>
                 <a href="{{ url()->current() }}?p=promocode" class="@if(request('p') === 'promocode') bg-sky-200 border-b-1 border-sky-600 scale-105 @else bg-zinc-200 border-slate-500 @endif hover:bg-sky-200 duration-300 hover:scale-105 border border-b-0 px-3 py-2 rounded-tr-md rounded-tl-md text-md">Promos</a>
                 <a href="{{ url()->current() }}?p=registrants" class="@if(request('p') === 'registrants') bg-sky-200 border-b-1 border-sky-600 scale-105 @else bg-zinc-200 border-slate-500 @endif hover:bg-sky-200 duration-300 hover:scale-105 border border-b-0 px-3 py-2 rounded-tr-md rounded-tl-md text-md">Registrants</a>
                 <a href="{{ url()->current() }}?p=settings" class="@if(request('p') === 'settings') bg-sky-200 border-b-1 border-sky-600 scale-105 @else bg-zinc-200 border-slate-500 @endif hover:bg-sky-200 duration-300 hover:scale-105 border border-b-0 px-3 py-2 rounded-tr-md rounded-tl-md text-md">Settings</a>
+                <a href="{{ url()->current() }}?p=breakout-session" class="@if(request('p') === 'breakout-session') bg-sky-200 border-b-1 border-sky-600 scale-105 @else bg-zinc-200 border-slate-500 @endif hover:bg-sky-200 duration-300 hover:scale-105 border border-b-0 px-3 py-2 rounded-tr-md rounded-tl-md text-md">Breakout Sessions</a>
             </div>
             {{-- <hr class="border border-zinc-500/70" /> --}}
 
@@ -216,6 +218,10 @@
 
             @if(request('p') === 'settings')
                 @livewire('programme.settings-section', ['programmeId' => $programme->id])
+            @endif
+
+            @if(request('p') === 'breakout-session')
+                @livewire('programme.breakout-session', ['programmeId' => $programme->id])
             @endif
             
         </div>
