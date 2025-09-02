@@ -5,7 +5,7 @@
                 <p class="text-center italic text-slate-500">
                     No Speakers Found
                 </p>
-                @livewire('speaker.speaker-slide-form')
+                @livewire('speaker.speaker-slide-form', ['programmeId' => $programmeId], key('speaker-slider-form'))
             </div>
         @else
             <div class="px-4 py-6 md:px-6 xl:px-7.5 flex justify-end">

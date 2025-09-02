@@ -13,13 +13,15 @@ class SettingsSection extends Component
     public bool $invitationOnly;
     public bool $searchable;
     public bool  $publishable;
-    public string $externalUrl;
+    public bool $allowPreRegistration;
+    public $externalUrl;
     public int $limit;
     public $adminFee;
     public $chequeNumber;
     public string $contactEmail;
     public string $programmeStatus;
     public $activeUntil;
+    public bool $allowBreakoutSession;
 
     public function mount()
     {
@@ -31,9 +33,25 @@ class SettingsSection extends Component
         $this->adminFee = $this->programme->adminFee;
         $this->chequeNumber = $this->programme->chequeCode;
         $this->contactEmail = $this->programme->contactEmail;
-        $this->externalUrl = $this->programme->externalUrl;
+        $this->externalUrl = $this->programme->externalUrl ?? NULL;
         $this->activeUntil = $this->programme->activeUntil;
         $this->programmeStatus = $this->programme->status;
+        $this->allowPreRegistration = $this->programme->allowPreRegistration;
+        $this->allowBreakoutSession = $this->programme->allowBreakoutSession;
+    }
+
+    public function toogleAllowBreakoutSession()
+    {
+        $isUpdated = $this->programme->update(['allowBreakoutSession' => $this->allowBreakoutSession]);
+        if($isUpdated)
+        {
+            $msg = $this->allowBreakoutSession ? 
+                'Breakout session is now enabled.' : 
+                'Breakout session is now disabled.';
+            Toaster::success($msg);
+        }
+        else
+            Toaster::danger('Something\'s wrong, please try again later.');
     }
 
     // Toggle for Invitation Only Mode
@@ -60,6 +78,21 @@ class SettingsSection extends Component
             $msg = $this->searchable ? 
                 'Programme is now searchable in the system.' : 
                 'Programme is not searchable in the search engine.';
+            Toaster::success($msg);
+        }
+        else
+            Toaster::danger('Something\'s wrong, please try again later.');
+    }
+
+    // Toogle for Allow Pre-registration
+    public function toogleAllowPreRegistration()
+    {
+        $isUpdated = $this->programme->update(['allowPreRegistration' => $this->allowPreRegistration]);
+        if($isUpdated)
+        {
+            $msg = $this->allowPreRegistration ? 
+                'Programme is now allowed for pre-registration.' : 
+                'Programme is not allowed for pre-registration.';
             Toaster::success($msg);
         }
         else

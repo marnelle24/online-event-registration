@@ -47,6 +47,7 @@ return new class extends Migration
             $table->boolean('private_only')->default(false);
             $table->string('externalUrl')->nullable();
             $table->boolean('soft_delete')->default(false);
+            $table->boolean('allowPreRegistration')->default(false);
             $table->string('status')->nullable('draft'); // draft, published, for private
             $table->timestamps();
         });

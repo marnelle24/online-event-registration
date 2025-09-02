@@ -86,8 +86,7 @@
                 </tr>
             </table>
             <div class="flex gap-3 pl-2 border-b-2 border-zinc-500/70">
-                <a 
-                    href="{{ url()->current() }}?p=dashboard" class="@if(request('p') === 'dashboard') bg-sky-200 border-b-1 border-sky-600 scale-105 @else bg-zinc-200 border-slate-500 @endif hover:bg-sky-200 duration-300 hover:scale-105 border border-b-0 px-3 py-2 rounded-tr-md rounded-tl-md text-md">Dashboard</a>
+                <a href="{{ url()->current() }}?p=dashboard" class="@if(request('p') === 'dashboard') bg-sky-200 border-b-1 border-sky-600 scale-105 @else bg-zinc-200 border-slate-500 @endif hover:bg-sky-200 duration-300 hover:scale-105 border border-b-0 px-3 py-2 rounded-tr-md rounded-tl-md text-md">Dashboard</a>
                 <a href="{{ url()->current() }}?p=information" class="@if(request('p') === 'information') bg-sky-200 border-b-1 border-sky-600 scale-105 @else bg-zinc-200 border-slate-500 @endif hover:bg-sky-200 duration-300 hover:scale-105 border border-b-0 px-3 py-2 rounded-tr-md rounded-tl-md text-md">Information</a>
                 <a href="{{ url()->current() }}?p=speaker-trainer" class="@if(request('p') === 'speaker-trainer') bg-sky-200 border-b-1 border-sky-600 scale-105 @else bg-zinc-200 border-slate-500 @endif hover:bg-sky-200 duration-300 hover:scale-105 border border-b-0 px-3 py-2 rounded-tr-md rounded-tl-md text-md">Speakers</a>
                 <a href="{{ url()->current() }}?p=promotion" class="@if(request('p') === 'promotion') bg-sky-200 border-b-1 border-sky-600 scale-105 @else bg-zinc-200 border-slate-500 @endif hover:bg-sky-200 duration-300 hover:scale-105 border border-b-0 px-3 py-2 rounded-tr-md rounded-tl-md text-md">Promotions</a>
@@ -201,27 +200,27 @@
             @endif
 
             @if(request('p') === 'speaker-trainer')
-                @livewire('speaker.index', ['programmeId' => $programme->id])
+                @livewire('speaker.index', ['programmeId' => $programme->id], key('speaker-index'))
             @endif
 
             @if(request('p') === 'promotion')
-                @livewire('promotion.index', ['programmeId' => $programme->id])
+                @livewire('promotion.index', ['programmeId' => $programme->id], key('promotion-index'))
             @endif
             
             @if(request('p') === 'promocode')
-                @livewire('promocode.index', ['programmeId' => $programme->id])
+                @livewire('promocode.index', ['programmeId' => $programme->id], key('promocode-index'))
             @endif
 
             @if(request('p') === 'registrants')
-                @livewire('registrant.index', ['programmeId' => $programme->id])
+                @livewire('registrant.index', ['programmeId' => $programme->id], key('registrant-index'))
             @endif
 
             @if(request('p') === 'settings')
-                @livewire('programme.settings-section', ['programmeId' => $programme->id])
+                @livewire('programme.settings-section', ['programmeId' => $programme->id], key('settings-section'))
             @endif
 
             @if(request('p') === 'breakout-session')
-                @livewire('programme.breakout-session', ['programmeId' => $programme->id])
+                @livewire('programme.breakout-session', ['programmeId' => $programme->id], key('breakout-session'))
             @endif
             
         </div>
@@ -252,5 +251,40 @@
     @push('script')
         @vite('resources/js/programme-dashboard-graph-1.js')
     @endpush
+
+
+    <style>
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.6s ease-out forwards;
+        }
+
+        @media (min-width: 768px) {
+            .grid-cols-2 > * {
+                animation-delay: calc(0.2s * var(--child-index, 0));
+            }
+        }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const items = document.querySelectorAll('.animate-fade-in');
+            items.forEach((item, index) => {
+                item.style.setProperty('--child-index', index);
+                item.style.animationDelay = `${index * 0.1}s`;
+                item.style.opacity = '1';
+            });
+        });
+    </script>
 </x-app-layout> 
 

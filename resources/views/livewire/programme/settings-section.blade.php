@@ -8,10 +8,19 @@
         <div class="border-t border-stroke px-4 py-4.5 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
             <table class="w-full">
                 <tr>
-                    <td width="25%" class="py-2">Turn on invitation only mode</td>
+                    <td width="25%" class="py-2">
+                        Turn on invitation only mode
+                        <p class="text-xs italic text-slate-500 text-left mt-1 leading-4">
+                            Only to who has the registration link can register for the programme.
+                        </p>
+                    </td>
                     <td class="p-2 w-14 flex">
                         <label for="toggle4" class="cursor-pointer select-none items-center">
-                            <div x-data="{ isActive: @entangle('invitationOnly') }" class="relative">
+                            <div x-data="{ isActive: @entangle('invitationOnly'), showToolTip: false }" 
+                                class="relative"
+                                @mouseover="showToolTip = true" 
+                                @mouseleave="showToolTip = false"
+                            >
                                 <input 
                                     wire:change="toogleInvitationOnly"
                                     wire:confirm="Are you sure you want to change the visibility setting of the programme?"
@@ -20,31 +29,124 @@
                                 />
                                 <p :class="isActive && '!bg-primary'" class="block h-8 w-14 rounded-full bg-black"></p>
                                 <p :class="isActive && '!right-1 !translate-x-full'" class="absolute left-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-white transition"></p>
+                                <div x-show="showToolTip" x-transition class="absolute mt-1 transition-all duration-300 ease-in-out hover:opacity-100 hover:translate-y-0 w-max bg-slate-700 rounded px-2 py-1 shadow-lg z-50">
+                                    <p class="text-left text-xs text-white flex flex-col p-1">
+                                        Invitation only mode
+                                    </p>
+                                </div>
                             </div>
                         </label>
                     </td>
                 </tr>
                 <tr>
-                    <td width="25%" class="py-2">Make it searchable</td>
+                    <td width="25%" class="py-2">
+                        Allow Pre-registration
+                        <p class="text-xs italic text-slate-500 text-left mt-1 leading-4">
+                            Allow participants to register for the programme before the programme starts. 
+                            If not free, no payment is needed yet.
+
+                        </p>
+                    </td>
                     <td class="p-2 w-14 flex">
                         <label for="toggle5" class="cursor-pointer select-none items-center">
-                            <div x-data="{ isActive: @entangle('searchable') }" class="relative">
+                            <div 
+                                x-data="{ isActive: @entangle('allowPreRegistration'), showToolTip: false }" 
+                                class="relative"
+                                @mouseover="showToolTip = true" 
+                                @mouseleave="showToolTip = false"
+                            >
+                                <input 
+                                    wire:change="toogleAllowPreRegistration"
+                                    wire:confirm="Are you sure you want to change the pre-registration setting of the programme?"
+                                    wire:model="allowPreRegistration"
+                                    type="checkbox" id="toggle5" class="sr-only" />
+                                <div :class="isActive && '!bg-primary'" class="block h-8 w-14 rounded-full bg-black"></div>
+                                <div :class="isActive && '!right-1 !translate-x-full'" class="absolute left-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-white transition"></div>
+                                <div x-show="showToolTip" x-transition class="absolute mt-1 transition-all duration-300 ease-in-out hover:opacity-100 hover:translate-y-0 w-max bg-slate-700 rounded px-2 py-1 shadow-lg z-50">
+                                    <p class="text-left text-xs text-white flex flex-col p-1">
+                                        Allow pre-registration
+                                    </p>
+                                </div>
+                            </div>
+                        </label>
+                    </td>
+                </tr>
+                <tr>
+                    <td width="25%" class="py-2">
+                        Enable Breakout Sessions
+                        <p class="text-xs italic text-slate-500 text-left mt-1 leading-4">
+                            Enable breakout sessions for the programme.
+                        </p>
+                    </td>
+                    <td class="p-2 w-14 flex">
+                        <label for="toggle9" class="cursor-pointer select-none items-center">
+                            <div 
+                                x-data="{ isActive: @entangle('allowBreakoutSession'), showToolTip: false }" 
+                                class="relative"
+                                @mouseover="showToolTip = true" 
+                                @mouseleave="showToolTip = false"
+                            >
+                                <input 
+                                    wire:change="toogleAllowBreakoutSession"
+                                    wire:confirm="Are you sure you want to change the breakout session setting of the programme?"
+                                    wire:model="allowBreakoutSession"
+                                    type="checkbox" id="toggle9" class="sr-only" />
+                                <div :class="isActive && '!bg-primary'" class="block h-8 w-14 rounded-full bg-black"></div>
+                                <div :class="isActive && '!right-1 !translate-x-full'" class="absolute left-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-white transition"></div>
+                                <div x-show="showToolTip" x-transition class="absolute mt-1 transition-all duration-300 ease-in-out hover:opacity-100 hover:translate-y-0 w-max bg-slate-700 rounded px-2 py-1 shadow-lg z-50">
+                                    <p class="text-left text-xs text-white flex flex-col p-1">
+                                        Enable breakout sessions
+                                    </p>
+                                </div>
+                            </div>
+                        </label>
+                    </td>
+                </tr>
+                <tr>
+                    <td width="25%" class="py-2">
+                        Make it searchable
+                        <p class="text-xs italic text-slate-500 text-left mt-1 leading-4">
+                            Make the programme searchable in the search feature.
+                        </p>
+                    </td>
+                    <td class="p-2 w-14 flex">
+                        <label for="toggle8" class="cursor-pointer select-none items-center">
+                            <div x-data="{ isActive: @entangle('searchable'), showToolTip: false }" 
+                                class="relative"
+                                @mouseover="showToolTip = true" 
+                                @mouseleave="showToolTip = false"
+                            >
                                 <input 
                                     wire:change="toogleSearchable"
                                     wire:confirm="Are you sure you want to change the search setting of the programme?"
                                     wire:model="searchable"
-                                    type="checkbox" id="toggle5" class="sr-only" />
+                                    type="checkbox" id="toggle8" class="sr-only" />
                                 <div :class="isActive && '!bg-primary'" class="block h-8 w-14 rounded-full bg-black"></div>
                                 <div :class="isActive && '!right-1 !translate-x-full'" class="absolute left-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-white transition"></div>
+                                <div x-show="showToolTip" x-transition class="absolute mt-1 transition-all duration-300 ease-in-out hover:opacity-100 hover:translate-y-0 w-max bg-slate-700 rounded px-2 py-1 shadow-lg z-50">
+                                    <p class="text-left text-xs text-white flex flex-col p-1">
+                                        Make it searchable
+                                    </p>
+                                </div>
                             </div>
                         </label>
                     </td>
                 </tr>
                 <tr>
-                    <td width="25%" class="py-2">Make it publishable</td>
+                    <td width="25%" class="py-2">
+                        Make it publishable
+                        <p class="text-xs italic text-slate-500 text-left mt-1 leading-4">
+                            Make the programme publishable in the system.
+                            It will be visible to the public in the search feature.
+                        </p>
+                    </td>
                     <td class="p-2 w-14 flex">
                         <label for="toggle6" class="cursor-pointer select-none items-center">
-                            <div x-data="{ isActive: @entangle('publishable') }" class="relative">
+                            <div x-data="{ isActive: @entangle('publishable'), showToolTip: false }" 
+                                class="relative"
+                                @mouseover="showToolTip = true" 
+                                @mouseleave="showToolTip = false"
+                            >
                                 <input 
                                     wire:change="tooglePublishable"
                                     wire:confirm="Are you sure you want to change the visibility setting of the programme?"
@@ -52,6 +154,11 @@
                                     type="checkbox" id="toggle6" class="sr-only" />
                                 <div :class="isActive && '!bg-primary'" class="block h-8 w-14 rounded-full bg-black"></div>
                                 <div :class="isActive && '!right-1 !translate-x-full'" class="absolute left-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-white transition"></div>
+                                <div x-show="showToolTip" x-transition class="absolute mt-1 transition-all duration-300 ease-in-out hover:opacity-100 hover:translate-y-0 w-max bg-slate-700 rounded px-2 py-1 shadow-lg z-50">
+                                    <p class="text-left text-xs text-white flex flex-col p-1">
+                                        Make it publishable
+                                    </p>
+                                </div>
                             </div>
                         </label>
                     </td>

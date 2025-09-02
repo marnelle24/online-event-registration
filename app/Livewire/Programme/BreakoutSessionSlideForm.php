@@ -2,24 +2,34 @@
 
 namespace App\Livewire\Programme;
 
+use App\Models\Speaker;
 use Livewire\Component;
+use App\Models\Breakout;
+use App\Models\Programme;
+use Masmerise\Toaster\Toaster;
 
 class BreakoutSessionSlideForm extends Component
 {
     public $programmeId;
-    public $show = true;
+    public $programme;
+    public $show = false;
+    public $allSpeakers = [];
     
     // Form properties
     public $session_title = '';
     public $session_description = '';
-    public $start_time = '';
-    public $end_time = '';
+    public $start_datetime = '';
+    public $end_datetime = '';
     public $speaker = '';
     public $location = '';
+    public $price = 0;
+    public $order = 0;
 
     public function mount($programmeId)
     {
         $this->programmeId = $programmeId;
+        $this->programme = Programme::find($programmeId);
+        $this->allSpeakers = Speaker::all();
     }
 
     public function openModal()
@@ -38,10 +48,12 @@ class BreakoutSessionSlideForm extends Component
     {
         $this->session_title = '';
         $this->session_description = '';
-        $this->start_time = '';
-        $this->end_time = '';
+        $this->start_datetime = '';
+        $this->end_datetime = '';
         $this->speaker = '';
         $this->location = '';
+        $this->price = 0;
+        $this->order = 0;
         $this->resetErrorBag();
     }
 
@@ -50,17 +62,47 @@ class BreakoutSessionSlideForm extends Component
         $this->validate([
             'session_title' => 'required|string|max:255',
             'session_description' => 'nullable|string',
-            'start_time' => 'nullable|date_format:H:i',
-            'end_time' => 'nullable|date_format:H:i|after:start_time',
-            'speaker' => 'nullable|string|max:255',
+            'start_datetime' => 'nullable|date',
+            'end_datetime' => 'nullable|date|after:start_datetime',
+            'speaker' => 'nullable|exists:speakers,id',
             'location' => 'nullable|string|max:255',
+            'price' => 'nullable|numeric|min:0',
+            'order' => 'nullable|integer|min:0',
         ]);
-
-        // Here you would save the breakout session
-        // For now, just show a success message
-        session()->flash('message', 'Breakout session created successfully!');
         
-        $this->closeModal();
+        try {
+            $breakout = Breakout::create([
+                'programme_id' => $this->programmeId,
+                'programCode' => $this->programme->programmeCode,
+                'title' => $this->session_title,
+                'description' => $this->session_description,
+                'startDate' => $this->start_datetime,
+                'endDate' => $this->end_datetime,
+                'price' => $this->price,
+                'location' => $this->location,
+                'speaker_id' => $this->speaker,
+                'order' => $this->order,
+                'createdBy' => auth()->user()->id,
+            ]);
+            
+            if($breakout)
+            {
+                Toaster::success('Breakout session created successfully!');
+                \Log::info('Breakout session created successfully in programme id: ' . $this->programmeId);
+                // $this->resetForm();
+                // $this->closeModal();
+            }
+            else
+            {
+                Toaster::error('Failed to create breakout session');
+                \Log::error('Failed to create breakout session in programme id: ' . $this->programmeId);
+            }
+        } 
+        catch (\Exception $e) {
+            Toaster::error('Failed to create breakout session');
+            \Log::error($e->getMessage());
+        }
+        
     }
 
     public function render()

@@ -64,13 +64,13 @@
                         <div class="space-y-4 flex flex-col gap-4">
                             <div>
                                 <label for="session_title" class="block text-sm font-medium text-slate-700 mb-2">
-                                    Session Title <span class="text-red-500">*</span>
+                                    Title <span class="text-red-500">*</span>
                                 </label>
                                 <input type="text" 
                                         id="session_title"
                                         wire:model="session_title"
                                         class="w-full rounded-none focus:ring-0 focus:border-slate-500 border-slate-500 shadow-sm"
-                                        placeholder="Enter session title">
+                                        placeholder="Session title">
                             </div>
                             <div>
                                 <label for="session_description" class="block text-sm font-medium text-slate-700 mb-2">
@@ -80,46 +80,73 @@
                                             wire:model="session_description"
                                             rows="4"
                                             class="w-full rounded-none focus:ring-0 focus:border-slate-500 border-slate-500 shadow-sm"
-                                            placeholder="Enter session description"></textarea>
+                                            placeholder="Description"></textarea>
                             </div>
                             <div>
-                                <label for="start_time" class="block text-sm font-medium text-slate-700 mb-2">Date & Time</label>
+                                <label for="date_time" class="block text-sm font-medium text-slate-700 mb-2">Date & Time</label>
                                 <div class="grid grid-cols-2 gap-4">
-                                    <x-input type="datetime-local" wire:model="start_time" class="rounded-none focus:ring-0 focus:border-slate-500 border-slate-500 shadow-sm" />
-                                    <x-input type="datetime-local" wire:model="end_time" class="rounded-none focus:ring-0 focus:border-slate-500 border-slate-500 shadow-sm" />
+                                    <x-input type="datetime-local" wire:model="start_datetime" class="rounded-none focus:ring-0 focus:border-slate-500 border-slate-500 shadow-sm" />
+                                    <x-input type="datetime-local" wire:model="end_datetime" class="rounded-none focus:ring-0 focus:border-slate-500 border-slate-500 shadow-sm" />
                                 </div>
                             </div>
-                            <div>
-                                <label for="speaker" class="block text-sm font-medium text-slate-700 mb-2">
-                                    Speaker
-                                </label>
-                                <input type="text" 
-                                        id="speaker"
-                                        wire:model="speaker"
-                                        class="w-full rounded-none focus:ring-0 focus:border-slate-500 border-slate-500 shadow-sm"
-                                        placeholder="Enter speaker name">
+                            <div class="flex lg:flex-row flex-col gap-4">
+                                <div class="lg:w-1/3 w-full">
+                                    <label for="price" class="block text-sm font-medium text-slate-700 mb-2">
+                                        Price (SGD)
+                                    </label>
+                                    <input type="number" 
+                                            id="price" 
+                                            step="0.10"
+                                            wire:model="price"
+                                            class="w-full border-slate-500 shadow-sm rounded-none focus:ring-0 focus:border-slate-500"
+                                            placeholder="Price">
+                                </div>
+                                <div class="lg:w-2/3 w-full">
+                                    <label for="location" class="block text-sm font-medium text-slate-700 mb-2">
+                                        Location/Room
+                                    </label>
+                                    <input type="text" 
+                                            id="location"
+                                            wire:model="location"
+                                            class="w-full border-slate-500 shadow-sm rounded-none focus:ring-0 focus:border-slate-500"
+                                            placeholder="Location or room number">
+                                </div>
                             </div>
-                            <div>
-                                <label for="location" class="block text-sm font-medium text-slate-700 mb-2">
-                                    Location/Room
-                                </label>
-                                <input type="text" 
-                                        id="location"
-                                        wire:model="location"
-                                        class="w-full border-slate-500 shadow-sm rounded-none focus:ring-0 focus:border-slate-500"
-                                        placeholder="Enter location or room number">
+
+                            <div class="flex lg:flex-row flex-col gap-4">
+                                <div class="lg:w-3/4 w-full">
+                                    <label for="speaker" class="block text-sm font-medium text-slate-700 mb-2">
+                                        Speaker
+                                    </label>
+                                    <select wire:model="speaker" class="w-full rounded-none focus:ring-0 focus:border-slate-500 border-slate-500 shadow-sm">
+                                        <option value="">Select Speaker</option>
+                                        @foreach ($allSpeakers as $speaker)
+                                            <option value="{{ $speaker->id }}">{{ $speaker->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="lg:w-1/4 w-full">
+                                    <label for="order" class="block text-sm font-medium text-slate-700 mb-2">
+                                        Order
+                                    </label>
+                                    <input type="number" 
+                                            id="order" 
+                                            step="1"
+                                            wire:model="order"
+                                            class="w-full border-slate-500 shadow-sm rounded-none focus:ring-0 focus:border-slate-500"
+                                            placeholder="Order">
+                                </div>
                             </div>
                         </div>
-
                         <!-- Action buttons -->
-                        <div class="flex justify-between space-x-3 pt-6 border-t border-slate-200">
+                        <div class="flex justify-between space-x-3 pt-6">
                             <button type="button" 
                                     wire:click="closeModal"
-                                    class="w-full py-3 text-sm font-medium text-slate-700 bg-white hover:scale-105 duration-300 border border-slate-500 rounded-none shadow-sm hover:bg-slate-200">
+                                    class="w-full py-3 text-md font-medium text-slate-700 bg-white hover:scale-105 duration-300 border border-slate-500 rounded-none shadow-sm hover:bg-slate-200">
                                 Cancel
                             </button>
                             <button type="submit" 
-                                    class="w-full py-3 text-sm font-medium text-white bg-green-600 border border-transparent hover:scale-105 rounded-none shadow-sm hover:bg-green-700 duration-300">
+                                    class="w-full py-3 text-md font-medium text-white bg-green-600 border border-transparent hover:scale-105 rounded-none shadow-sm hover:bg-green-700 duration-300">
                                 <span wire:loading.remove>Save Session</span>
                                 <span wire:loading>Saving...</span>
                             </button>
@@ -129,3 +156,4 @@
             </div>
         </div>
     @endif
+</div>

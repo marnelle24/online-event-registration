@@ -52,6 +52,8 @@ class Programme extends Model implements HasMedia
         'publishable',
         'private_only',
         'externalUrl',
+        'allowPreRegistration',
+        'allowBreakoutSession',
         'soft_delete',
         'status',
         'created_at',
@@ -110,6 +112,11 @@ class Programme extends Model implements HasMedia
     public function ministry()
     {
         return $this->belongsTo(Ministry::class);
+    }
+
+    public function breakouts()
+    {
+        return $this->hasMany(Breakout::class);
     }
 
     public function registrations()

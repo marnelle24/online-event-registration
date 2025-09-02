@@ -36,6 +36,11 @@ class Speaker extends Model implements HasMedia
             ->doNotGenerateSlugsOnUpdate();
     }
 
+    public function breakouts()
+    {
+        return $this->hasMany(Breakout::class);
+    }
+
     public function programmes()
     {
         return $this->belongsToMany(Programme::class, 'speaker_programme', 'speaker_id', 'programme_id')
