@@ -173,30 +173,7 @@
             @endif
             
             @if(request('p') === 'information')
-                <div class="rounded-sm border border-stroke bg-white shadow-default w-full overflow-x-scroll">
-                    <div class="rounded-sm border border-stroke bg-white p-8 shadow-default">
-                        @if($programme->excerpt)
-                            <p class="text-sm italic text-slate-500 mb-1 border-b py-2 border-slate-400">Except:</p>
-                            <p>{{ $programme->excerpt }}</p>
-                        @endif
-                        @if($programme->description)
-                            <div class="mt-4">
-                                <p class="text-sm italic text-slate-500 mb-2 border-b py-2 border-slate-400">Description:</p>
-                                <div class="ck-content text-sm py-2">
-                                    {!! $programme->description !!}
-                                </div>
-                            </div>
-                        @endif
-                        <div class="mt-4">
-                            <p class="text-sm italic text-slate-500 mb-2 border-b py-2 border-slate-400">Categories:</p>
-                            <div class="flex flex-wrap whitespace-normal gap-2 py-2">
-                                @foreach ($programme->categories as $category)
-                                    <p class="inline-flex rounded-full bg-warning bg-opacity-20 border border-warning drop-shadow px-3 py-1 text-sm font-medium text-warning">{{$category->name}}</p>
-                                @endforeach
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                @livewire('programme.information-details', ['programmeId' => $programme->id], key('information-details'))
             @endif
 
             @if(request('p') === 'speaker-trainer')
