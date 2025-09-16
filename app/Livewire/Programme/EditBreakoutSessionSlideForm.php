@@ -32,14 +32,9 @@ class EditBreakoutSessionSlideForm extends Component
         $this->location = $breakout->location;
     }
 
-    public function openModal()
+    public function toogleShowEditCategory()
     {
-        $this->show = true;
-    }
-    
-    public function closeModal()
-    {
-        $this->show = false;
+        $this->show = !$this->show;
     }
     
     // public function save()

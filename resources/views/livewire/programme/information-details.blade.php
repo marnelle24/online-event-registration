@@ -89,15 +89,13 @@
         @endif
         <hr class="my-4 border-slate-400/70 border-dashed" />
 
-        <div class="mt-4">
-            <div class="flex items-center gap-3">
+        <div class="mt-4 flex flex-col justify-between">
+            <div class="flex items-center gap-1">
                 <p class="text-sm italic text-slate-500 py-2 border-slate-400">Categories:</p>
                 @livewire('programme.update-category', ['programmeId' => $programme->id, 'programmeCategories' => $programme->categories], key('update-category'))
             </div>
-            <div class="flex flex-wrap whitespace-normal gap-2 py-2">
-                @foreach ($programme->categories as $category)
-                    <a href="#" class="inline-flex rounded-full bg-warning hover:bg-warning/60 hover:text-white transition-all duration-300 bg-opacity-20 border border-warning drop-shadow px-3 py-1 text-sm font-medium text-warning">{{$category->name}}</a>
-                @endforeach
+            <div class="flex flex-wrap whitespace-normal gap-2">
+                @livewire('category.bubble-list', ['programmeId' => $programme->id, 'canRemove' => false], key('bubble-list'))
             </div>
         </div>
     </div>

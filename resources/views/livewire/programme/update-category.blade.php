@@ -15,7 +15,7 @@
         </div>
     </div>
 
-        <!-- Backdrop and Slide-over Modal -->
+    <!-- Backdrop and Slide-over Modal -->
     @if ($show)
         <div x-data="{ modalOpen: @entangle('show') }"
              x-show="modalOpen"
@@ -59,24 +59,47 @@
                     <x-validation-errors :class="'mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-md'" />
                     
                     @if (session()->has('message'))
-                        <div class="mb-4 text-green-700 bg-green-300/40 border border-green-600/20 rounded-md p-3 text-sm">
+                        <div class="text-green-700 bg-green-300/40 border border-green-600/20 rounded-md p-3 text-sm">
                             {{ session('message') }}
                         </div> 
                     @endif
                     <div class="mb-4">
                         <label for="categories" class="block mb-2.5 text-sm font-medium text-gray-900 dark:text-white">Select categories</label>
-                        <select wire:model="categories" id="categories" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                            @foreach ($categories as $category)
-                                <option value="{{ $category->id }}">{{ $category->name }}</option>
-                            @endforeach
-                        </select>
+                        <div class="flex items-center gap-2">
+                                <select 
+                                    wire:model="selectedCategory" 
+                                    id="categories" 
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-none focus:ring-0 focus:border-slate-500 block w-full p-2.5"
+                                >
+                                    <option value="" selected>Select Category</option>
+                                    @foreach ($categories as $category)
+                                        <option value="{{ $category->id }}" {{ $programmeCategories->contains($category) ? 'disabled' : '' }}>{{ $category->name }}</option>
+                                    @endforeach
+                                </select>
+                            <button 
+                                wire:loading.attr="disabled"
+                                wire:loading.class="opacity-50 cursor-not-allowed"
+                                wire:click="getSelectedCategory" 
+                                type="button" 
+                                class="bg-slate-800 hover:bg-slate-600 hover:-translate-y-0.5 duration-300 text-white px-4 py-2 rounded-none"
+                            >
+                                Add
+                            </button>
+                        </div>
+                        @error('selectedCategory')
+                            <p class="mt-1 text-xs text-danger">{{ $message }}</p>
+                        @enderror
                         <br />
-                        @dump($programmeCategories->toArray())
+                        @if ($programmeCategories->count() > 0)
+                            <p class="text-sm italic text-slate-500 py-2 border-slate-400">Current categories:</p>
+                        @endif
+
+                        @if ($programmeCategories->count() > 0)
+                            @livewire('category.bubble-list', ['categories' => $programmeCategories, 'programmeId' => $programmeId, 'canRemove' => true], key('bubble-list'))
+                        @endif
                     </div>
                 </div>
             </div>
         </div>
     @endif
-
-    {{-- The Master doesn't talk, he acts. --}}
 </div>
