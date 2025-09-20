@@ -39,10 +39,17 @@ class SpeakerDropDownListSelect extends Component
             ]
         );
 
-        $msg = 'New '.$validated['type'].' added successfully.';
+        $msg = 'New '.$validated['type'].' role added successfully.';
         sleep(1);
         Toaster::success($msg);
         $this->dispatch('successAssignment');
+        $this->resetForm();
+    }
+
+    public function resetForm()
+    {
+        $this->reset(['details', 'type', 'speakerID']);
+        $this->resetValidation();
     }
 
     public function render()

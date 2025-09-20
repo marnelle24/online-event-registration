@@ -32,7 +32,7 @@ class Index extends Component
     public function removeSpeaker($speakerId)
     {
         $this->programme->speakers()->detach($speakerId);
-        Toaster::success('Speaker removed successfully in this programme.');
+        Toaster::success('Removed successfully from this programme.');
         $this->render();
     }
 
