@@ -1,6 +1,6 @@
-<div x-data="{ showToolTip: false }" class="relative">
+<div x-data="{ show: false, showToolTip: false }" class="relative">
     <button 
-        wire:click="openModal"
+        @click="show = true"
         @mouseover="showToolTip = true" 
         @mouseleave="showToolTip = false"
         class="hover:text-blue-500 hover:scale-110 duration-300 flex items-center"
@@ -17,19 +17,37 @@
         </div>
     </button>
 
-    @if ($show)
+    <!-- Backdrop and Slide-over Modal -->
+    <div 
+        x-show="show" 
+        x-transition:enter="transition ease-out duration-300"
+        x-transition:enter-start="opacity-0"
+        x-transition:enter-end="opacity-100"
+        x-transition:leave="transition ease-in duration-200"
+        x-transition:leave-start="opacity-100"
+        x-transition:leave-end="opacity-0"
+        class="fixed inset-0 z-50"
+        x-cloak
+    >
+        <!-- Backdrop -->
+        <div class="absolute inset-0 bg-black/50" @click="show = false">
+        </div>
+        
+        <!-- Slide-over Modal -->
         <div 
-            wire:click="closeModal"
-            x-transition
-            class="fixed inset-0 z-50"
-        >
-            <!-- Backdrop -->
-            <div class="absolute inset-0 bg-black/50" @click="showModal = false">
-            </div>
-            <div class="absolute inset-y-0 right-0 lg:w-1/4 w-full bg-white shadow-lg transform transition-transform duration-300 overflow-auto" style="transform: translateX(0%)">
+            x-show="show"
+            x-transition:enter="transform transition ease-in-out duration-500"
+            x-transition:enter-start="translate-x-full"
+            x-transition:enter-end="translate-x-0"
+            x-transition:leave="transform transition ease-in-out duration-300"
+            x-transition:leave-start="translate-x-0"
+            x-transition:leave-end="translate-x-full"
+            class="absolute inset-y-0 right-0 lg:w-1/4 w-full bg-white shadow-xl overflow-auto">
                 <div class="flex justify-between items-center p-4 border-b-2 border-slate-400/70 bg-slate-400">
                     <h2 class="text-white text-2xl uppercase font-light">Payment Details</h2>
-                    <button wire:click="closeModal" class="text-gray-600 hover:text-gray-900 text-xl">
+                    <button 
+                        @click="show = false" 
+                        class="text-gray-600 hover:text-gray-900 text-xl">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8 stroke-slate-800 hover:stroke-slate-500 hover:-translate-y-1 duration-300">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
                         </svg>
@@ -95,5 +113,5 @@
                 </div>
             </div>
         </div>
-    @endif
+    </div>
 </div>

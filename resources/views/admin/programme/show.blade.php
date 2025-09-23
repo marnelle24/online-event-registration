@@ -90,7 +90,7 @@
                 <a href="{{ url()->current() }}?p=information" class="@if(request('p') === 'information') bg-sky-200 border-b-1 border-sky-600 scale-105 @else bg-zinc-200 border-slate-500 @endif hover:bg-sky-200 duration-300 hover:scale-105 border border-b-0 px-3 py-2 rounded-tr-md rounded-tl-md text-md">Information</a>
                 <a href="{{ url()->current() }}?p=speaker-trainer" class="@if(request('p') === 'speaker-trainer') bg-sky-200 border-b-1 border-sky-600 scale-105 @else bg-zinc-200 border-slate-500 @endif hover:bg-sky-200 duration-300 hover:scale-105 border border-b-0 px-3 py-2 rounded-tr-md rounded-tl-md text-md">Speakers</a>
                 <a href="{{ url()->current() }}?p=promotion" class="@if(request('p') === 'promotion') bg-sky-200 border-b-1 border-sky-600 scale-105 @else bg-zinc-200 border-slate-500 @endif hover:bg-sky-200 duration-300 hover:scale-105 border border-b-0 px-3 py-2 rounded-tr-md rounded-tl-md text-md">Promotions</a>
-                <a href="{{ url()->current() }}?p=promocode" class="@if(request('p') === 'promocode') bg-sky-200 border-b-1 border-sky-600 scale-105 @else bg-zinc-200 border-slate-500 @endif hover:bg-sky-200 duration-300 hover:scale-105 border border-b-0 px-3 py-2 rounded-tr-md rounded-tl-md text-md">Promos</a>
+                <a href="{{ url()->current() }}?p=promocode" class="@if(request('p') === 'promocode') bg-sky-200 border-b-1 border-sky-600 scale-105 @else bg-zinc-200 border-slate-500 @endif hover:bg-sky-200 duration-300 hover:scale-105 border border-b-0 px-3 py-2 rounded-tr-md rounded-tl-md text-md">Promocodes</a>
                 <a href="{{ url()->current() }}?p=registrants" class="@if(request('p') === 'registrants') bg-sky-200 border-b-1 border-sky-600 scale-105 @else bg-zinc-200 border-slate-500 @endif hover:bg-sky-200 duration-300 hover:scale-105 border border-b-0 px-3 py-2 rounded-tr-md rounded-tl-md text-md">Registrants</a>
                 <a href="{{ url()->current() }}?p=settings" class="@if(request('p') === 'settings') bg-sky-200 border-b-1 border-sky-600 scale-105 @else bg-zinc-200 border-slate-500 @endif hover:bg-sky-200 duration-300 hover:scale-105 border border-b-0 px-3 py-2 rounded-tr-md rounded-tl-md text-md">Settings</a>
                 <a href="{{ url()->current() }}?p=breakout-session" class="@if(request('p') === 'breakout-session') bg-sky-200 border-b-1 border-sky-600 scale-105 @else bg-zinc-200 border-slate-500 @endif hover:bg-sky-200 duration-300 hover:scale-105 border border-b-0 px-3 py-2 rounded-tr-md rounded-tl-md text-md">Breakout Sessions</a>
@@ -181,11 +181,12 @@
             @endif
 
             @if(request('p') === 'promotion')
-                @livewire('promotion.index', ['programmeId' => $programme->id], key('promotion-index'))
+                @livewire('promotion.all-promotion', ['programmeId' => $programme->id], key('all-promotion'))
             @endif
             
             @if(request('p') === 'promocode')
-                @livewire('promocode.index', ['programmeId' => $programme->id], key('promocode-index'))
+                @livewire('promocode.all-promocode', ['programmeId' => $programme->id], key('all-promocode'))
+                {{-- @livewire('promocode.index', ['programmeId' => $programme->id], key('promocode-index')) --}}
             @endif
 
             @if(request('p') === 'registrants')
@@ -224,13 +225,6 @@
         .ck-content h4 {
             font-size: 20px !important;
         }
-    </style>
-    @push('script')
-        @vite('resources/js/programme-dashboard-graph-1.js')
-    @endpush
-
-
-    <style>
         @keyframes fadeIn {
             from {
                 opacity: 0;
@@ -252,16 +246,18 @@
             }
         }
     </style>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const items = document.querySelectorAll('.animate-fade-in');
-            items.forEach((item, index) => {
-                item.style.setProperty('--child-index', index);
-                item.style.animationDelay = `${index * 0.1}s`;
-                item.style.opacity = '1';
+    @push('script')
+        @vite('resources/js/programme-dashboard-graph-1.js')
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const items = document.querySelectorAll('.animate-fade-in');
+                items.forEach((item, index) => {
+                    item.style.setProperty('--child-index', index);
+                    item.style.animationDelay = `${index * 0.1}s`;
+                    item.style.opacity = '1';
+                });
             });
-        });
-    </script>
+        </script>
+    @endpush
 </x-app-layout> 
 

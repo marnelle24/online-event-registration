@@ -1,7 +1,7 @@
-<div class="relative">
+<div class="relative" x-data="{ show: false }">
     <!-- Trigger button -->
     <button 
-        wire:click="openModal" 
+        @click="show = true" 
         type="button" 
         class="tracking-widest font-thin uppercase inline-flex items-center bg-green-600 hover:scale-105 hover:bg-green-500 duration-300 justify-center rounded-md border border-green-600 py-2 px-3 text-center text-white drop-shadow text-xs"
     >
@@ -12,38 +12,40 @@
     </button>
 
     <!-- Backdrop and Slide-over Modal -->
-    @if ($show)
-        <div x-data="{ modalOpen: @entangle('show') }"
-             x-show="modalOpen"
-             x-transition:enter="transition ease-out duration-300"
-             x-transition:enter-start="opacity-0"
-             x-transition:enter-end="opacity-100"
-             x-transition:leave="transition ease-in duration-200"
-             x-transition:leave-start="opacity-100"
-             x-transition:leave-end="opacity-0"
-             class="fixed inset-0 z-50 overflow-hidden"
-             @keydown.escape="$wire.closeModal()">
-            
-            <!-- Backdrop -->
-            <div class="absolute inset-0 bg-black bg-opacity-50 transition-opacity"
-                 wire:click="closeModal"></div>
-                 
-            <!-- Slide Panel -->
-            <div x-show="modalOpen"
-                 x-transition:enter="transition ease-out duration-300 transform"
-                 x-transition:enter-start="translate-x-full"
-                 x-transition:enter-end="translate-x-0"
-                 x-transition:leave="transition ease-in duration-200 transform"
-                 x-transition:leave-start="translate-x-0"
-                 x-transition:leave-end="translate-x-full"
-                 class="absolute right-0 top-0 h-full w-full max-w-lg bg-white shadow-xl">
+    <div 
+        x-show="show" 
+        x-transition:enter="transition ease-out duration-300"
+        x-transition:enter-start="opacity-0"
+        x-transition:enter-end="opacity-100"
+        x-transition:leave="transition ease-in duration-200"
+        x-transition:leave-start="opacity-100"
+        x-transition:leave-end="opacity-0"
+        class="fixed inset-0 z-50 overflow-hidden"
+        x-cloak
+        @keydown.escape="show = false">
+        
+        <!-- Backdrop -->
+        <div class="absolute inset-0 bg-black bg-opacity-50 transition-opacity"
+             @click="show = false"></div>
+             
+        <!-- Slide Panel -->
+        <div 
+            x-show="show"
+            x-transition:enter="transform transition ease-in-out duration-500"
+            x-transition:enter-start="translate-x-full"
+            x-transition:enter-end="translate-x-0"
+            x-transition:leave="transform transition ease-in-out duration-300"
+            x-transition:leave-start="translate-x-0"
+            x-transition:leave-end="translate-x-full"
+            class="absolute right-0 top-0 h-full w-full max-w-lg bg-white shadow-xl">
                 
             <div class="flex h-full flex-col">
                 <!-- Header -->
                 <div class="flex justify-between items-center p-4 border-b-2 border-slate-500/60 bg-slate-400">
-                    <h2 class="text-white text-2xl uppercase font-light">Add Breakout Session</h2>
-                    <button wire:click="closeModal" 
-                            class="text-slate-600 hover:text-slate-900 text-xl p-2 rounded-full hover:bg-slate-300/50 transition-colors duration-200">
+                    <h2 class="text-white text-xl tracking-wider uppercase font-light">Add Breakout Session</h2>
+                    <button 
+                        @click="show = false" 
+                        class="text-slate-600 hover:text-slate-900 text-xl p-2 rounded-full hover:bg-slate-300/50 transition-colors duration-200">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 stroke-white hover:stroke-slate-200 duration-300">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
                         </svg>
@@ -141,19 +143,26 @@
                         <!-- Action buttons -->
                         <div class="flex justify-between space-x-3 pt-6">
                             <button type="button" 
-                                    wire:click="closeModal"
+                                    @click="show = false"
                                     class="w-full py-3 text-md font-medium text-slate-700 bg-white hover:scale-105 duration-300 border border-slate-500 rounded-none shadow-sm hover:bg-slate-200">
                                 Cancel
                             </button>
-                            <button type="submit" 
-                                    class="w-full py-3 text-md font-medium text-white bg-green-600 border border-transparent hover:scale-105 rounded-none shadow-sm hover:bg-green-700 duration-300">
-                                <span wire:loading.remove>Save Session</span>
-                                <span wire:loading>Saving...</span>
+                            <button 
+                                wire:target="save"
+                                wire:loading.attr="disabled"
+                                type="submit" 
+                                class="disabled:cursor-not-allowed disabled:opacity-50 w-full py-3 text-md font-medium text-white bg-green-600 border border-transparent hover:scale-105 rounded-none shadow-sm hover:bg-green-700 duration-300">
+                                <span wire:loading.remove wire:target="save">
+                                    Save
+                                </span>
+                                <span wire:loading wire:target="save">
+                                    Saving...
+                                </span>
                             </button>
                         </div>
                     </form>
                 </div>
             </div>
         </div>
-    @endif
+    </div>
 </div>

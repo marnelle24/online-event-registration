@@ -10,8 +10,21 @@ class BreakoutSession extends Component
 {
     public $programmeId;
     public $breakouts;
+
+    protected $listeners = [
+        'newAddedBreakout' => 'refreshBreakouts',
+        'breakoutUpdated' => 'refreshBreakouts'
+    ];
     
     public function mount()
+    {
+        $this->breakouts = Breakout::where('programme_id', $this->programmeId)
+            ->where('isActive', true)
+            ->orderBy('order', 'asc')
+            ->get();
+    }
+
+    public function refreshBreakouts()
     {
         $this->breakouts = Breakout::where('programme_id', $this->programmeId)
             ->where('isActive', true)
@@ -22,18 +35,10 @@ class BreakoutSession extends Component
     public function deleteBreakout($id)
     {
         $breakout = Breakout::find($id);
-        $breakout->isActive = false;
-        $breakout->save();
+        $breakout->delete();
         Toaster::success('Breakout session deleted successfully!');
         \Log::info('Breakout session deleted successfully in programme id: ' . $this->programmeId);
-        
-        // update the list of breakouts
-        // $this->breakouts = Breakout::where('programme_id', $this->programmeId)
-        //     ->where('isActive', true)
-        //     ->orderBy('order', 'asc')
-        //     ->get();
-
-        $this->mount();
+        $this->refreshBreakouts();
     }
     
 

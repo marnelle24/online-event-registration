@@ -12,7 +12,6 @@ class BreakoutSessionSlideForm extends Component
 {
     public $programmeId;
     public $programme;
-    public $show = false;
     public $allSpeakers = [];
     
     // Form properties
@@ -30,18 +29,6 @@ class BreakoutSessionSlideForm extends Component
         $this->programmeId = $programmeId;
         $this->programme = Programme::find($programmeId);
         $this->allSpeakers = Speaker::all();
-    }
-
-    public function openModal()
-    {
-        $this->show = true;
-        $this->resetForm();
-    }
-
-    public function closeModal()
-    {
-        $this->show = false;
-        $this->resetForm();
     }
 
     public function resetForm()
@@ -84,19 +71,22 @@ class BreakoutSessionSlideForm extends Component
                 'order' => $this->order,
                 'createdBy' => auth()->user()->id,
             ]);
+
+            sleep(1);
             
             if($breakout)
             {
                 Toaster::success('Breakout session created successfully!');
                 \Log::info('Breakout session created successfully in programme id: ' . $this->programmeId);
-                // $this->resetForm();
-                // $this->closeModal();
+                $this->dispatch('newAddedBreakout');
             }
             else
             {
                 Toaster::error('Failed to create breakout session');
                 \Log::error('Failed to create breakout session in programme id: ' . $this->programmeId);
             }
+
+            $this->resetForm();
         } 
         catch (\Exception $e) {
             Toaster::error('Failed to create breakout session');

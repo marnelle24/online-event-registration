@@ -1,7 +1,7 @@
-<div>
+<div x-data="{ show: false }" @close-modal.window="show = false">
     <div x-data="{ showToolTip: false }" class="relative flex items-center gap-3">
         <svg 
-            wire:click="toogleShowEditCategory"
+            @click="show = true"
             @mouseover="showToolTip = true" 
             @mouseleave="showToolTip = false"
             class="w-5 h-5 stroke-blue-500 hover:scale-110 duration-300 hover:stroke-blue-600 cursor-pointer"
@@ -15,39 +15,41 @@
         </div>
     </div>
 
-        <!-- Backdrop and Slide-over Modal -->
-    @if ($show)
-        <div x-data="{ modalOpen: @entangle('show') }"
-             x-show="modalOpen"
-             x-transition:enter="transition ease-out duration-300"
-             x-transition:enter-start="opacity-0"
-             x-transition:enter-end="opacity-100"
-             x-transition:leave="transition ease-in duration-200"
-             x-transition:leave-start="opacity-100"
-             x-transition:leave-end="opacity-0"
-             class="fixed inset-0 z-50 overflow-hidden"
-             @keydown.escape="$wire.toogleShowEditCategory()">
-            
-            <!-- Backdrop -->
-            <div class="absolute inset-0 bg-black bg-opacity-50 transition-opacity"
-                 wire:click="toogleShowEditCategory"></div>
-                 
-            <!-- Slide Panel -->
-            <div x-show="modalOpen"
-                 x-transition:enter="transition ease-out duration-300 transform"
-                 x-transition:enter-start="translate-x-full"
-                 x-transition:enter-end="translate-x-0"
-                 x-transition:leave="transition ease-in duration-200 transform"
-                 x-transition:leave-start="translate-x-0"
-                 x-transition:leave-end="translate-x-full"
-                 class="absolute right-0 top-0 h-full w-full max-w-lg bg-white shadow-xl">
+    <!-- Backdrop and Slide-over Modal -->
+    <div 
+        x-show="show" 
+        x-transition:enter="transition ease-out duration-300"
+        x-transition:enter-start="opacity-0"
+        x-transition:enter-end="opacity-100"
+        x-transition:leave="transition ease-in duration-200"
+        x-transition:leave-start="opacity-100"
+        x-transition:leave-end="opacity-0"
+        class="fixed inset-0 z-50 overflow-hidden"
+        x-cloak
+        @keydown.escape="show = false">
+        
+        <!-- Backdrop -->
+        <div class="absolute inset-0 bg-black bg-opacity-50 transition-opacity"
+             @click="show = false"></div>
+             
+        <!-- Slide Panel -->
+        <div 
+            x-show="show"
+            x-transition:enter="transform transition ease-in-out duration-500"
+            x-transition:enter-start="translate-x-full"
+            x-transition:enter-end="translate-x-0"
+            x-transition:leave="transform transition ease-in-out duration-300"
+            x-transition:leave-start="translate-x-0"
+            x-transition:leave-end="translate-x-full"
+            class="absolute right-0 top-0 h-full w-full max-w-lg bg-white shadow-xl">
                 
             <div class="flex h-full flex-col">
                 <!-- Header -->
                 <div class="flex justify-between items-center p-4 border-b-2 border-slate-500/60 bg-slate-400">
-                    <h2 class="text-white text-2xl uppercase font-light">Update Breakout Session</h2>
-                    <button wire:click="toogleShowEditCategory" 
-                            class="text-slate-600 hover:text-slate-900 text-xl p-2 rounded-full hover:bg-slate-300/50 transition-colors duration-200 cursor-pointer">
+                    <h2 class="text-white text-xl uppercase font-light">Update Breakout Session</h2>
+                    <button 
+                        @click="show = false" 
+                        class="text-slate-600 hover:text-slate-900 text-xl p-2 rounded-full hover:bg-slate-300/50 transition-colors duration-200 cursor-pointer">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 stroke-white hover:stroke-slate-200 duration-300">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
                         </svg>
@@ -63,13 +65,117 @@
                             {{ session('message') }}
                         </div> 
                     @endif
-                    <div class="mb-4">
-                        <label for="categories" class="block mb-2.5 text-sm font-medium text-gray-900 dark:text-white">Select categories</label>
-                    </div>
+                    
+                    <form wire:submit.prevent="save" class="space-y-6">
+                        <div class="space-y-4 flex flex-col gap-4">
+                            <div>
+                                <label for="session_title" class="block text-sm font-medium text-slate-700 mb-2">
+                                    Title <span class="text-red-500">*</span>
+                                </label>
+                                <input type="text" 
+                                        id="session_title"
+                                        wire:model="session_title"
+                                        class="w-full rounded-none focus:ring-0 focus:border-slate-500 border-slate-500 shadow-sm"
+                                        placeholder="Session title">
+                            </div>
+                            <div>
+                                <label for="session_description" class="block text-sm font-medium text-slate-700 mb-2">
+                                    Description
+                                </label>
+                                <textarea id="session_description"
+                                            wire:model="session_description"
+                                            rows="4"
+                                            class="w-full rounded-none focus:ring-0 focus:border-slate-500 border-slate-500 shadow-sm"
+                                            placeholder="Description"></textarea>
+                            </div>
+                            <div>
+                                <label for="date_time" class="block text-sm font-medium text-slate-700 mb-2">Date & Time</label>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <x-input type="datetime-local" wire:model="start_datetime" class="rounded-none focus:ring-0 focus:border-slate-500 border-slate-500 shadow-sm" />
+                                    <x-input type="datetime-local" wire:model="end_datetime" class="rounded-none focus:ring-0 focus:border-slate-500 border-slate-500 shadow-sm" />
+                                </div>
+                            </div>
+                            <div class="flex lg:flex-row flex-col gap-4">
+                                <div class="lg:w-1/3 w-full">
+                                    <label for="price" class="block text-sm font-medium text-slate-700 mb-2">
+                                        Price (SGD)
+                                    </label>
+                                    <input type="number" 
+                                            id="price" 
+                                            step="0.10"
+                                            wire:model="price"
+                                            class="w-full border-slate-500 shadow-sm rounded-none focus:ring-0 focus:border-slate-500"
+                                            placeholder="Price">
+                                </div>
+                                <div class="lg:w-2/3 w-full">
+                                    <label for="location" class="block text-sm font-medium text-slate-700 mb-2">
+                                        Location/Room
+                                    </label>
+                                    <input type="text" 
+                                            id="location"
+                                            wire:model="location"
+                                            class="w-full border-slate-500 shadow-sm rounded-none focus:ring-0 focus:border-slate-500"
+                                            placeholder="Location or room number">
+                                </div>
+                            </div>
+
+                            <div class="flex lg:flex-row flex-col gap-4">
+                                <div class="lg:w-3/4 w-full">
+                                    <label for="speaker" class="block text-sm font-medium text-slate-700 mb-2">
+                                        Speaker
+                                    </label>
+                                    <select wire:model="speaker" class="w-full rounded-none focus:ring-0 focus:border-slate-500 border-slate-500 shadow-sm">
+                                        <option value="">Select Speaker</option>
+                                        @foreach ($allSpeakers as $speakerOption)
+                                            <option value="{{ $speakerOption->id }}">{{ $speakerOption->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="lg:w-1/4 w-full">
+                                    <label for="order" class="block text-sm font-medium text-slate-700 mb-2">
+                                        Order
+                                    </label>
+                                    <input type="number" 
+                                            id="order" 
+                                            step="1"
+                                            wire:model="order"
+                                            class="w-full border-slate-500 shadow-sm rounded-none focus:ring-0 focus:border-slate-500"
+                                            placeholder="Order">
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label class="flex items-center">
+                                    <input type="checkbox" wire:model="isActive" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                                    <span class="ml-2 text-sm text-gray-600">Active</span>
+                                </label>
+                            </div>
+                        </div>
+                        <!-- Action buttons -->
+                        <div class="flex justify-between space-x-3 pt-6">
+                            <button type="button" 
+                                    @click="show = false"
+                                    class="w-full py-3 text-md font-medium text-slate-700 bg-white hover:scale-105 duration-300 border border-slate-500 rounded-none shadow-sm hover:bg-slate-200">
+                                Cancel
+                            </button>
+                            <button 
+                                wire:target="save"
+                                wire:loading.attr="disabled"
+                                type="submit" 
+                                class="disabled:cursor-not-allowed disabled:opacity-50 w-full py-3 text-md font-medium text-white bg-blue-600 border border-transparent hover:scale-105 rounded-none shadow-sm hover:bg-blue-700 duration-300">
+                                <span wire:loading.remove wire:target="save">
+                                    Update
+                                </span>
+                                <span wire:loading wire:target="save">
+                                    Updating...
+                                </span>
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
-    @endif
+    </div>
 
     {{-- The Master doesn't talk, he acts. --}}
 </div>

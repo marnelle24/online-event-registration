@@ -66,11 +66,6 @@
                             </p>
                         </div>
                         <div class="col-span-1 flex justify-end items-center gap-3">
-                            {{-- <form 
-                                action="" 
-                                method="POST" onsubmit="return confirm('Are you sure you want to delete this programme? This action cannot be undone.');">
-                                @csrf
-                                @method('PUT') --}}
                             @livewire('programme.edit-breakout-session-slide-form', ['breakout' => $breakout], key($key))
                             <button 
                                 wire:click="deleteBreakout({{ $breakout->id }})"
@@ -89,7 +84,6 @@
                                     Delete
                                 </div>
                             </button>
-                            {{-- </form> --}}
                         </div>
                     </div>
                 @endforeach
