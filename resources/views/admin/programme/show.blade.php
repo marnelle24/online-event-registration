@@ -177,7 +177,7 @@
             @endif
 
             @if(request('p') === 'speaker-trainer')
-                @livewire('speaker.index', ['programmeId' => $programme->id], key('speaker-index'))
+                @livewire('programme.speaker.all-speaker', ['programmeId' => $programme->id], key('all-speaker'))
             @endif
 
             @if(request('p') === 'promotion')
@@ -186,7 +186,6 @@
             
             @if(request('p') === 'promocode')
                 @livewire('promocode.all-promocode', ['programmeId' => $programme->id], key('all-promocode'))
-                {{-- @livewire('promocode.index', ['programmeId' => $programme->id], key('promocode-index')) --}}
             @endif
 
             @if(request('p') === 'registrants')
