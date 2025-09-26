@@ -36,6 +36,15 @@ class Speaker extends Model implements HasMedia
             ->doNotGenerateSlugsOnUpdate();
     }
 
+    public function processedSocials()
+    {
+        if(!$this->socials)
+            return [];
+
+        return json_decode($this->socials, true);
+
+    }
+
     public function breakouts()
     {
         return $this->hasMany(Breakout::class);

@@ -10,10 +10,8 @@ use Illuminate\Support\Facades\DB;
 
 class AllSpeaker extends Component
 {
-
     public $programmeId;
     public $programme;
-    // public $speakers;
 
     protected $listeners = [
         'updatechanges' => 'refreshSpeakers',
