@@ -110,6 +110,22 @@ class ProgrammeController extends Controller
         return view('admin.programme.show', compact('programme'));
     }
 
+    public function publicShow($programmeCode)
+    {
+        $programme = Programme::where('programmeCode', $programmeCode)
+            ->with(['speakers', 'categories', 'ministry', 'promotions'])
+            ->where('publishable', true)
+            ->where('searchable', true)
+            ->where('status', 'published')
+            ->first();
+
+        if (!$programme) {
+            abort(404, 'Programme not found or not available for public viewing.');
+        }
+
+        return view('pages.programme-details', compact('programme'));
+    }
+
     public function update($id, UpdateProgrammeRequest $request)
     {
         $validated = $request->validated();

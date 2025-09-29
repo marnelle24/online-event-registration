@@ -1,26 +1,100 @@
-<nav class="z-999 px-4 w-full bg-zinc-50 transition-all duration-400 ease-in-out py-6 shadow {{ Route::is('frontpage') ? 'border-b border-slate-400/30 py-6' : '' }}">
-    <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between">
+<nav 
+    x-data="{ 
+        isFixed: false,
+        ticking: false,
+        isMobile: false,
+        init() {
+            this.checkMobile();
+            this.handleScroll();
+            if (!this.isMobile) {
+                window.addEventListener('scroll', () => this.requestTick());
+                window.addEventListener('resize', () => this.checkMobile());
+            }
+        },
+        checkMobile() {
+            this.isMobile = window.innerWidth < 768; // md breakpoint - tablets and up get fixed header
+            if (this.isMobile) {
+                this.isFixed = false; // Reset to normal state on mobile
+            }
+        },
+        requestTick() {
+            if (!this.ticking && !this.isMobile) {
+                requestAnimationFrame(() => this.handleScroll());
+                this.ticking = true;
+            }
+        },
+        handleScroll() {
+            if (this.isMobile) {
+                this.ticking = false;
+                return;
+            }
+            
+            const scrollThreshold = window.innerHeight * 0.10; // 10% of window height
+            const shouldBeFixed = window.scrollY >= scrollThreshold;
+            
+            if (this.isFixed !== shouldBeFixed) {
+                this.isFixed = shouldBeFixed;
+            }
+            
+            this.ticking = false;
+        }
+    }"
+    :class="{
+        'md:fixed top-0 left-0 right-0 z-50 transform translate-y-0 py-3 bg-white/95 backdrop-blur-md shadow-lg': isFixed && !isMobile,
+        'relative py-6 bg-zinc-50 shadow': !isFixed || isMobile
+    }"
+    class="w-full px-4 transition-all duration-500 ease-in-out {{ Route::is('frontpage') ? 'border-b border-slate-400/30' : '' }}"
+>
+    <div 
+        class="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between"
+        :class="{ 'py-1': isFixed && !isMobile, 'py-0': !isFixed || isMobile }"
+    >
         <!-- Logo -->
         <div class="first-line:mb-4 md:mb-0">
             <a href="/" class="flex items-center">
-                <img src="{{ asset('images/logo.png') }}" alt="Logo" class="h-6 w-auto">
-                <span class="ml-2 xl:text-3xl text-3xl font-extrabold drop-shadow text-gray-800 font-nunito">Streams of Life</span>
+                <img 
+                    src="{{ asset('logo.png') }}" 
+                    alt="Logo" 
+                    :class="{ 'h-5': isFixed && !isMobile, 'h-6': !isFixed || isMobile }"
+                    class="w-auto transition-all duration-300 ease-in-out"
+                >
+                <span 
+                    :class="{ 
+                        'xl:text-2xl text-2xl': isFixed && !isMobile, 
+                        'xl:text-3xl text-3xl': !isFixed || isMobile 
+                    }"
+                    class="ml-2 font-extrabold drop-shadow text-gray-800 font-nunito transition-all duration-300 ease-in-out"
+                >
+                    Streams of Life
+                </span>
             </a>
         </div>
 
         <!-- Desktop Navigation -->
         <div class="hidden md:flex items-center space-x-4">
             @auth()
-                <a href="{{ '#' }}" class="px-5 py-2 bg-orange-1/80 text-white text-xs drop-shadow-sm rounded-full shadow-md hover:text-neutral-200 hover:bg-orange-1 hover:shadow-lg hover:-translate-y-0.5 transition duration-300 ease-in-out">
+                <a 
+                    href="{{ route('admin.programmes') }}" 
+                    :class="{ 'px-4 py-1.5 text-xs': isFixed && !isMobile, 'px-5 py-2 text-xs': !isFixed || isMobile }"
+                    class="bg-orange-1/80 text-white drop-shadow-sm rounded-full shadow-md hover:text-neutral-200 hover:bg-orange-1 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 ease-in-out"
+                >
                     Dashboard
                 </a>
             
             @endauth
             @guest()
-                <a href="{{ route('login') }}" class="px-5 py-2 bg-orange-2/80 text-white text-xs drop-shadow-sm rounded-full shadow-md hover:text-neutral-200 hover:bg-orange-2 hover:shadow-lg hover:-translate-y-0.5 transition duration-300 ease-in-out">
+                <a 
+                    href="{{ route('login') }}" 
+                    :class="{ 'px-4 py-1.5 text-xs': isFixed && !isMobile, 'px-5 py-2 text-xs': !isFixed || isMobile }"
+                    class="bg-orange-2/80 text-white drop-shadow-sm rounded-full shadow-md hover:text-neutral-200 hover:bg-orange-2 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 ease-in-out"
+                >
                     Login
                 </a>
-                <a href="{{ route('register') }}" class="px-5 py-2 bg-orange-1/80 text-white text-xs drop-shadow-sm rounded-full shadow-md hover:text-neutral-200 hover:bg-orange-1 hover:shadow-lg hover:-translate-y-0.5 transition duration-300 ease-in-out">
+                <a 
+                    href="{{ route('register') }}" 
+                    :class="{ 'px-4 py-1.5 text-xs': isFixed && !isMobile, 'px-5 py-2 text-xs': !isFixed || isMobile }"
+                    class="bg-orange-1/80 text-white drop-shadow-sm rounded-full shadow-md hover:text-neutral-200 hover:bg-orange-1 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 ease-in-out"
+                >
                     Sign Up
                 </a>
             @endguest
@@ -28,7 +102,9 @@
     </div>
 
     <!-- Mobile Navigation -->
-    <div class="z-9999 fixed bottom-0 left-0 right-0 bg-slate-500 shadow-lg md:hidden">
+    <div 
+        {{-- :class="{ 'bottom-0': isFixed }" --}}
+        class="z-9999 fixed bottom-0 left-0 right-0 bg-slate-500 shadow-lg md:hidden lg:hidden">
         <div class="flex justify-around py-4">
             <a href="/" class="flex flex-col items-center text-white group">
                 <svg xmlns="http://www.w3.org/2000/svg" class="group-hover:-translate-y-0.5 duration-300 group-hover:stroke-slate-300 stroke-white h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">

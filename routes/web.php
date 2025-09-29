@@ -5,9 +5,28 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ProgrammeController;
 
+//public routes
 Route::get('/', function () {
-    return view('welcome');
-});
+    return view('pages/front-page');
+})->name('frontpage');
+
+Route::get('/about', function () {
+    return view('pages/about');
+})->name('about');
+
+Route::get('/programmes', function () {
+    return view('pages/programmes');
+})->name('programmes');
+
+Route::get('/categories', function () {
+    return view('pages/categories');
+})->name('categories');
+
+Route::get('/categories/{slug}', function ($slug) {
+    return view('pages/single-category', ['slug' => $slug]);
+})->name('single-category');
+
+Route::get('/programme/{programmeCode}', [ProgrammeController::class, 'publicShow'])->name('programme.show');
 
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])->group(function () {
 
