@@ -1,6 +1,7 @@
 @section('title', 'Home')
 <x-guest-layout>
-    <div class="relative min-h-screen bg-gradient-to-b bg-white">
+    {{-- <div class="relative min-h-screen bg-gradient-to-b bg-white"> --}}
+    <div class="relative min-h-screen bg-gradient-to-b from-white via-teal-50 to-teal-50/30">
         <div class="relative w-full xl:h-[650px] h-auto overflow-hidden">
             @livewire('frontpage.slider', ['isCarousel' => false])
         </div>

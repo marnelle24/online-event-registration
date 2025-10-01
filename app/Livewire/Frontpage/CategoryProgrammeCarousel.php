@@ -50,6 +50,7 @@ class CategoryProgrammeCarousel extends Component
             ->where('searchable', true)
             ->where('status', 'published')
             ->orderBy('startDate', 'asc')
+            ->limit(6)
             ->get();
         } 
         else 

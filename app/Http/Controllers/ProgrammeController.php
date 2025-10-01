@@ -113,13 +113,14 @@ class ProgrammeController extends Controller
     public function publicShow($programmeCode)
     {
         $programme = Programme::where('programmeCode', $programmeCode)
-            ->with(['speakers', 'categories', 'ministry', 'promotions'])
+            ->with(['speakers', 'categories', 'ministry', 'promotions', 'breakouts.speaker'])
             ->where('publishable', true)
             ->where('searchable', true)
             ->where('status', 'published')
             ->first();
 
-        if (!$programme) {
+        if (!$programme) 
+        {
             abort(404, 'Programme not found or not available for public viewing.');
         }
 

@@ -58,9 +58,12 @@
                                 >
                             @else
                                 <div class="flex items-center justify-center h-full text-white">
-                                    <svg class="w-16 h-16 opacity-50" fill="currentColor" viewBox="0 0 24 24">
+                                    {{-- <svg class="w-16 h-16 opacity-50" fill="currentColor" viewBox="0 0 24 24">
                                         <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-                                    </svg>
+                                    </svg> --}}
+                                    <p class="text-6xl font-normal rounded-full text-white/60 drop-shadow text-center tracking-widest">
+                                        {{ Helper::getInitials($programme->title) }}
+                                    </p>
                                 </div>
                             @endif
                             
@@ -137,7 +140,7 @@
                             </div>
 
                             <!-- Speakers -->
-                            @if($programme->speakers->isNotEmpty())
+                            {{-- @if($programme->speakers->isNotEmpty())
                                 <div class="mb-4">
                                     <div class="flex items-center mb-2">
                                         <svg class="w-4 h-4 mr-2 text-teal-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -147,7 +150,7 @@
                                     </div>
                                     <div class="flex flex-wrap gap-1">
                                         @foreach($programme->speakers->take(2) as $speaker)
-                                            <span class="bg-teal-50 text-teal-700 px-2 py-1 rounded-full text-xs font-medium">
+                                            <span class="border border-teal-500/60 bg-teal-50 text-teal-700 px-2 py-1 rounded-full text-xs font-medium">
                                                 {{ $speaker->title }} {{ $speaker->name }}
                                             </span>
                                         @endforeach
@@ -158,20 +161,29 @@
                                         @endif
                                     </div>
                                 </div>
-                            @endif
+                            @endif --}}
 
                             <!-- Registration Status -->
                             <div class="mb-4">
                                 @if($programme->limit && $programme->total_registrations >= $programme->limit)
-                                    <div class="bg-red-50 border border-red-200 text-red-700 px-3 py-2 rounded-lg text-sm">
+                                    <div class="flex items-center gap-1 bg-red-50 border border-red-200 text-red-700 px-3 py-2 rounded-lg text-sm">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
+                                        </svg>
                                         <strong>Fully Booked</strong> - Registration closed
                                     </div>
                                 @elseif($programme->limit)
-                                    <div class="bg-green-50 border border-green-200 text-green-700 px-3 py-2 rounded-lg text-sm">
-                                        <strong>{{ $programme->limit - $programme->total_registrations }}</strong> spots remaining
+                                    <div class="flex items-center gap-1 bg-green-50 border border-green-200 text-green-700 px-3 py-2 rounded-lg text-sm">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
+                                        </svg>
+                                        <strong>{{ $programme->total_registrations . ' / ' . $programme->limit }}</strong> spots remaining
                                     </div>
                                 @else
-                                    <div class="bg-blue-50 border border-blue-200 text-blue-700 px-3 py-2 rounded-lg text-sm">
+                                    <div class="flex items-center gap-1 bg-blue-50 border border-blue-200 text-blue-700 px-3 py-2 rounded-lg text-sm">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
+                                        </svg>
                                         <strong>Open Registration</strong> - No limit
                                     </div>
                                 @endif
