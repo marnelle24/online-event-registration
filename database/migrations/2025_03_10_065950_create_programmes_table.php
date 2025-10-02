@@ -48,6 +48,12 @@ return new class extends Migration
             $table->string('externalUrl')->nullable();
             $table->boolean('soft_delete')->default(false);
             $table->boolean('allowPreRegistration')->default(false);
+            $table->boolean('allowWalkInRegistration')->default(false);
+            $table->boolean('allowGroupRegistration')->default(false);
+            $table->integer('groupRegistrationMin')->nullable();
+            $table->integer('groupRegistrationMax')->nullable();
+            $table->decimal('groupRegIndividualFee', 8, 2)->nullable();
+            $table->boolean('allowBreakoutSession')->default(false);
             $table->string('status')->nullable('draft'); // draft, published, for private
             $table->timestamps();
         });

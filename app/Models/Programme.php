@@ -53,11 +53,14 @@ class Programme extends Model implements HasMedia
         'private_only',
         'externalUrl',
         'allowPreRegistration',
+        'allowWalkInRegistration',
+        'allowGroupRegistration',
+        'groupRegistrationMin',
+        'groupRegistrationMax',
+        'groupRegIndividualFee',
         'allowBreakoutSession',
         'soft_delete',
         'status',
-        'created_at',
-        'updated_at',
     ];
 
     public function getLocationAttribute()

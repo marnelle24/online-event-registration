@@ -13,7 +13,7 @@
                 <div class="p-6 md:p-8">
                     <div class="flex flex-wrap items-center gap-2 mb-4">
                         @foreach($programme->categories as $category)
-                            <span class="bg-teal-100 text-teal-800 px-3 border border-teal-800/70 py-1 rounded-full text-sm font-medium">
+                            <span class="bg-teal-100/70 capitalize text-teal-800 px-3 border border-teal-800/70 py-1 rounded-full text-sm font-medium">
                                 {{ $category->name }}
                             </span>
                         @endforeach
@@ -88,12 +88,13 @@
                             </div>
                         @endif
                     </div>
-                    
+                    <br />
+                    <br />
                     <!-- Register Button -->
                     <div class="flex justify-center">
-                        <button class="bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white font-bold py-4 px-8 rounded-lg text-lg transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2">
+                        <a href="{{ route('programme.register', $programme->programmeCode) }}" class="uppercase font-thin tracking-widest bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white py-4 px-8 rounded-lg text-lg transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2">
                             Register Now
-                        </button>
+                        </a>
                     </div>
                 </div>
             </div>
@@ -101,7 +102,7 @@
             <!-- Programme Description -->
             @if($programme->description)
                 <div class="bg-white rounded-lg shadow-lg p-6 md:p-8 mb-8">
-                    <h2 class="text-2xl font-bold text-slate-900 mb-4">About This Programme</h2>
+                    <h2 class="text-md uppercase tracking-widest font-bold text-teal-500 mb-4">About This Programme</h2>
                     <div class="prose prose-lg max-w-none text-slate-700">
                         {!! $programme->description !!}
                     </div>

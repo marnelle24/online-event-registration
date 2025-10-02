@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ProgrammeController;
+use App\Http\Controllers\RegistrantController;
 
 //public routes
 Route::get('/', function () {
@@ -27,6 +28,7 @@ Route::get('/categories/{slug}', function ($slug) {
 })->name('single-category');
 
 Route::get('/programme/{programmeCode}', [ProgrammeController::class, 'publicShow'])->name('programme.show');
+Route::get('/programme/{programmeCode}/register', [RegistrantController::class, 'register'])->name('programme.register');
 
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])->group(function () {
 
