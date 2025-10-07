@@ -18,7 +18,13 @@ class RegistrantController extends Controller
             abort(404);
         }
         
-        return view('pages.programme-register')->with('programme', $programme)->with('programmeCode', $programmeCode);
+        // Get authenticated user data if available
+        $user = auth()->user();
+        
+        return view('pages.programme-register')
+            ->with('programme', $programme)
+            ->with('programmeCode', $programmeCode)
+            ->with('user', $user);
     }
 
     public function validatePromocode(Request $request)
