@@ -71,16 +71,48 @@
         </div>
 
         <!-- Desktop Navigation -->
-        <div class="hidden md:flex items-center space-x-4">
+        <div class="hidden md:flex items-center space-x-2">
             @auth()
-                <a 
-                    href="{{ route('admin.programmes') }}" 
-                    :class="{ 'px-4 py-1.5 text-xs': isFixed && !isMobile, 'px-5 py-2 text-xs': !isFixed || isMobile }"
-                    class="bg-teal-600/80 text-white drop-shadow-sm rounded-full shadow-md hover:text-neutral-200 hover:bg-teal-1 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 ease-in-out"
-                >
-                    Dashboard
-                </a>
-            
+                <ul class="flex items-center">
+                    <li>
+                        <a 
+                            href="{{ route('admin.programmes') }}" 
+                            :class="{ 'px-4 py-1.5': isFixed && !isMobile, 'px-5 py-2': !isFixed || isMobile }"
+                            class="text-teal-600 drop-shadow-sm hover:text-teal-700 hover:-translate-y-0.5 transition-all duration-300 ease-in-out"
+                        >
+                            Home
+                        </a>
+                    </li>
+                    <li>
+                        <a 
+                            href="{{ route('admin.dashboard') }}" 
+                            :class="{ 'px-4 py-1.5': isFixed && !isMobile, 'px-5 py-2': !isFixed || isMobile }"
+                            class="text-teal-600 drop-shadow-sm hover:text-teal-700 hover:-translate-y-0.5 transition-all duration-300 ease-in-out"
+                        >
+                            Events
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('frontpage') }}" class="text-teal-600 drop-shadow-sm hover:text-teal-700 hover:-translate-y-0.5 transition-all duration-300 ease-in-out">
+                            Courses
+                        </a>
+                    </li>
+                </ul>
+                
+                <!-- Logout Button -->
+                <form method="POST" action="{{ route('logout') }}" class="inline">
+                    @csrf
+                    <button 
+                        type="submit"
+                        :class="{ 'px-4 py-1.5 text-xs': isFixed && !isMobile, 'px-5 py-2 text-xs': !isFixed || isMobile }"
+                        class="flex items-center space-x-1 text-teal-600 drop-shadow-sm rounded-full uppercase tracking-wider font-light hover:text-teal-700 hover:-translate-y-0.5 transition-all duration-300 ease-in-out"
+                    >
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                        </svg>
+                        <span>Logout</span>
+                    </button>
+                </form>
             @endauth
             @guest()
                 <a 
@@ -112,7 +144,61 @@
                 </svg>
                 <span class="text-xs mt-1 group-hover:text-teal-200 group-hover:-translate-y-0.5 duration-300">Home</span>
             </a>
+            
+            @auth
+                <!-- Dashboard -->
+                <a href="{{ auth()->user()->isAdmin() ? route('admin.dashboard') : route('user.dashboard') }}" class="flex flex-col items-center text-white group">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="group-hover:-translate-y-0.5 duration-300 group-hover:stroke-teal-300 stroke-white h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    </svg>
+                    <span class="text-xs mt-1 group-hover:text-teal-200 group-hover:-translate-y-0.5 duration-300">Dashboard</span>
+                </a>
+                
+                <!-- Events -->
+                <a href="{{ route('admin.dashboard') }}" class="flex flex-col items-center text-white group">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="group-hover:-translate-y-0.5 duration-300 group-hover:stroke-teal-300 stroke-white h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    <span class="text-xs mt-1 group-hover:text-teal-200 group-hover:-translate-y-0.5 duration-300">Events</span>
+                </a>
+                
+                <!-- Courses -->
+                <a href="{{ route('frontpage') }}" class="flex flex-col items-center text-white group">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="group-hover:-translate-y-0.5 duration-300 group-hover:stroke-teal-300 stroke-white h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                    </svg>
+                    <span class="text-xs mt-1 group-hover:text-teal-200 group-hover:-translate-y-0.5 duration-300">Courses</span>
+                </a>
+                
+                <!-- Mobile Logout Button -->
+                <form method="POST" action="{{ route('logout') }}" class="flex flex-col items-center">
+                    @csrf
+                    <button type="submit" class="flex flex-col items-center text-white group">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="group-hover:-translate-y-0.5 duration-300 group-hover:stroke-red-300 stroke-white h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                        </svg>
+                        <span class="text-xs mt-1 group-hover:text-red-200 group-hover:-translate-y-0.5 duration-300">Logout</span>
+                    </button>
+                </form>
+            @endauth
+            
             @guest
+                <!-- Events for guests -->
+                <a href="{{ route('admin.dashboard') }}" class="flex flex-col items-center text-white group">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="group-hover:-translate-y-0.5 duration-300 group-hover:stroke-teal-300 stroke-white h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    <span class="text-xs mt-1 group-hover:text-teal-200 group-hover:-translate-y-0.5 duration-300">Events</span>
+                </a>
+                
+                <!-- Courses for guests -->
+                <a href="{{ route('frontpage') }}" class="flex flex-col items-center text-white group">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="group-hover:-translate-y-0.5 duration-300 group-hover:stroke-teal-300 stroke-white h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                    </svg>
+                    <span class="text-xs mt-1 group-hover:text-teal-200 group-hover:-translate-y-0.5 duration-300">Courses</span>
+                </a>
+                
                 <a href="{{ route('login') }}" class="flex flex-col items-center text-white group">
                     <svg xmlns="http://www.w3.org/2000/svg" class="group-hover:-translate-y-0.5 duration-300 group-hover:stroke-teal-300 stroke-white h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />

@@ -1,6 +1,7 @@
 <!-- Main Registrant Information -->
 <div class="border border-slate-300 rounded-lg p-6">
-    <h3 class="text-lg font-semibold text-slate-800 mb-4 pb-2 border-b">Main Registrant</h3>
+    <h3 x-show="allowGroupRegistration || isGroupRegistration" class="text-lg font-semibold text-slate-800 mb-4 pb-2 border-b">Main Registrant</h3>
+    <h3 x-show="!allowGroupRegistration && !isGroupRegistration" class="text-lg font-semibold text-slate-800 mb-4 pb-2 border-b">Registrant Information</h3>
     <div class="grid md:grid-cols-2 gap-4">
         <div>
             <p class="text-sm text-slate-600">Full Name</p>

@@ -82,6 +82,26 @@ document.addEventListener('alpine:init', () => {
             return totalMembers >= this.groupRegistrationMin && totalMembers <= this.groupRegistrationMax;
         },
 
+        // Form Validation Methods
+        isMainRegistrantValid() {
+            // Check if required fields for main registrant are filled
+            return this.formData.title && 
+                   this.formData.title.trim() !== '' &&
+                   this.formData.firstName && 
+                   this.formData.firstName.trim() !== '' &&
+                   this.formData.lastName && 
+                   this.formData.lastName.trim() !== '' &&
+                   this.formData.email && 
+                   this.formData.email.trim() !== '' &&
+                   this.formData.contactNumber && 
+                   this.formData.contactNumber.trim() !== '';
+        },
+
+        canCompleteRegistration() {
+            // Check if main registrant is valid and not currently submitting
+            return this.isMainRegistrantValid() && !this.submitting;
+        },
+
         // Pricing Methods
         calculateTotalCost() {
             // Simply return programme price minus promo code discount if applicable

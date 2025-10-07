@@ -11,7 +11,7 @@
         <!-- Register as Guest -->
         <div @click="selectRegistrationType('guest')" 
              class="cursor-pointer border-2 rounded-xl p-6 transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
-             :class="formData.registrationType === 'guest' ? 'border-teal-600 bg-teal-50' : 'border-slate-200 hover:border-teal-300'">
+             :class="formData.registrationType === 'guest' ? 'border-teal-600 bg-teal-50' : 'border-slate-200 hover:border-teal-500'">
             <div class="flex items-start justify-between mb-4">
                 <div class="w-12 h-12 bg-teal-100 rounded-lg flex items-center justify-center">
                     <svg class="w-6 h-6 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -31,7 +31,7 @@
 
         <!-- Login -->
         <a href="{{ route('login', ['redirect' => url()->full()]) }}" 
-           class="cursor-pointer border-2 rounded-xl p-6 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 border-slate-200 hover:border-teal-300 block">
+           class="cursor-pointer border-2 rounded-xl p-6 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 border-slate-200 hover:border-teal-500 block">
             <div class="flex items-start justify-between mb-4">
                 <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
                     <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
