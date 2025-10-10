@@ -31,6 +31,7 @@ class Registrant extends Model
         'promocode_id',
         'promotion_id',
         'emailStatus',
+        'registrationType',
         'confirmedBy',
         'approvedBy',
         'approvedDate',

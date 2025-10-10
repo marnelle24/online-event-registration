@@ -29,6 +29,8 @@ Route::get('/categories/{slug}', function ($slug) {
 
 Route::get('/programme/{programmeCode}', [ProgrammeController::class, 'publicShow'])->name('programme.show');
 Route::get('/programme/{programmeCode}/register', [RegistrantController::class, 'register'])->name('programme.register');
+Route::get('/registration/confirmation/{regCode}', [RegistrantController::class, 'confirmation'])->name('registration.confirmation');
+Route::get('/registration/payment/{regCode}', [RegistrantController::class, 'payment'])->name('registration.payment');
 
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])->group(function () {
 

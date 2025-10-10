@@ -1,5 +1,5 @@
-<!-- Step 4: Promo Code (or Step 3 if no group registration) -->
-<div x-show="(currentStep === 4 && allowGroupRegistration) || (currentStep === 3 && !allowGroupRegistration)" 
+<!-- Promo Code Step (Always second-to-last step when active promocodes exist) -->
+<div x-show="hasActivePromocodes && currentStep === (totalSteps - 1)" 
      x-transition:enter="transition ease-out duration-300" 
      x-transition:enter-start="opacity-0 transform translate-x-8" 
      x-transition:enter-end="opacity-100 transform translate-x-0">

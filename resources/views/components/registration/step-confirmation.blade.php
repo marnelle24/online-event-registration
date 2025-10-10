@@ -1,7 +1,7 @@
 @props(['programme'])
 
-<!-- Step 5: Confirmation (or Step 4 if no group registration) -->
-<div x-show="(currentStep === 5 && allowGroupRegistration) || (currentStep === 4 && !allowGroupRegistration)" 
+<!-- Confirmation Step (Always the last step) -->
+<div x-show="currentStep === totalSteps" 
      x-transition:enter="transition ease-out duration-300" 
      x-transition:enter-start="opacity-0 transform translate-x-8" 
      x-transition:enter-end="opacity-100 transform translate-x-0">
@@ -43,8 +43,9 @@
             </button>
             <button @click="submitRegistration" 
                     type="button"
-                    :disabled="!canCompleteRegistration()"
-                    class="bg-teal-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-teal-700 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed">
+                    :class="{ 'opacity-50 cursor-not-allowed': submitting }"
+                    :disabled="{{ auth()->check() ? 'false' : '!canCompleteRegistration()' }}"
+                    class="bg-teal-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-teal-700 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 flex items-center justify-center">
                 <span x-show="!submitting">Complete Registration</span>
                 <span x-show="submitting">Processing...</span>
                 <svg x-show="!submitting" class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">

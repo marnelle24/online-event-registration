@@ -1,4 +1,4 @@
-@props(['currentStep', 'totalSteps', 'allowGroupRegistration', 'user'])
+@props(['currentStep', 'totalSteps', 'allowGroupRegistration', 'user', 'hasActivePromocodes'])
 
 <!-- Progress Timeline -->
 <div class="bg-gradient-to-r from-teal-600 to-teal-700 px-6 md:px-8 py-8">
@@ -40,8 +40,8 @@
             <span class="text-xs text-white mt-1 font-medium hidden md:block">Group</span>
         </div>
 
-        <!-- Step 4 (Promo Code) -->
-        <div class="flex flex-col items-center z-10 relative">
+        <!-- Step 4 (Promo Code - Only when active promocodes exist) -->
+        <div x-show="hasActivePromocodes" class="flex flex-col items-center z-10 relative">
             <div class="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-all duration-300"
                  :class="currentStep >= (allowGroupRegistration ? 4 : 3) ? 'bg-white text-teal-700 shadow-lg' : 'bg-teal-800/40 text-teal-300'">
                 <span class="font-bold text-xs md:text-sm" x-show="currentStep > (allowGroupRegistration ? 4 : 3)">✓</span>
@@ -56,17 +56,11 @@
             <span class="text-xs text-white mt-1 font-medium hidden md:block">Promo</span>
         </div>
 
-        <!-- Step 5/4 (Confirmation) -->
+        <!-- Confirmation (Always last step) -->
         <div class="flex flex-col items-center z-10 relative">
             <div class="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-all duration-300"
-                 :class="currentStep >= (allowGroupRegistration ? 5 : 4) ? 'bg-white text-teal-700 shadow-lg' : 'bg-teal-800/40 text-teal-300'">
-                <span class="font-bold text-xs md:text-sm">
-                    @if($user)
-                        <span x-text="allowGroupRegistration ? '4' : '3'"></span>
-                    @else
-                        <span x-text="allowGroupRegistration ? '5' : '4'"></span>
-                    @endif
-                </span>
+                 :class="currentStep >= totalSteps ? 'bg-white text-teal-700 shadow-lg' : 'bg-teal-800/40 text-teal-300'">
+                <span class="font-bold text-xs md:text-sm" x-text="@if($user) totalSteps - 1 @else totalSteps @endif"></span>
             </div>
             <span class="text-xs text-white mt-1 font-medium hidden md:block">Confirm</span>
         </div>
@@ -81,8 +75,8 @@
             @endif
             <span x-show="currentStep === 2">Registration Information</span>
             <span x-show="currentStep === 3 && allowGroupRegistration">Group Members</span>
-            <span x-show="(currentStep === 4 && allowGroupRegistration) || (currentStep === 3 && !allowGroupRegistration)">Promo Code</span>
-            <span x-show="(currentStep === 5 && allowGroupRegistration) || (currentStep === 4 && !allowGroupRegistration)">Confirmation</span>
+            <span x-show="hasActivePromocodes && ((currentStep === 4 && allowGroupRegistration) || (currentStep === 3 && !allowGroupRegistration))">Promo Code</span>
+            <span x-show="currentStep === totalSteps">Confirmation</span>
         </p>
     </div>
 </div>
