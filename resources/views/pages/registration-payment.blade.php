@@ -206,7 +206,7 @@
                     <div class="border-2 border-slate-200 hover:bg-teal-50 hover:shadow-lg transition-all duration-300 rounded-lg p-6">
                         <div class="flex items-start">
                             <div class="flex-shrink-0 w-12 h-12 bg-[#7C2278] rounded-lg flex items-center justify-center">
-                                <img src="{{ asset('images/PayNow.svg') }}" alt="PayNow" class="w-12 h-20">
+                                <img src="{{ asset('images/PayNow.png') }}" alt="PayNow" class="w-8">
                             </div>
                             <div class="ml-4 flex-1">
                                 <h3 class="text-lg font-semibold text-slate-800 mb-2">Credit/Debit via PayNow</h3>
