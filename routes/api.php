@@ -11,3 +11,7 @@ Route::get('/user', function (Request $request) {
 // Public API routes for registration
 Route::post('/validate-promocode', [RegistrantController::class, 'validatePromocode']);
 Route::post('/register-programme', [RegistrantController::class, 'store']);
+
+// Payment API routes
+Route::get('/payment-methods/{regCode}', [RegistrantController::class, 'getPaymentMethods']);
+Route::post('/process-payment/{regCode}', [RegistrantController::class, 'processPayment']);

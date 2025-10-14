@@ -1,25 +1,152 @@
 @section('title', 'Payment Required')
 
 <x-guest-layout>
-    <div class="relative min-h-screen bg-gradient-to-b from-white via-teal-100/70 to-white/30 py-12">
+    <!-- Load Payment Service Script Before Alpine Initializes -->
+    <script src="{{ asset('js/payment-service.js') }}"></script>
+    <script>
+        // Define Alpine component before Alpine initializes
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('paymentPageData', (regCode) => ({
+                regCode: regCode,
+                paymentService: null,
+                processing: false,
+                errorMessage: null,
+                showBankTransferModal: false,
+                bankTransferInstructions: {
+                    bank_details: null
+                },
+                loadingBankDetails: false,
+
+                init() {
+                    this.paymentService = new PaymentService(this.regCode);
+                    // Make paymentService available globally for modal actions
+                    window.paymentService = this.paymentService;
+                    
+                    // Pre-load bank transfer instructions to populate bank details
+                    this.loadBankTransferDetails();
+                },
+
+                async loadBankTransferDetails() {
+                    this.loadingBankDetails = true;
+                    try {
+                        console.log('Pre-loading bank transfer details...');
+                        const result = await this.paymentService.processPayment('bank_transfer');
+                        
+                        if (result.success && result.data && result.data.instructions) {
+                            this.bankTransferInstructions = result.data.instructions;
+                        }
+                    } catch (error) {
+                        console.error('Error loading bank details:', error);
+                        // Silently fail - config defaults will be shown
+                    } finally {
+                        this.loadingBankDetails = false;
+                    }
+                },
+
+                async processHitPayPayment() {
+                    if (this.processing) return;
+
+                    this.processing = true;
+                    this.errorMessage = null;
+
+                    try {
+                        // Process payment with HitPay
+                        const result = await this.paymentService.processPayment('hitpay');
+
+                        if (result.success && result.data.redirect_url) {
+                            // Redirect to HitPay payment page
+                            window.location.href = result.data.redirect_url;
+                        } else {
+                            throw new Error('Payment gateway did not return a valid URL');
+                        }
+                    } catch (error) {
+                        this.processing = false;
+                        this.errorMessage = error.message || 'Payment processing failed. Please try again.';
+                        console.error('Payment error:', error);
+
+                        // Scroll to error message
+                        this.$nextTick(() => {
+                            this.$el.querySelector('[x-show="errorMessage"]')?.scrollIntoView({ 
+                                behavior: 'smooth', 
+                                block: 'center' 
+                            });
+                        });
+                    }
+                },
+
+                async processBankTransfer() 
+                {
+                    try 
+                    {
+                        // If instructions are already loaded, just show the modal
+                        if (this.bankTransferInstructions?.bank_details && this.bankTransferInstructions?.steps) {
+                            console.log('Using cached bank transfer instructions');
+                            this.showBankTransferModal = true;
+                            return;
+                        }
+
+                        // Otherwise, fetch the instructions
+                        console.log('Fetching bank transfer instructions...');
+                        const result = await this.paymentService.processPayment('bank_transfer');
+                        console.log('Bank transfer result:', result);
+
+                        if (result.success && result.data && result.data.instructions) {
+                            this.bankTransferInstructions = result.data.instructions;
+                            this.showBankTransferModal = true;
+                            console.log('Modal opened with instructions');
+                        } else {
+                            throw new Error('Failed to load bank transfer instructions');
+                        }
+                    } 
+                    catch (error) 
+                    {
+                        console.error('Bank transfer error:', error);
+                        this.errorMessage = error.message || 'Failed to process bank transfer. Please try again.';
+                    } 
+                }
+            }));
+        });
+    </script>
+
+    <div class="relative min-h-screen bg-gradient-to-b from-white via-teal-100/70 to-white/30 py-12" x-data="paymentPageData('{{ $registrant->regCode }}')">
         <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
             
             <!-- Payment Header -->
-            <div class="bg-white rounded-lg shadow-lg border-t-4 border-orange-500 overflow-hidden mb-8 p-8">
+            <div class="bg-white rounded-lg shadow-lg border-t-4 {{ $isPaid ? 'border-green-500' : 'border-orange-500' }} overflow-hidden mb-8 p-8">
                 <div class="flex items-center justify-center mb-6">
-                    <div class="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center">
-                        <svg class="w-10 h-10 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
-                        </svg>
-                    </div>
+                    @if($isPaid)
+                        <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
+                            <svg class="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                    @else
+                        <div class="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center">
+                            <svg class="w-10 h-10 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                            </svg>
+                        </div>
+                    @endif
                 </div>
-                <h1 class="text-3xl font-bold text-center text-slate-800 mb-2">Payment Required</h1>
-                <p class="text-center text-slate-600 mb-6">Complete your payment to confirm your registration</p>
                 
-                <div class="bg-orange-50 border border-orange-200 rounded-lg p-6 text-center">
-                    <p class="text-sm text-slate-600 mb-2">Your Registration Code</p>
-                    <p class="text-3xl font-bold text-orange-700 tracking-wider">{{ $registrant->regCode }}</p>
-                </div>
+                @if($isPaid)
+                    <h1 class="text-3xl font-bold text-center text-slate-800 mb-2">Payment Completed</h1>
+                    <p class="text-center text-slate-600 mb-6">Your payment has been successfully processed</p>
+                    
+                    <div class="bg-green-50 border border-green-200 rounded-lg p-6 text-center">
+                        <p class="text-sm text-slate-600 mb-2">{{ $registrant->groupRegistrationID ? 'Group Registration ID' : 'Your Registration Code' }}</p>
+                        <p class="text-3xl font-bold text-green-700 tracking-wider">{{ $registrant->groupRegistrationID ?? $registrant->regCode }}</p>
+                        <p class="text-sm text-green-600 mt-2">✓ Payment Status: {{ ucfirst(str_replace('_', ' ', $registrant->paymentStatus)) }}</p>
+                    </div>
+                @else
+                    <h1 class="text-3xl font-bold text-center text-slate-800 mb-2">Payment Required</h1>
+                    <p class="text-center text-slate-600 mb-6">Complete your payment to confirm your registration</p>
+                    
+                    <div class="bg-orange-50 border border-orange-200 rounded-lg p-6 text-center">
+                        <p class="text-sm text-slate-600 mb-2">{{ $registrant->groupRegistrationID ? 'Group Registration ID' : 'Your Registration Code' }}</p>
+                        <p class="text-3xl font-bold text-orange-700 tracking-wider">{{ $registrant->groupRegistrationID ?? $registrant->regCode }}</p>
+                    </div>
+                @endif
             </div>
 
             <!-- Programme Details -->
@@ -102,6 +229,10 @@
                                     <div>
                                         <p class="text-slate-600">Name</p>
                                         <p class="font-semibold text-slate-800">{{ $member->title }} {{ $member->firstName }} {{ $member->lastName }}</p>
+                                        @if($member->groupRegistrationID && $member->paymentStatus == 'group_member_paid')
+                                            <span class="text-xs text-slate-600 italic font-bold">Code:</span>
+                                            <span class="text-xs text-green-600 italic font-bold">{{ $member->paymentReferenceNo }}</span>
+                                        @endif
                                     </div>
                                     <div>
                                         <p class="text-slate-600">Email</p>
@@ -147,8 +278,54 @@
                 </div>
             </div>
 
-            <!-- Payment Methods -->
+            <!-- Payment Completed Info (Shown only if paid) -->
+            @if($isPaid)
             <div class="bg-white rounded-lg shadow-lg overflow-hidden mb-8 p-6">
+                <h2 class="text-xl font-bold text-slate-800 mb-4 pb-2 border-b">Payment Information</h2>
+                
+                <div class="space-y-4">
+                    <div class="bg-green-50 border border-green-200 rounded-lg p-6">
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0">
+                                <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </div>
+                            <div class="ml-4 flex-1">
+                                <h3 class="text-lg font-semibold text-green-800 mb-2">Payment Successful</h3>
+                                <p class="text-sm text-green-700 mb-3">Your payment has been processed and your registration is confirmed.</p>
+                                
+                                <div class="space-y-2 text-sm">
+                                    @if($registrant->paymentReferenceNo)
+                                    <div class="flex justify-between">
+                                        <span class="text-slate-600">Payment Reference:</span>
+                                        <span class="font-semibold text-slate-800">{{ $registrant->paymentReferenceNo }}</span>
+                                    </div>
+                                    @endif
+                                    
+                                    @if($registrant->payment_gateway)
+                                    <div class="flex justify-between">
+                                        <span class="text-slate-600">Payment Method:</span>
+                                        <span class="font-semibold text-slate-800">{{ ucfirst(str_replace('_', ' ', $registrant->payment_gateway)) }}</span>
+                                    </div>
+                                    @endif
+                                    
+                                    @if($registrant->payment_completed_at)
+                                    <div class="flex justify-between">
+                                        <span class="text-slate-600">Payment Date:</span>
+                                        <span class="font-semibold text-slate-800">{{ $registrant->payment_completed_at->format('M d, Y h:i A') }}</span>
+                                    </div>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @endif
+
+            <!-- Payment Methods (Hidden if already paid) -->
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden mb-8 p-6" @if(!$isPaid) style="display: block;" @else style="display: none;" @endif>
                 <h2 class="text-xl font-bold text-slate-800 mb-4 pb-2 border-b">Payment Methods</h2>
                 
                 <!-- Payment Options Grid -->
@@ -169,23 +346,56 @@
                                 <p class="text-sm text-slate-600">Transfer directly to our bank account</p>
                                 <p class="text-sm text-slate-600 mb-3">Please use your registration code <strong>{{ $registrant->regCode }}</strong> as payment reference</p>
                                 
-                                <div class="bg-blue-100/50 border border-blue-200 rounded-lg p-4 space-y-2 text-sm">
-                                    <div class="flex justify-between">
+                                <div class="bg-blue-100/50 border border-blue-200 rounded-lg p-4 space-y-2 text-sm mb-4 relative">
+                                    <!-- Loading indicator -->
+                                    <div x-show="loadingBankDetails" class="absolute inset-0 bg-blue-50 bg-opacity-90 flex items-center justify-center rounded-lg">
+                                        <div class="flex items-center space-x-2">
+                                            <svg class="animate-spin h-5 w-5 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                            </svg>
+                                            <span class="text-sm text-blue-700">Loading bank details...</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Display bank details from API response if available, otherwise show config defaults -->
+                                    <div class="flex justify-between" x-show="bankTransferInstructions?.bank_details?.bank_name || '{{ config('services.bank_transfer.bank_name') }}'">
                                         <span class="text-slate-600">Bank Name:</span>
-                                        <span class="font-semibold text-slate-800">DBS Bank</span>
+                                        <span class="font-semibold text-slate-800" x-text="bankTransferInstructions?.bank_details?.bank_name || '{{ config('services.bank_transfer.bank_name', 'DBS Bank') }}'"></span>
                                     </div>
-                                    <div class="flex justify-between">
+                                    <div class="flex justify-between" x-show="bankTransferInstructions?.bank_details?.account_number || '{{ config('services.bank_transfer.account_number') }}'">
                                         <span class="text-slate-600">Account Number:</span>
-                                        <span class="font-semibold text-slate-800">002-1234567-8</span>
+                                        <span class="font-semibold text-slate-800" x-text="bankTransferInstructions?.bank_details?.account_number || '{{ config('services.bank_transfer.account_number', '002-1234567-8') }}'"></span>
                                     </div>
-                                    <div class="flex justify-between">
+                                    <div class="flex justify-between" x-show="bankTransferInstructions?.bank_details?.account_name || '{{ config('services.bank_transfer.account_name') }}'">
                                         <span class="text-slate-600">Account Name:</span>
-                                        <span class="font-semibold text-slate-800">Streams Of Life Pte Ltd</span>
+                                        <span class="font-semibold text-slate-800" x-text="bankTransferInstructions?.bank_details?.account_name || '{{ config('services.bank_transfer.account_name', 'Streams Of Life Pte Ltd') }}'"></span>
                                     </div>
-                                    <div class="flex justify-between">
+                                    <div class="flex justify-between" x-show="bankTransferInstructions?.bank_details?.swift_code || '{{ config('services.bank_transfer.swift_code') }}'">
                                         <span class="text-slate-600">Swift Code:</span>
-                                        <span class="font-semibold text-slate-800">DBSSSGSG</span>
+                                        <span class="font-semibold text-slate-800" x-text="bankTransferInstructions?.bank_details?.swift_code || '{{ config('services.bank_transfer.swift_code', '21321') }}'"></span>
                                     </div>
+
+                                    <!-- Optional bank details (only show if they exist in API response) -->
+                                    <template x-if="bankTransferInstructions?.bank_details?.branch_code">
+                                        <div class="flex justify-between">
+                                            <span class="text-slate-600">Branch Code:</span>
+                                            <span class="font-semibold text-slate-800" x-text="bankTransferInstructions.bank_details.branch_code"></span>
+                                        </div>
+                                    </template>
+                                    <template x-if="bankTransferInstructions?.bank_details?.routing_number">
+                                        <div class="flex justify-between">
+                                            <span class="text-slate-600">Routing Number:</span>
+                                            <span class="font-semibold text-slate-800" x-text="bankTransferInstructions.bank_details.routing_number"></span>
+                                        </div>
+                                    </template>
+                                    <template x-if="bankTransferInstructions?.bank_details?.iban">
+                                        <div class="flex justify-between">
+                                            <span class="text-slate-600">IBAN:</span>
+                                            <span class="font-semibold text-slate-800" x-text="bankTransferInstructions.bank_details.iban"></span>
+                                        </div>
+                                    </template>
+
                                     @if($registrant->programme->chequeCode)
                                         <div class="flex justify-between">
                                             <span class="text-slate-600">Cheque Code:</span>
@@ -198,11 +408,16 @@
                                         </p>
                                     </div>
                                 </div>
+                                <button type="button" 
+                                        @click="processBankTransfer"
+                                        class="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 transition-colors disabled:hover:bg-blue-600">
+                                    View Detailed Instructions
+                                </button>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Credit/Debit Card -->
+                    <!-- Credit/Debit Card / PayNow via HitPay -->
                     <div class="border-2 border-slate-200 hover:bg-teal-50 hover:shadow-lg transition-all duration-300 rounded-lg p-6">
                         <div class="flex items-start">
                             <div class="flex-shrink-0 w-12 h-12 bg-[#7C2278] rounded-lg flex items-center justify-center">
@@ -210,79 +425,40 @@
                             </div>
                             <div class="ml-4 flex-1">
                                 <h3 class="text-lg font-semibold text-slate-800 mb-2">Credit/Debit via PayNow</h3>
-                                <p class="text-sm text-slate-600 mb-3">Pay securely with your card or your PayNow balance</p>
+                                <p class="text-sm text-slate-600 mb-3">Pay securely with your card, PayNow, or e-wallets via HitPay</p>
+                                
+                                <!-- Error Message -->
+                                <div x-show="errorMessage" 
+                                     x-transition
+                                     class="mb-3 bg-red-50 border border-red-200 rounded-lg p-3">
+                                    <div class="flex">
+                                        <svg class="h-5 w-5 text-red-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                                        </svg>
+                                        <p class="text-sm text-red-800" x-text="errorMessage"></p>
+                                    </div>
+                                </div>
                                 
                                 <button type="button" 
-                                        class="hover:-translate-y-0.5 hover:shadow-lg duration-300 transition-all w-full mt-4 bg-[#7C2278]/90 uppercase tracking-wider text-white py-3 px-6 rounded-lg font-semibold hover:bg-[#7C2278]"
-                                        onclick="alert('Payment gateway integration coming soon!')">
-                                    Pay {{ '$'.number_format($registrant->netAmount, 2) }} with PayNow
+                                        @click="processHitPayPayment"
+                                        :disabled="processing"
+                                        :class="{'opacity-50 cursor-not-allowed': processing}"
+                                        class="hover:-translate-y-0.5 hover:shadow-lg duration-300 transition-all w-full mt-4 bg-[#7C2278]/90 uppercase tracking-wider text-white py-3 px-6 rounded-lg font-semibold hover:bg-[#7C2278] disabled:hover:translate-y-0">
+                                    <span x-show="!processing">Pay ${{ number_format($registrant->netAmount, 2) }} with PayNow</span>
+                                    <span x-show="processing" class="flex items-center justify-center">
+                                        <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                        </svg>
+                                        Processing...
+                                    </span>
                                 </button>
                                 
-                                <p class="text-[11px] text-slate-500 mt-2 text-center">Secured by SSL encryption</p>
+                                <p class="text-[11px] text-slate-500 mt-2 text-center">Secured by HitPay with SSL encryption</p>
                             </div>
                         </div>
                     </div>
-
-                    <!-- PayPal -->
-                    {{-- <div class="border-2 border-slate-200 rounded-lg p-6 hover:border-teal-500 transition-colors">
-                        <div class="flex items-start">
-                            <div class="flex-shrink-0">
-                                <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
-                                    <svg class="w-6 h-6 text-yellow-600" fill="currentColor" viewBox="0 0 24 24">
-                                        <path d="M20.067 8.478c.492.88.556 2.014.3 3.327-.74 3.806-3.276 5.12-6.514 5.12h-.5a.805.805 0 00-.794.68l-.04.22-.63 3.993-.028.15a.805.805 0 01-.794.679H7.72a.483.483 0 01-.477-.558L7.418 21h1.518l.95-6.02h1.385c4.678 0 7.75-2.203 8.796-6.502z"/>
-                                    </svg>
-                                </div>
-                            </div>
-                            <div class="ml-4 flex-1">
-                                <h3 class="text-lg font-semibold text-slate-800 mb-2">PayPal</h3>
-                                <p class="text-sm text-slate-600 mb-3">Pay with your PayPal account</p>
-                                
-                                <button type="button" 
-                                        class="w-full bg-yellow-500 text-slate-900 py-3 px-6 rounded-lg font-semibold hover:bg-yellow-600 transition-colors"
-                                        onclick="alert('PayPal integration coming soon!')">
-                                    Pay with PayPal
-                                </button>
-                            </div>
-                        </div>
-                    </div> --}}
-
                 </div>
-            </div>
-
-            <!-- Important Notice -->
-            <div class="bg-amber-50 border border-amber-200 rounded-lg p-6 mb-8">
-                <h2 class="text-lg font-bold text-amber-900 mb-3 flex items-center">
-                    <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
-                    </svg>
-                    Important Information for Bank Transfer and Cheque Payment
-                </h2>
-                <ul class="space-y-2 text-amber-900 text-sm">
-                    <li class="flex items-start">
-                        <svg class="w-5 h-5 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                        </svg>
-                        <span>Please use your registration code <strong>{{ $registrant->regCode }}</strong> as payment reference</span>
-                    </li>
-                    <li class="flex items-start">
-                        <svg class="w-5 h-5 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                        </svg>
-                        <span>After payment, please email your proof of payment to <strong>{{ $registrant->programme->contactEmail }}</strong></span>
-                    </li>
-                    <li class="flex items-start">
-                        <svg class="w-5 h-5 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                        </svg>
-                        <span>Your registration will be confirmed once payment is verified (usually within 1-2 business days)</span>
-                    </li>
-                    <li class="flex items-start">
-                        <svg class="w-5 h-5 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                        </svg>
-                        <span>A confirmation email with event details will be sent once payment is verified</span>
-                    </li>
-                </ul>
             </div>
 
             <!-- Contact Support -->
@@ -309,6 +485,17 @@
 
             <!-- Action Buttons -->
             <div class="flex flex-col sm:flex-row gap-4 justify-center py-8">
+                @if($isPaid)
+                    <!-- Show confirmation page button if paid -->
+                    <a href="{{ route('registration.confirmation', ['regCode' => $registrant->regCode]) }}" 
+                       class="inline-flex border border-green-600 duration-300 transition-all items-center justify-center px-6 py-3 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        View Confirmation
+                    </a>
+                @endif
+                
                 <a href="{{ route('frontpage') }}" 
                    class="inline-flex border border-slate-300 duration-300 transition-all items-center justify-center px-6 py-3 bg-slate-200 text-slate-700 rounded-lg font-semibold hover:bg-slate-300">
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -316,18 +503,42 @@
                     </svg>
                     Back to Home
                 </a>
-                {{-- <button type="button"
-                        onclick="window.print()"
-                        class="inline-flex items-center justify-center px-6 py-3 bg-teal-600 text-white rounded-lg font-semibold hover:bg-teal-700 transition-colors">
-                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
-                    </svg>
-                    Print Payment Details
-                </button> --}}
             </div>
 
         </div>
+        <!-- End max-w-4xl container -->
+
+        <!-- Bank Transfer Modal Component -->
+        <x-bank-transfer-modal />
     </div>
+    <!-- End Alpine.js scope -->
+    
+    
     <x-footer-public />
 </x-guest-layout>
+
+@push('styles')
+<style>
+    /* Hide elements with x-cloak until Alpine loads */
+    [x-cloak] {
+        display: none !important;
+    }
+    
+    /* Print styles for bank transfer modal */
+    @media print {
+        body * {
+            visibility: hidden;
+        }
+        .bank-transfer-modal,
+        .bank-transfer-modal * {
+            visibility: visible;
+        }
+        .bank-transfer-modal {
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+    }
+</style>
+@endpush
 

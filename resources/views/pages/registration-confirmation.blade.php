@@ -13,16 +13,24 @@
                         </svg>
                     </div>
                 </div>
-                <h1 class="text-3xl font-bold text-center text-slate-800 mb-2">Registration Successful!</h1>
-                @if($registrant->programme->allowPreRegistration)
-                    <p class="text-center text-slate-600 mb-6">Thank you for registering. Your registration has been shortlisted.</p>
+                @if($registrant->paymentStatus == 'paid')
+                    <h1 class="text-3xl font-bold text-center text-slate-800 mb-2">Registration Successful!</h1>
+                    <p class="text-center text-slate-600 mb-6">Your payment has been successfully processed</p>
+                    
+                    <div class="bg-green-50 border border-green-200 rounded-lg p-6 text-center">
+                        <p class="text-sm text-slate-600 mb-2">{{ $registrant->groupRegistrationID ? 'Group Registration ID' : 'Your Registration Code' }}</p>
+                        <p class="text-3xl font-bold text-green-700 tracking-wider">{{ $registrant->groupRegistrationID ?? $registrant->regCode }}</p>
+                        <p class="text-sm text-green-600 mt-2">✓ Payment Status: {{ ucfirst(str_replace('_', ' ', $registrant->paymentStatus)) }}</p>
+                    </div>
                 @else
-                    <p class="text-center text-slate-600 mb-6">Thank you for registering. Your registration has been confirmed.</p>
+                    <h1 class="text-3xl font-bold text-center text-slate-800 mb-2">Payment Required</h1>
+                    <p class="text-center text-slate-600 mb-6">Complete your payment to confirm your registration</p>
+                    
+                    <div class="bg-orange-50 border border-orange-200 rounded-lg p-6 text-center">
+                        <p class="text-sm text-slate-600 mb-2">{{ $registrant->groupRegistrationID ? 'Group Registration ID' : 'Your Registration Code' }}</p>
+                        <p class="text-3xl font-bold text-orange-700 tracking-wider">{{ $registrant->groupRegistrationID ?? $registrant->regCode }}</p>
+                    </div>
                 @endif
-                <div class="bg-teal-50 border border-teal-500/50 rounded-lg p-6 text-center">
-                    <p class="text-sm text-slate-600 mb-2">Your Registration Code</p>
-                    <p class="text-3xl drop-shadow font-bold text-teal-700 tracking-wider">{{ $registrant->regCode }}</p>
-                </div>
             </div>
 
             <!-- Programme Details -->
@@ -103,15 +111,16 @@
                             <p class="font-semibold text-slate-800 mb-2">Member {{ $index + 2 }}</p>
                             <div class="grid md:grid-cols-3 gap-3 text-sm">
                                 <div>
-                                    <p class="text-slate-600">Name</p>
                                     <p class="font-medium text-slate-800">{{ $member->title }} {{ $member->firstName }} {{ $member->lastName }}</p>
+                                    @if($member->groupRegistrationID && $member->paymentStatus == 'group_member_paid')
+                                        <span class="text-xs text-slate-600 italic font-bold">Code:</span>
+                                        <span class="text-xs text-green-600 italic font-bold">{{ $member->paymentReferenceNo }}</span>
+                                    @endif
                                 </div>
                                 <div>
-                                    <p class="text-slate-600">Email</p>
                                     <p class="font-medium text-slate-800">{{ $member->email }}</p>
                                 </div>
                                 <div>
-                                    <p class="text-slate-600">Contact</p>
                                     <p class="font-medium text-slate-800">{{ $member->contactNumber }}</p>
                                 </div>
                             </div>

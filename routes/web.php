@@ -32,6 +32,10 @@ Route::get('/programme/{programmeCode}/register', [RegistrantController::class, 
 Route::get('/registration/confirmation/{regCode}', [RegistrantController::class, 'confirmation'])->name('registration.confirmation');
 Route::get('/registration/payment/{regCode}', [RegistrantController::class, 'payment'])->name('registration.payment');
 
+// Payment routes
+Route::get('/payment/callback', [RegistrantController::class, 'paymentCallback'])->name('payment.callback');
+Route::post('/payment/webhook', [RegistrantController::class, 'paymentWebhook'])->name('payment.webhook');
+
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])->group(function () {
 
     Route::get('/admin', function () {

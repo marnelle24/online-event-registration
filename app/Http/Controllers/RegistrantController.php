@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\Programme;
 use App\Models\Promocode;
 use App\Models\Registrant;
+use App\Services\Payment\PaymentService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Log;
 
 class RegistrantController extends Controller
 {
@@ -256,6 +258,9 @@ class RegistrantController extends Controller
             return redirect()->route('registration.confirmation', ['regCode' => $regCode]);
         }
         
+        // Check if payment is already completed
+        $isPaid = in_array($registrant->paymentStatus, ['paid', 'group_member_paid', 'free']);
+        
         // Get group members if this is a group registration (always return collection)
         $groupMembers = collect();
         if ($registrant->groupRegistrationID) {
@@ -263,10 +268,11 @@ class RegistrantController extends Controller
                 ->where('regCode', '!=', $regCode)
                 ->get();
         }
-        
+
         return view('pages.registration-payment', [
             'registrant' => $registrant,
-            'groupMembers' => $groupMembers
+            'groupMembers' => $groupMembers,
+            'isPaid' => $isPaid
         ]);
     }
 
@@ -289,6 +295,274 @@ class RegistrantController extends Controller
             'registrant' => $registrant,
             'groupMembers' => $groupMembers
         ]);
+    }
+
+    /**
+     * Process payment with selected payment method
+     *
+     * @param Request $request
+     * @param string $regCode
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function processPayment(Request $request, $regCode)
+    {
+        $request->validate([
+            'payment_method' => 'required|string|in:hitpay,paypal,stripe,bank_transfer',
+        ]);
+
+        try {
+            $registrant = Registrant::where('regCode', $regCode)->firstOrFail();
+            
+            // Verify this is a paid event
+            if ($registrant->netAmount <= 0) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'This is a free event, no payment required.',
+                ], 400);
+            }
+
+            // Check if already paid
+            if ($registrant->paymentStatus === 'paid') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Payment has already been completed.',
+                ], 400);
+            }
+
+            $paymentService = new PaymentService();
+            $result = $paymentService->processPayment(
+                $registrant, 
+                $request->payment_method,
+                $request->only(['card_token', 'payment_token']) // Additional data for specific gateways
+            );
+
+            if ($result['success']) {
+                return response()->json([
+                    'success' => true,
+                    'payment_method' => $request->payment_method,
+                    'data' => $result['data'],
+                ]);
+            }
+
+            return response()->json([
+                'success' => false,
+                'message' => $result['error'] ?? 'Payment processing failed',
+            ], 500);
+
+        } catch (\Exception $e) {
+            Log::error('Payment processing error', [
+                'regCode' => $regCode,
+                'error' => $e->getMessage(),
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while processing payment',
+            ], 500);
+        }
+    }
+
+    /**
+     * Handle payment callback from payment gateways
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function paymentCallback(Request $request)
+    {
+        try 
+        {
+            // Determine payment method from request
+            $paymentMethod = $this->detectPaymentMethod($request);
+
+            if (!$paymentMethod) {
+                return redirect()->route('home')->with('error', 'Invalid payment callback');
+            }
+
+            $paymentService = new PaymentService();
+            $result = $paymentService->verifyPaymentCallback($paymentMethod, $request->all());
+
+            if ($result['verified']) 
+            {
+                $referenceNo = $result['reference_no'];
+
+                $registrant = Registrant::where('paymentReferenceNo', $referenceNo)
+                    ->orWhere('regCode', $referenceNo)
+                    ->first();
+
+                // dd($result, $registrant);
+
+                if ($registrant) 
+                {
+                    return redirect()
+                        ->route('registration.confirmation', ['regCode' => $registrant->regCode])
+                        ->with('success', 'Payment successful! Your registration is confirmed.');
+                }
+            }
+
+            return redirect()->route('home')->with('error', 'Payment verification failed');
+
+        } 
+        catch (\Exception $e) 
+        {
+            Log::error('Payment callback error', [
+                'error' => $e->getMessage(),
+                'request' => $request->all(),
+            ]);
+
+            return redirect()->route('home')->with('error', 'Payment verification failed');
+        }
+    }
+
+    /**
+     * Handle payment webhook from payment gateways
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function paymentWebhook(Request $request)
+    {
+        try {
+            // Determine payment method from request
+            $paymentMethod = $this->detectPaymentMethod($request);
+            
+            if (!$paymentMethod) {
+                return response()->json(['error' => 'Invalid webhook'], 400);
+            }
+
+            $paymentService = new PaymentService();
+            $result = $paymentService->verifyPaymentCallback($paymentMethod, $request->all());
+
+            Log::info('Payment webhook received', [
+                'payment_method' => $paymentMethod,
+                'verified' => $result['verified'] ?? false,
+                'result' => $result,
+            ]);
+
+            return response()->json(['success' => true]);
+
+        } catch (\Exception $e) {
+            Log::error('Payment webhook error', [
+                'error' => $e->getMessage(),
+                'request' => $request->all(),
+            ]);
+
+            return response()->json(['error' => 'Webhook processing failed'], 500);
+        }
+    }
+
+    /**
+     * Get available payment methods for registrant
+     *
+     * @param string $regCode
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getPaymentMethods($regCode)
+    {
+        try {
+            $registrant = Registrant::where('regCode', $regCode)->firstOrFail();
+            
+            $paymentService = new PaymentService();
+            $methods = $paymentService->getAvailablePaymentMethods();
+
+            return response()->json([
+                'success' => true,
+                'payment_methods' => $methods,
+                'registrant' => [
+                    'regCode' => $registrant->regCode,
+                    'amount' => $registrant->netAmount,
+                    'currency' => 'SGD', // Default currency
+                ],
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to load payment methods',
+            ], 500);
+        }
+    }
+
+    /**
+     * Admin: Verify bank transfer payment manually
+     *
+     * @param Request $request
+     * @param string $regCode
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function verifyBankTransfer(Request $request, $regCode)
+    {
+        // This should be protected by admin middleware
+        $request->validate([
+            'verified' => 'required|boolean',
+            'notes' => 'nullable|string',
+        ]);
+
+        try {
+            $registrant = Registrant::where('regCode', $regCode)->firstOrFail();
+
+            if ($request->verified) {
+                $paymentService = new PaymentService();
+                $paymentService->confirmPayment($registrant->paymentReferenceNo, [
+                    'verified_by' => auth()->user()->name ?? 'Admin',
+                    'verified_at' => now(),
+                    'notes' => $request->notes,
+                ]);
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Payment verified and registration confirmed',
+                ]);
+            }
+
+            $registrant->update([
+                'paymentStatus' => 'rejected',
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Payment rejected',
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to verify payment',
+            ], 500);
+        }
+    }
+
+    /**
+     * Detect payment method from request
+     *
+     * @param Request $request
+     * @return string|null
+     */
+    protected function detectPaymentMethod(Request $request): ?string
+    {
+        return 'hitpay';
+
+        // Check for HitPay
+        if ($request->has('hmac') || $request->has('reference_number')) {
+            return 'hitpay';
+        }
+
+        // Check for Stripe
+        if ($request->has('session_id')) {
+            return 'stripe';
+        }
+
+        // Check for PayPal
+        if ($request->has('token') || $request->has('PayerID')) {
+            return 'paypal';
+        }
+
+        // Check explicit payment_method parameter
+        if ($request->has('payment_method')) {
+            return $request->payment_method;
+        }
+
+        return null;
     }
 
     private function generateRegCode($programmeCode)

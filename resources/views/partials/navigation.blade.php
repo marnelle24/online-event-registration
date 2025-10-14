@@ -136,7 +136,7 @@
     <!-- Mobile Navigation -->
     <div 
         {{-- :class="{ 'bottom-0': isFixed }" --}}
-        class="z-9999 fixed bottom-0 left-0 right-0 bg-teal-900/90 shadow-lg md:hidden lg:hidden">
+        class="z-99 fixed bottom-0 left-0 right-0 bg-teal-900/90 shadow-lg md:hidden lg:hidden">
         <div class="flex justify-around py-4">
             <a href="/" class="flex flex-col items-center text-white group">
                 <svg xmlns="http://www.w3.org/2000/svg" class="group-hover:-translate-y-0.5 duration-300 group-hover:stroke-slate-300 stroke-white h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">

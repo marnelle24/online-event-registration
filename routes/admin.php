@@ -7,6 +7,7 @@ use App\Http\Controllers\SpeakerController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\MinistryController;
 use App\Http\Controllers\ProgrammeController;
+use App\Http\Controllers\RegistrantController;
 
 Route::middleware(['admin'])->prefix('admin')->group(function () {
 
@@ -54,6 +55,11 @@ Route::middleware(['admin'])->prefix('admin')->group(function () {
         Route::get('/{id}', [AdminController::class, 'show'])->name('admin.users.show');
         Route::get('/{id}/edit', [AdminController::class, 'edit'])->name('admin.users.edit');
         Route::put('/{id}', [AdminController::class, 'update'])->name('admin.users.update');
+    });
+
+    // Payment verification routes
+    Route::prefix('payments')->group(function () {
+        Route::post('/verify-bank-transfer/{regCode}', [RegistrantController::class, 'verifyBankTransfer'])->name('admin.payments.verify-bank-transfer');
     });
     
 });
