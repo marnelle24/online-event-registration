@@ -59,6 +59,7 @@ class PaymentService
     public function processPayment(Registrant $registrant, string $paymentMethod, array $additionalData = []): array
     {
         try {
+
             $gateway = $this->getGateway($paymentMethod);
 
             // Prepare payment data
@@ -67,7 +68,7 @@ class PaymentService
             // Log payment attempt
             Log::info('Processing payment', [
                 'registrant_id' => $registrant->id,
-                'regCode' => $registrant->regCode,
+                'confirmationCode' => $registrant->confirmationCode,
                 'payment_method' => $paymentMethod,
                 'amount' => $registrant->netAmount,
             ]);
@@ -163,7 +164,7 @@ class PaymentService
     {
         
         try {
-            $registrant = Registrant::where('paymentReferenceNo', $referenceNo)->first();
+            $registrant = Registrant::where('confirmationCode', $referenceNo)->first();
 
             if (!$registrant) {
                 Log::warning('Registrant not found for payment confirmation', [
@@ -174,6 +175,7 @@ class PaymentService
 
             // Prepare update data
             $updateData = [
+                'regCode' => $this->generateRegCode($registrant->programCode),
                 'paymentStatus' => 'paid',
                 'regStatus' => 'confirmed',
                 'payment_completed_at' => now(),
@@ -211,6 +213,7 @@ class PaymentService
                     $memberPaymentRef = $registrant->groupRegistrationID . '_GM' . str_pad($index + 1, 2, '0', STR_PAD_LEFT);
                     
                     $member->update([
+                        'regCode' => $this->generateRegCode($registrant->programCode),
                         'regStatus' => 'confirmed',
                         'paymentStatus' => 'group_member_paid',
                         'paymentReferenceNo' => $memberPaymentRef,
@@ -220,7 +223,7 @@ class PaymentService
                         'payment_metadata' => array_merge($member->payment_metadata ?? [], [
                             'group_payment_confirmed' => true,
                             'main_registrant_ref' => $referenceNo,
-                            'main_registrant_code' => $registrant->regCode,
+                            'main_registrant_code' => $registrant->confirmationCode,
                             'group_registration_id' => $registrant->groupRegistrationID,
                             'confirmed_at' => now()->toIso8601String(),
                         ]),
@@ -229,7 +232,7 @@ class PaymentService
 
                 Log::info('Updated group members payment status', [
                     'main_registrant_id' => $registrant->id,
-                    'main_registrant_code' => $registrant->regCode,
+                    'main_registrant_code' => $registrant->confirmationCode,
                     'main_registrant_ref' => $referenceNo,
                     'group_registration_id' => $registrant->groupRegistrationID,
                     'group_members_count' => $groupMembers->count(),
@@ -239,7 +242,7 @@ class PaymentService
 
             Log::info('Payment confirmed successfully', [
                 'registrant_id' => $registrant->id,
-                'regCode' => $registrant->regCode,
+                'confirmationCode' => $registrant->confirmationCode,
                 'reference_no' => $referenceNo,
             ]);
 
@@ -266,7 +269,7 @@ class PaymentService
     {
         return array_merge([
             'registrant_id' => $registrant->id,
-            'regCode' => $registrant->regCode,
+            'confirmationCode' => $registrant->confirmationCode,
             'amount' => $registrant->netAmount,
             'currency' => 'SGD', // Default currency
             'description' => "Registration for {$registrant->programme->title}",
@@ -274,7 +277,7 @@ class PaymentService
             'customer_name' => "{$registrant->firstName} {$registrant->lastName}",
             'customer_phone' => $registrant->contactNumber,
             'return_url' => route('payment.callback'),
-            'cancel_url' => route('registration.payment', ['regCode' => $registrant->regCode]),
+            'cancel_url' => route('registration.payment', ['confirmationCode' => $registrant->confirmationCode]),
             'webhook_url' => '',
         ], $additionalData);
     }
@@ -303,7 +306,12 @@ class PaymentService
         // Update payment transaction ID if provided
         if (isset($response['payment_id'])) {
             $updateData['payment_transaction_id'] = $response['payment_id'];
-        } elseif (isset($response['session_id'])) {
+            $updateData['payment_transaction_id'] = $response['payment_id'];
+        } 
+        else if (isset($response['reference_no']) && $paymentMethod === 'bank_transfer') {
+            $updateData['payment_transaction_id'] = $response['reference_no'];
+        }
+        elseif (isset($response['session_id'])) {
             $updateData['payment_transaction_id'] = $response['session_id'];
         } elseif (isset($response['order_id'])) {
             $updateData['payment_transaction_id'] = $response['order_id'];
@@ -360,6 +368,30 @@ class PaymentService
                 'enabled' => true,
             ],
         ];
+    }
+
+    private function generateRegCode($programmeCode)
+    {
+        // Count existing registrants for this programme
+        $count = Registrant::where('programCode', $programmeCode)->count();
+        
+        // Increment to get the current registrant number
+        $registrantNumber = $count + 1;
+        
+        // Pad with zeros (3 digits)
+        $paddedNumber = str_pad($registrantNumber, 3, '0', STR_PAD_LEFT);
+        
+        // Generate registration code: PROGRAMMECODE_XXX
+        $regCode = $programmeCode . '_' . $paddedNumber;
+        
+        // Check if regCode already exists (safety check)
+        while (Registrant::where('regCode', $regCode)->exists()) {
+            $registrantNumber++;
+            $paddedNumber = str_pad($registrantNumber, 3, '0', STR_PAD_LEFT);
+            $regCode = $programmeCode . '_' . $paddedNumber;
+        }
+
+        return $regCode;
     }
 }
 

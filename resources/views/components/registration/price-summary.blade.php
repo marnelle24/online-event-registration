@@ -2,7 +2,7 @@
 
 <!-- Price Summary -->
 @if($programme->price > 0)
-<div class="bg-amber-100/50 border border-amber-200 rounded-lg p-6">
+<div class="bg-amber-50/50 border border-amber-200 rounded-lg p-6">
     <h3 class="text-lg font-semibold text-slate-800 mb-4">Price Summary</h3>
     <div class="space-y-2">
         <div x-show="isGroupRegistration" class="flex justify-between text-slate-600 text-sm mb-2">
@@ -11,16 +11,30 @@
         </div>
         <div class="flex justify-between text-slate-700">
             <span>Programme Fee:</span>
-            <span class="font-semibold">SGD <span x-text="programmePrice.toFixed(2)"></span></span>
+            <div class="flex items-center gap-2">
+                <span 
+                    :class="hasActivePromotion ? 'line-through' : ''"
+                    class="text-slate-400">
+                    $<span x-text="programmePrice.toFixed(2)"></span>
+                </span>
+            </div>
+        </div>
+        <div 
+            x-show="hasActivePromotion" 
+            class="flex justify-between text-slate-700">
+            <span class="font-medium text-green-700" x-text="activePromotion?.title || 'Promotion'"></span>
+            <div class="flex items-center gap-2"></div>
+                <span class="font-semibold" :class="hasActivePromotion ? 'text-green-600' : ''">$<span x-text="getEffectivePrice().toFixed(2)"></span></span>
+            </div>
         </div>
         <div x-show="promocodeValid" class="flex justify-between text-green-600">
             <span>Promo Code Discount:</span>
-            <span class="font-semibold">- SGD <span x-text="discountAmount.toFixed(2)"></span></span>
+            <span class="font-semibold">- $<span x-text="discountAmount.toFixed(2)"></span></span>
         </div>
         <div class="border-t border-amber-300 pt-2 mt-2">
             <div class="flex justify-between text-xl font-bold text-slate-800">
                 <span>Total Amount:</span>
-                <span class="text-teal-600">SGD <span x-text="calculateTotalCost().toFixed(2)"></span></span>
+                <span class="text-teal-600">$<span x-text="calculateTotalCost().toFixed(2)"></span></span>
             </div>
         </div>
     </div>

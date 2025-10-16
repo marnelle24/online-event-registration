@@ -70,13 +70,13 @@
                             <!-- Price Badge -->
                             <div class="absolute top-3 right-3">
                                 @if($programme->active_promotion)
-                                    <div class="bg-teal-500 text-white px-3 py-1 rounded-full text-sm font-bold shadow-lg">
-                                        {{ $programme->discounted_price }}
-                                        <span class="line-through text-teal-200 ml-1 text-xs">{{ $programme->formatted_price }}</span>
+                                    <div class="bg-red-500 text-white px-3 py-1 rounded-full text-sm font-bold shadow-lg">
+                                        {{ '$'.$programme->discounted_price }}
+                                        <span class="line-through text-white ml-1 text-sm">{{ '$'.$programme->formatted_price }}</span>
                                     </div>
                                 @else
-                                    <div class="bg-white/90 backdrop-blur-sm text-gray-800 px-3 py-1 rounded-full text-sm font-bold shadow-lg">
-                                        {{ $programme->formatted_price }}
+                                    <div class="bg-white/90 backdrop-blur-sm text-slate-600 px-3 py-1 rounded-full text-sm font-bold shadow-lg">
+                                        {{ '$'.$programme->formatted_price }}
                                     </div>
                                 @endif
                             </div>
@@ -84,7 +84,7 @@
                             <!-- Category Badge -->
                             @if($programme->categories->isNotEmpty())
                                 <div class="absolute top-3 left-3">
-                                    <span class="bg-black/20 backdrop-blur-sm text-white px-2 py-1 rounded-full text-xs font-medium">
+                                    <span class="bg-white/80 capitalize backdrop-blur-sm text-slate-700 px-2 py-1 rounded-full text-sm font-medium">
                                         {{ $programme->categories->first()->name }}
                                     </span>
                                 </div>
@@ -138,30 +138,6 @@
                                     </div>
                                 @endif
                             </div>
-
-                            <!-- Speakers -->
-                            {{-- @if($programme->speakers->isNotEmpty())
-                                <div class="mb-4">
-                                    <div class="flex items-center mb-2">
-                                        <svg class="w-4 h-4 mr-2 text-teal-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                                        </svg>
-                                        <span class="text-sm font-medium text-gray-700">Speakers</span>
-                                    </div>
-                                    <div class="flex flex-wrap gap-1">
-                                        @foreach($programme->speakers->take(2) as $speaker)
-                                            <span class="border border-teal-500/60 bg-teal-50 text-teal-700 px-2 py-1 rounded-full text-xs font-medium">
-                                                {{ $speaker->title }} {{ $speaker->name }}
-                                            </span>
-                                        @endforeach
-                                        @if($programme->speakers->count() > 2)
-                                            <span class="bg-gray-100 text-gray-600 px-2 py-1 rounded-full text-xs">
-                                                +{{ $programme->speakers->count() - 2 }} more
-                                            </span>
-                                        @endif
-                                    </div>
-                                </div>
-                            @endif --}}
 
                             <!-- Registration Status -->
                             <div class="mb-4">

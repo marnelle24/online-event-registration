@@ -19,8 +19,8 @@
                     
                     <div class="bg-green-50 border border-green-200 rounded-lg p-6 text-center">
                         <p class="text-sm text-slate-600 mb-2">{{ $registrant->groupRegistrationID ? 'Group Registration ID' : 'Your Registration Code' }}</p>
-                        <p class="text-3xl font-bold text-green-700 tracking-wider">{{ $registrant->groupRegistrationID ?? $registrant->regCode }}</p>
-                        <p class="text-sm text-green-600 mt-2">✓ Payment Status: {{ ucfirst(str_replace('_', ' ', $registrant->paymentStatus)) }}</p>
+                        <p class="text-3xl font-bold text-green-700 tracking-wider">{{ $registrant->groupRegistrationID ?? $registrant->confirmationCode }}</p>
+                        {{-- <p class="text-sm text-green-600 mt-2">✓ Payment Status: {{ ucfirst(str_replace('_', ' ', $registrant->paymentStatus)) }}</p> --}}
                     </div>
                 @else
                     <h1 class="text-3xl font-bold text-center text-slate-800 mb-2">Payment Required</h1>
@@ -28,7 +28,7 @@
                     
                     <div class="bg-orange-50 border border-orange-200 rounded-lg p-6 text-center">
                         <p class="text-sm text-slate-600 mb-2">{{ $registrant->groupRegistrationID ? 'Group Registration ID' : 'Your Registration Code' }}</p>
-                        <p class="text-3xl font-bold text-orange-700 tracking-wider">{{ $registrant->groupRegistrationID ?? $registrant->regCode }}</p>
+                        <p class="text-3xl font-bold text-orange-700 tracking-wider">{{ $registrant->groupRegistrationID ?? $registrant->confirmationCode }}</p>
                     </div>
                 @endif
             </div>
@@ -111,17 +111,20 @@
                             <p class="font-semibold text-slate-800 mb-2">Member {{ $index + 2 }}</p>
                             <div class="grid md:grid-cols-3 gap-3 text-sm">
                                 <div>
-                                    <p class="font-medium text-slate-800">{{ $member->title }} {{ $member->firstName }} {{ $member->lastName }}</p>
+                                    <p class="text-slate-600">Name</p>
+                                    <p class="font-medium text-xl text-slate-800">{{ $member->title }} {{ $member->firstName }} {{ $member->lastName }}</p>
                                     @if($member->groupRegistrationID && $member->paymentStatus == 'group_member_paid')
-                                        <span class="text-xs text-slate-600 italic font-bold">Code:</span>
-                                        <span class="text-xs text-green-600 italic font-bold">{{ $member->paymentReferenceNo }}</span>
+                                        <span class="text-xs text-slate-600 font-bold">Code:</span>
+                                        <span class="text-xs text-green-600 font-bold">{{ $member->paymentReferenceNo }}</span>
                                     @endif
                                 </div>
                                 <div>
-                                    <p class="font-medium text-slate-800">{{ $member->email }}</p>
+                                    <p class="text-slate-600">Email</p>
+                                    <p class="font-medium text-xl text-slate-800">{{ $member->email }}</p>
                                 </div>
                                 <div>
-                                    <p class="font-medium text-slate-800">{{ $member->contactNumber }}</p>
+                                    <p class="text-slate-600">Contact</p>
+                                    <p class="font-medium text-xl text-slate-800">{{ $member->contactNumber }}</p>
                                 </div>
                             </div>
                         </div>
@@ -190,7 +193,7 @@
                                     <svg class="w-5 h-5 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                                         <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
                                     </svg>
-                                    <span>Please save your registration code: <strong>{{ $registrant->regCode }}</strong></span>
+                                    <span>Please save your registration code: <strong>{{ $registrant->confirmationCode }}</strong></span>
                                 </li>
                                 @if($registrant->netAmount > 0)
                                 <li class="flex items-start">

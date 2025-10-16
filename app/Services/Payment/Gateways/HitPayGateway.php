@@ -41,7 +41,7 @@ class HitPayGateway implements PaymentGatewayInterface
                 'amount' => number_format($paymentData['amount'], 2, '.', ''),
                 'currency' => $paymentData['currency'],
                 'purpose' => $paymentData['description'],
-                'reference_number' => $paymentData['regCode'],
+                'reference_number' => $paymentData['confirmationCode'],
                 'redirect_url' => $paymentData['return_url'],
                 'webhook' => $paymentData['webhook_url'],
                 'name' => $paymentData['customer_name'],
@@ -54,7 +54,8 @@ class HitPayGateway implements PaymentGatewayInterface
                 
                 return [
                     'status' => 'initiated',
-                    'reference_no' => $data['reference_number'] ?? $paymentData['regCode'],
+                    'data' => $data,
+                    'reference_no' => $data['reference_number'] ?? $paymentData['confirmationCode'],
                     'payment_id' => $data['id'] ?? null,
                     'payment_url' => $data['url'] ?? null,
                     'redirect_url' => $data['url'] ?? null,

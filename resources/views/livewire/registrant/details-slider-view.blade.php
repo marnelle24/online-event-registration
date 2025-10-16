@@ -66,7 +66,7 @@
                     <table class="border-x border-t border-slate-400 shadow w-full">
                         <tr class="border-b border-slate-400">
                             <td class="py-2 px-2 text-md">Reg Code</td>
-                            <td class="py-2 px-2 text-md">{{ $registrant->regCode }}</td>
+                            <td class="py-2 px-2 text-md">{{ $registrant->confirmationCode }}</td>
                         </tr>
                         <tr class="border-b border-slate-400">
                             <td class="py-2 px-2 text-md">NRIC</td>

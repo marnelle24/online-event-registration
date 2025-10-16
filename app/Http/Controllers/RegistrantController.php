@@ -123,36 +123,35 @@ class RegistrantController extends Controller
 
         $programme = Programme::findOrFail($request->programmeId);
 
-        // Calculate pricing (use totalCost from frontend or calculate)
-        $price = $programme->price;
-        $discountAmount = 0;
-        $netAmount = $request->totalCost ?? $price;
-        $promocodeId = null;
+        $activePromotion = $programme->active_promotion;
+        $discountAmount = $activePromotion ? $activePromotion->price : 0;
+        $netAmount = $activePromotion ? $activePromotion->price : $programme->price;
+        $promotionId = $activePromotion ? $activePromotion->id : null;
 
+        $promocodeId = null;
         if ($request->promocodeId) 
         {
             $promocode = Promocode::find($request->promocodeId);
 
             if ($promocode && $promocode->isActive) 
             {
-                $netAmount = $request->totalCost ?? $promocode->price;
-                $discountAmount = $price - $netAmount;
+                $netAmount = $promocode->price;
+                $discountAmount = $promocode->price;
                 $promocodeId = $promocode->id;
-                
-                // Increment usage count
-                $promocode->increment('usedCount');
             }
         }
 
         // Generate unique registration code for main registrant
-        $mainRegCode = $this->generateRegCode($programme->programmeCode);
+        // $mainRegCode = $this->generateRegCode($programme->programmeCode);
+        $confirmationCode = $programme->programmeCode.'_'.strtoupper(substr(uniqid(), -6));
         
         // Generate unique group registration ID if this is a group registration
-        $groupRegistrationId = $request->isGroupRegistration ? strtoupper(substr(uniqid(), -8)) : null;
+        $groupRegistrationId = $request->isGroupRegistration ? $confirmationCode : null;
 
         // Create main registrant
         $mainRegistrant = Registrant::create([
-            'regCode' => $mainRegCode,
+            'regCode' =>$netAmount > 0 ? NULL : $this->generateRegCode($programme->programmeCode),
+            'confirmationCode' => $confirmationCode,
             'programCode' => $programme->programmeCode,
             'programme_id' => $programme->id,
             'nric' => $request->nric,
@@ -164,33 +163,24 @@ class RegistrantController extends Controller
             'postalCode' => $request->postalCode,
             'email' => $request->email,
             'contactNumber' => $request->contactNumber,
-            'price' => $price,
+            'price' => $programme->price,
             'discountAmount' => $discountAmount,
             'netAmount' => $netAmount,
             'promocode_id' => $promocodeId,
+            'promotion_id' => $promotionId,
             'paymentStatus' => $netAmount > 0 ? 'pending' : 'free',
-            'regStatus' => 'pending',
+            'regStatus' => $netAmount > 0 ? 'pending' : 'confirmed',
             'extraFields' => $request->extraFields ?? null,
             'registrationType' => $request->registrationType,
             'groupRegistrationID' => $groupRegistrationId,
         ]);
-
-        // If free event, mark as confirmed
-        if ($netAmount == 0) {
-            $mainRegistrant->update([
-                'regStatus' => 'confirmed',
-                'paymentStatus' => 'free'
-            ]);
-        }
-
         
         if ($request->isGroupRegistration && $request->has('groupMembers') && is_array($request->groupMembers)) 
         {
-            foreach ($request->groupMembers as $member) {
-                $memberRegCode = $this->generateRegCode($programme->programmeCode);
-                
+            foreach ($request->groupMembers as $member) 
+            {
                 $groupMember = Registrant::create([
-                    'regCode' => $memberRegCode,
+                    'confirmationCode' => $confirmationCode,
                     'programCode' => $programme->programmeCode,
                     'programme_id' => $programme->id,
                     'nric' => $member['nric'] ?? null,
@@ -203,20 +193,17 @@ class RegistrantController extends Controller
                     'discountAmount' => 0,
                     'netAmount' => 0,
                     'promocode_id' => $promocodeId,
-                    'paymentStatus' => 'group_member',
-                    'regStatus' => 'pending',
+                    'promotion_id' => $promotionId,
+                    'paymentStatus' => $netAmount > 0 ? 'group_member_pending' : 'free',
+                    'regStatus' => $netAmount > 0 ? 'group_reg_pending' : 'confirmed',
                     'registrationType' => 'group_member',
                     'groupRegistrationID' => $groupRegistrationId, // Link to main registrant with same group ID
                 ]);
-
-                if ($netAmount == 0) {
-                    $groupMember->update(['regStatus' => 'confirmed']);
-                }
             }
         }
 
         // Determine redirect URL based on payment status and pre-registration settings
-        $redirectUrl = route('registration.confirmation', ['regCode' => $mainRegCode]);
+        $redirectUrl = route('registration.confirmation', ['confirmationCode' => $confirmationCode]);
         
         // If this is a paid event, check pre-registration settings
         if ($netAmount > 0) 
@@ -224,38 +211,37 @@ class RegistrantController extends Controller
             if ($programme->allowPreRegistration) 
             {
                 // Allow pre-registration: redirect to confirmation page
-                $redirectUrl = route('registration.confirmation', ['regCode' => $mainRegCode]);
+                $redirectUrl = route('registration.confirmation', ['confirmationCode' => $confirmationCode]);
             } 
             else 
             {
                 // No pre-registration: redirect to payment page
-                $redirectUrl = route('registration.payment', ['regCode' => $mainRegCode]);
+                $redirectUrl = route('registration.payment', ['confirmationCode' => $confirmationCode]);
             }
         }
-        // For free events ($netAmount == 0), always redirect to confirmation page
-        
+
         sleep(2);
 
         return response()->json([
             'success' => true,
             'registrantId' => $mainRegistrant->id,
-            'mainRegCode' => $mainRegCode,
+            'mainRegCode' => $confirmationCode,
             'isGroupRegistration' => $request->isGroupRegistration,
             'groupRegistrationId' => $groupRegistrationId,
             'redirectUrl' => $redirectUrl
         ]);
     }
 
-    public function payment($regCode)
+    public function payment($confirmationCode)
     {
-        $registrant = Registrant::where('regCode', $regCode)->firstOrFail();
+        $registrant = Registrant::where('confirmationCode', $confirmationCode)->firstOrFail();
         
         // Load related data
         $registrant->load('programme', 'promocode');
         
         // Verify this is a paid event
         if ($registrant->netAmount <= 0) {
-            return redirect()->route('registration.confirmation', ['regCode' => $regCode]);
+            return redirect()->route('registration.confirmation', ['confirmationCode' => $confirmationCode]);
         }
         
         // Check if payment is already completed
@@ -265,7 +251,8 @@ class RegistrantController extends Controller
         $groupMembers = collect();
         if ($registrant->groupRegistrationID) {
             $groupMembers = Registrant::where('groupRegistrationID', $registrant->groupRegistrationID)
-                ->where('regCode', '!=', $regCode)
+                ->where('confirmationCode', '=', $confirmationCode)
+                ->orderBy('id', 'asc')
                 ->get();
         }
 
@@ -276,9 +263,9 @@ class RegistrantController extends Controller
         ]);
     }
 
-    public function confirmation($regCode)
+    public function confirmation($confirmationCode)
     {
-        $registrant = Registrant::where('regCode', $regCode)->firstOrFail();
+        $registrant = Registrant::where('confirmationCode', $confirmationCode)->firstOrFail();
         
         // Load related data
         $registrant->load('programme', 'promocode');
@@ -287,7 +274,8 @@ class RegistrantController extends Controller
         $groupMembers = collect();
         if ($registrant->groupRegistrationID) {
             $groupMembers = Registrant::where('groupRegistrationID', $registrant->groupRegistrationID)
-                ->where('regCode', '!=', $regCode)
+                ->where('confirmationCode', '=', $confirmationCode)
+                ->orderBy('id', 'asc')
                 ->get();
         }
         
@@ -301,17 +289,17 @@ class RegistrantController extends Controller
      * Process payment with selected payment method
      *
      * @param Request $request
-     * @param string $regCode
+     * @param string $confirmationCode
      * @return \Illuminate\Http\JsonResponse
      */
-    public function processPayment(Request $request, $regCode)
+    public function processPayment(Request $request, $confirmationCode)
     {
         $request->validate([
             'payment_method' => 'required|string|in:hitpay,paypal,stripe,bank_transfer',
         ]);
 
         try {
-            $registrant = Registrant::where('regCode', $regCode)->firstOrFail();
+            $registrant = Registrant::where('confirmationCode', $confirmationCode)->firstOrFail();
             
             // Verify this is a paid event
             if ($registrant->netAmount <= 0) {
@@ -351,7 +339,7 @@ class RegistrantController extends Controller
 
         } catch (\Exception $e) {
             Log::error('Payment processing error', [
-                'regCode' => $regCode,
+                'confirmationCode' => $confirmationCode,
                 'error' => $e->getMessage(),
             ]);
 
@@ -387,15 +375,13 @@ class RegistrantController extends Controller
                 $referenceNo = $result['reference_no'];
 
                 $registrant = Registrant::where('paymentReferenceNo', $referenceNo)
-                    ->orWhere('regCode', $referenceNo)
+                    ->orWhere('confirmationCode', $referenceNo)
                     ->first();
-
-                // dd($result, $registrant);
 
                 if ($registrant) 
                 {
                     return redirect()
-                        ->route('registration.confirmation', ['regCode' => $registrant->regCode])
+                        ->route('registration.confirmation', ['confirmationCode' => $registrant->confirmationCode])
                         ->with('success', 'Payment successful! Your registration is confirmed.');
                 }
             }
@@ -454,13 +440,13 @@ class RegistrantController extends Controller
     /**
      * Get available payment methods for registrant
      *
-     * @param string $regCode
+     * @param string $confirmationCode
      * @return \Illuminate\Http\JsonResponse
      */
-    public function getPaymentMethods($regCode)
+    public function getPaymentMethods($confirmationCode)
     {
         try {
-            $registrant = Registrant::where('regCode', $regCode)->firstOrFail();
+            $registrant = Registrant::where('confirmationCode', $confirmationCode)->firstOrFail();
             
             $paymentService = new PaymentService();
             $methods = $paymentService->getAvailablePaymentMethods();
@@ -469,7 +455,7 @@ class RegistrantController extends Controller
                 'success' => true,
                 'payment_methods' => $methods,
                 'registrant' => [
-                    'regCode' => $registrant->regCode,
+                    'confirmationCode' => $registrant->confirmationCode,
                     'amount' => $registrant->netAmount,
                     'currency' => 'SGD', // Default currency
                 ],
@@ -487,10 +473,10 @@ class RegistrantController extends Controller
      * Admin: Verify bank transfer payment manually
      *
      * @param Request $request
-     * @param string $regCode
+     * @param string $confirmationCode
      * @return \Illuminate\Http\JsonResponse
      */
-    public function verifyBankTransfer(Request $request, $regCode)
+    public function verifyBankTransfer(Request $request, $confirmationCode)
     {
         // This should be protected by admin middleware
         $request->validate([
@@ -499,7 +485,7 @@ class RegistrantController extends Controller
         ]);
 
         try {
-            $registrant = Registrant::where('regCode', $regCode)->firstOrFail();
+            $registrant = Registrant::where('confirmationCode', $confirmationCode)->firstOrFail();
 
             if ($request->verified) {
                 $paymentService = new PaymentService();
@@ -540,10 +526,8 @@ class RegistrantController extends Controller
      */
     protected function detectPaymentMethod(Request $request): ?string
     {
-        return 'hitpay';
-
         // Check for HitPay
-        if ($request->has('hmac') || $request->has('reference_number')) {
+        if ($request->has('hmac') || $request->has('reference')) {
             return 'hitpay';
         }
 

@@ -59,7 +59,7 @@ Route::middleware(['admin'])->prefix('admin')->group(function () {
 
     // Payment verification routes
     Route::prefix('payments')->group(function () {
-        Route::post('/verify-bank-transfer/{regCode}', [RegistrantController::class, 'verifyBankTransfer'])->name('admin.payments.verify-bank-transfer');
+        Route::post('/verify-bank-transfer/{confirmationCode}', [RegistrantController::class, 'verifyBankTransfer'])->name('admin.payments.verify-bank-transfer');
     });
     
 });

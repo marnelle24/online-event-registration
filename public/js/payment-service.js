@@ -4,8 +4,8 @@
  */
 
 class PaymentService {
-    constructor(regCode) {
-        this.regCode = regCode;
+    constructor(confirmationCode) {
+        this.confirmationCode = confirmationCode;
         this.baseUrl = '/api';
     }
 
@@ -15,7 +15,7 @@ class PaymentService {
      */
     async getPaymentMethods() {
         try {
-            const response = await fetch(`${this.baseUrl}/payment-methods/${this.regCode}`);
+            const response = await fetch(`${this.baseUrl}/payment-methods/${this.confirmationCode}`);
             const data = await response.json();
             
             if (!data.success) {
@@ -37,7 +37,7 @@ class PaymentService {
      */
     async processPayment(paymentMethod, additionalData = {}) {
         try {
-            const response = await fetch(`${this.baseUrl}/process-payment/${this.regCode}`, {
+            const response = await fetch(`${this.baseUrl}/process-payment/${this.confirmationCode}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

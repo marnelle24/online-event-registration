@@ -16,6 +16,10 @@ document.addEventListener('alpine:init', () => {
         groupRegistrationMax: config.groupRegistrationMax,
         groupRegIndividualFee: config.groupRegIndividualFee,
         programmePrice: config.programmePrice,
+        hasActivePromotion: config.hasActivePromotion || false,
+        activePromotion: config.activePromotion || null,
+        formattedPrice: config.formattedPrice || '',
+        discountedPrice: config.discountedPrice || null,
         
         // Form State
         validating: false,
@@ -23,7 +27,14 @@ document.addEventListener('alpine:init', () => {
         promocodeError: '',
         promocodeValid: false,
         discountAmount: 0,
-        finalPrice: config.programmePrice,
+        finalPrice: (() => {
+            // Initialize finalPrice with active promotion discount if available
+            if (config.hasActivePromotion && config.discountedPrice) {
+                const match = config.discountedPrice.match(/[\d.]+/);
+                return match ? parseFloat(match[0]) : config.programmePrice;
+            }
+            return config.programmePrice;
+        })(),
         isGroupRegistration: false,
         groupMembers: [],
         
@@ -209,12 +220,27 @@ document.addEventListener('alpine:init', () => {
         },
 
         // Pricing Methods
+        parsePrice(priceString) {
+            // Parse price string like "SGD 50.00" or "Free" to number
+            if (!priceString || priceString === 'Free') return 0;
+            const match = priceString.match(/[\d.]+/);
+            return match ? parseFloat(match[0]) : 0;
+        },
+
+        getEffectivePrice() {
+            // Return the effective price (promotion price if active, otherwise original price)
+            if (this.hasActivePromotion && this.discountedPrice) {
+                return this.parsePrice(this.discountedPrice);
+            }
+            return parseFloat(this.programmePrice);
+        },
+
         calculateTotalCost() {
-            // Simply return programme price minus promo code discount if applicable
+            // Return effective price (promotion price if active) minus promo code discount if applicable
             if (this.promocodeValid && this.finalPrice !== null && this.finalPrice !== undefined) {
                 return parseFloat(this.finalPrice);
             }
-            return parseFloat(this.programmePrice);
+            return this.getEffectivePrice();
         },
 
         // Registration Type Selection
@@ -251,7 +277,9 @@ document.addEventListener('alpine:init', () => {
                     this.promocodeValid = true;
                     this.formData.promocodeId = data.promocodeId;
                     this.finalPrice = parseFloat(data.price);
-                    this.discountAmount = this.programmePrice - this.finalPrice;
+                    // Calculate discount from effective price (promotion price if active)
+                    const effectivePrice = this.getEffectivePrice();
+                    this.discountAmount = effectivePrice - this.finalPrice;
                 } else {
                     this.promocodeError = data.message || 'Invalid promo code';
                     this.promocodeValid = false;

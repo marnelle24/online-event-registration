@@ -40,8 +40,8 @@ class StripeGateway implements PaymentGatewayInterface
                     'success_url' => $paymentData['return_url'] . '?session_id={CHECKOUT_SESSION_ID}',
                     'cancel_url' => $paymentData['cancel_url'],
                     'customer_email' => $paymentData['customer_email'],
-                    'client_reference_id' => $paymentData['regCode'],
-                    'metadata[regCode]' => $paymentData['regCode'],
+                    'client_reference_id' => $paymentData['confirmationCode'],
+                    'metadata[confirmationCode]' => $paymentData['confirmationCode'],
                     'metadata[registrant_id]' => $paymentData['registrant_id'],
                 ]);
 
@@ -50,7 +50,7 @@ class StripeGateway implements PaymentGatewayInterface
                 
                 return [
                     'status' => 'initiated',
-                    'reference_no' => $paymentData['regCode'],
+                    'reference_no' => $paymentData['confirmationCode'],
                     'session_id' => $data['id'] ?? null,
                     'payment_url' => $data['url'] ?? null,
                     'redirect_url' => $data['url'] ?? null,

@@ -45,7 +45,8 @@
                 <div x-show="bankTransferInstructions?.amount" class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-4">
                     <p class="font-bold">Amount to Transfer:</p>
                     <p class="text-2xl font-bold text-blue-900">
-                        <span x-text="bankTransferInstructions?.currency || 'SGD'"></span>
+                        {{-- <span x-text="bankTransferInstructions?.currency || '$'"></span> --}}
+                        <span>$</span>
                         <span x-text="bankTransferInstructions?.amount ? parseFloat(bankTransferInstructions.amount).toFixed(2) : '0.00'"></span>
                     </p>
                     <p x-show="bankTransferInstructions?.reference_no" class="text-xs mt-1">

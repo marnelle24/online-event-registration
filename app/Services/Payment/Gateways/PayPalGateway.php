@@ -60,9 +60,9 @@ class PayPalGateway implements PaymentGatewayInterface
                     'intent' => 'CAPTURE',
                     'purchase_units' => [
                         [
-                            'reference_id' => $paymentData['regCode'],
+                            'reference_id' => $paymentData['confirmationCode'],
                             'description' => $paymentData['description'],
-                            'custom_id' => $paymentData['regCode'],
+                            'custom_id' => $paymentData['confirmationCode'],
                             'amount' => [
                                 'currency_code' => $paymentData['currency'],
                                 'value' => number_format($paymentData['amount'], 2, '.', ''),
@@ -101,7 +101,7 @@ class PayPalGateway implements PaymentGatewayInterface
                 
                 return [
                     'status' => 'initiated',
-                    'reference_no' => $paymentData['regCode'],
+                    'reference_no' => $paymentData['confirmationCode'],
                     'order_id' => $data['id'] ?? null,
                     'payment_url' => $approvalUrl,
                     'redirect_url' => $approvalUrl,

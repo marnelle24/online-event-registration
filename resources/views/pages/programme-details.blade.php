@@ -67,10 +67,19 @@
                             <div>
                                 <h3 class="font-semibold text-slate-900">Price</h3>
                                 @if($programme->active_promotion)
-                                    <p class="text-green-600 font-bold">{{ $programme->discounted_price }}</p>
-                                    <p class="text-slate-500 line-through text-sm">{{ $programme->formatted_price }}</p>
+                                    <div class="flex gap-1 items-center">
+                                        <p class="text-green-600 font-bold text-lg">
+                                            {{ '$'.$programme->discounted_price }}
+                                        </p>
+                                        <p class="text-green-700 text-sm font-medium capitalize italic">
+                                            ({{ $programme->active_promotion->title }})
+                                        </p>
+                                    </div>
+                                    <p class="text-slate-500 line-through text-md">
+                                        {{ '$'.$programme->formatted_price }}
+                                    </p>
                                 @else
-                                    <p class="text-slate-600 font-bold">{{ $programme->formatted_price }}</p>
+                                    <p class="text-slate-600 font-bold text-lg">{{ '$'.$programme->formatted_price }}</p>
                                 @endif
                             </div>
                         </div>

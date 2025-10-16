@@ -162,25 +162,30 @@ class Programme extends Model implements HasMedia
         if ($this->price <= 0) {
             return 'Free';
         }
-        return 'SGD ' . number_format($this->price, 2);
+        return number_format($this->price, 2);
     }
 
     public function getDiscountedPriceAttribute()
     {
-        $activePromo = $this->active_promotion;
-        if (!$activePromo) {
+        $activePromo = $this->active_promotion; // coming from getActivePromotionAttribute()
+        
+        if (!$activePromo)
             return null;
-        }
 
-        $discountAmount = 0;
-        if ($activePromo->discount_type === 'percentage') {
-            $discountAmount = $this->price * ($activePromo->discount_value / 100);
-        } else {
-            $discountAmount = $activePromo->discount_value;
-        }
+        return number_format($activePromo->price, 2);
 
-        $discountedPrice = $this->price - $discountAmount;
-        return $discountedPrice > 0 ? 'SGD ' . number_format($discountedPrice, 2) : 'Free';
+        // $discountAmount = 0;
+        // if ($activePromo->discount_type === 'percentage') 
+        // {
+        //     $discountAmount = $this->price * ($activePromo->discount_value / 100);
+        // } 
+        // else 
+        // {
+        //     $discountAmount = $activePromo->discount_value;
+        // }
+
+        // $discountedPrice = $this->price - $discountAmount;
+        // return $discountedPrice > 0 ? 'SGD ' . number_format($discountedPrice, 2) : 'Free';
     }
 
     public function getTotalRegistrationsAttribute()

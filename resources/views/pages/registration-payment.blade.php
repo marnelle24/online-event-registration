@@ -1,13 +1,15 @@
 @section('title', 'Payment Required')
-
+{{-- @push('scripts')
+    @vite(['resources/js/payment-service.js'])
+@endpush --}}
 <x-guest-layout>
     <!-- Load Payment Service Script Before Alpine Initializes -->
     <script src="{{ asset('js/payment-service.js') }}"></script>
     <script>
         // Define Alpine component before Alpine initializes
         document.addEventListener('alpine:init', () => {
-            Alpine.data('paymentPageData', (regCode) => ({
-                regCode: regCode,
+            Alpine.data('paymentPageData', (confirmationCode) => ({
+                confirmationCode: confirmationCode,
                 paymentService: null,
                 processing: false,
                 errorMessage: null,
@@ -18,12 +20,12 @@
                 loadingBankDetails: false,
 
                 init() {
-                    this.paymentService = new PaymentService(this.regCode);
+                    this.paymentService = new PaymentService(this.confirmationCode);
                     // Make paymentService available globally for modal actions
                     window.paymentService = this.paymentService;
                     
                     // Pre-load bank transfer instructions to populate bank details
-                    this.loadBankTransferDetails();
+                    // this.loadBankTransferDetails();
                 },
 
                 async loadBankTransferDetails() {
@@ -78,6 +80,7 @@
                 {
                     try 
                     {
+                        console.log('Processing bank transfer...');
                         // If instructions are already loaded, just show the modal
                         if (this.bankTransferInstructions?.bank_details && this.bankTransferInstructions?.steps) {
                             console.log('Using cached bank transfer instructions');
@@ -108,7 +111,7 @@
         });
     </script>
 
-    <div class="relative min-h-screen bg-gradient-to-b from-white via-teal-100/70 to-white/30 py-12" x-data="paymentPageData('{{ $registrant->regCode }}')">
+    <div class="relative min-h-screen bg-gradient-to-b from-white via-teal-100/70 to-white/30 py-12" x-data="paymentPageData('{{ $registrant->confirmationCode }}')">
         <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
             
             <!-- Payment Header -->
@@ -134,17 +137,20 @@
                     <p class="text-center text-slate-600 mb-6">Your payment has been successfully processed</p>
                     
                     <div class="bg-green-50 border border-green-200 rounded-lg p-6 text-center">
-                        <p class="text-sm text-slate-600 mb-2">{{ $registrant->groupRegistrationID ? 'Group Registration ID' : 'Your Registration Code' }}</p>
-                        <p class="text-3xl font-bold text-green-700 tracking-wider">{{ $registrant->groupRegistrationID ?? $registrant->regCode }}</p>
-                        <p class="text-sm text-green-600 mt-2">✓ Payment Status: {{ ucfirst(str_replace('_', ' ', $registrant->paymentStatus)) }}</p>
+                        <p class="text-sm text-slate-600 mb-2">{{ $registrant->groupRegistrationID ? 'Group Confirmation Code' : 'Your Confirmation Code' }}</p>
+                        <p class="text-3xl font-bold text-green-700 tracking-wider">{{ $registrant->groupRegistrationID ?? $registrant->confirmationCode }}</p>
+                        {{-- <p class="text-sm text-green-600 mt-2">✓ Payment Status: {{ ucfirst(str_replace('_', ' ', $registrant->paymentStatus)) }}</p> --}}
                     </div>
                 @else
                     <h1 class="text-3xl font-bold text-center text-slate-800 mb-2">Payment Required</h1>
-                    <p class="text-center text-slate-600 mb-6">Complete your payment to confirm your registration</p>
+                    <p class="text-center text-slate-600">Complete your payment to confirm your registration.</p>
+                    @if(!$registrant->groupRegistrationID && $registrant->netAmount > 0)
+                        <p class="text-center text-slate-600 mb-6">Registration code will be generated after payment is completed.</p>
+                    @endif
                     
                     <div class="bg-orange-50 border border-orange-200 rounded-lg p-6 text-center">
-                        <p class="text-sm text-slate-600 mb-2">{{ $registrant->groupRegistrationID ? 'Group Registration ID' : 'Your Registration Code' }}</p>
-                        <p class="text-3xl font-bold text-orange-700 tracking-wider">{{ $registrant->groupRegistrationID ?? $registrant->regCode }}</p>
+                        <p class="text-sm text-slate-600 mb-2">{{ $registrant->groupRegistrationID ? 'Group Confirmation Code' : 'Your Confirmation Code' }}</p>
+                        <p class="text-3xl font-bold text-orange-700 tracking-wider">{{ $registrant->groupRegistrationID ?? $registrant->confirmationCode }}</p>
                     </div>
                 @endif
             </div>
@@ -228,19 +234,19 @@
                                 <div class="grid md:grid-cols-3 gap-3 text-sm">
                                     <div>
                                         <p class="text-slate-600">Name</p>
-                                        <p class="font-semibold text-slate-800">{{ $member->title }} {{ $member->firstName }} {{ $member->lastName }}</p>
+                                        <p class="font-semibold text-lg text-slate-800">{{ $member->title }} {{ $member->firstName }} {{ $member->lastName }}</p>
                                         @if($member->groupRegistrationID && $member->paymentStatus == 'group_member_paid')
-                                            <span class="text-xs text-slate-600 italic font-bold">Code:</span>
-                                            <span class="text-xs text-green-600 italic font-bold">{{ $member->paymentReferenceNo }}</span>
+                                            <span class="text-xs text-slate-600 font-bold">Code:</span>
+                                            <span class="text-xs text-green-600 font-bold">{{ $member->paymentReferenceNo }}</span>
                                         @endif
                                     </div>
                                     <div>
                                         <p class="text-slate-600">Email</p>
-                                        <p class="font-semibold text-slate-800">{{ $member->email }}</p>
+                                        <p class="font-semibold text-lg text-slate-800">{{ $member->email }}</p>
                                     </div>
                                     <div>
                                         <p class="text-slate-600">Contact</p>
-                                        <p class="font-semibold text-slate-800">{{ $member->contactNumber }}</p>
+                                        <p class="font-semibold text-lg text-slate-800">{{ $member->contactNumber }}</p>
                                     </div>
                                 </div>
                             </div>
@@ -256,23 +262,24 @@
                 <div class="space-y-3">
                     <div class="flex justify-between items-center">
                         <span class="text-slate-600">Programme Fee:</span>
-                        <span class="font-semibold text-slate-800">${{ number_format($registrant->price, 2) }}</span>
+                        <span class="font-semibold text-slate-800 @if($registrant->programme->active_promotion) line-through @endif">${{ number_format($registrant->price, 2) }}</span>
                     </div>
-                    @if($registrant->discountAmount > 0)
-                        <div class="flex justify-between items-center text-green-600">
-                            <span>Discount Applied:</span>
-                            <span class="font-semibold">- ${{ number_format($registrant->discountAmount, 2) }}</span>
+                    @if($registrant->programme->active_promotion)
+                        <div class="flex justify-between items-center">
+                            <span class="text-green-600 capitalize italic">{{ $registrant->programme->active_promotion->title }}</span>
+                            <span class="font-semibold text-green-600">${{ number_format($registrant->programme->discounted_price, 2) }}</span>
                         </div>
-                        @if($registrant->promocode)
-                            <div class="text-sm text-slate-600">
-                                <p>Promo Code: <span class="font-medium text-slate-800">{{ $registrant->promocode->promocode }}</span></p>
-                            </div>
-                        @endif
+                    @endif
+                    
+                    @if($registrant->promocode)
+                        <div class="text-sm text-slate-600">
+                            <p>Promo Code: <span class="font-medium text-slate-800">{{ $registrant->promocode->promocode }}</span></p>
+                        </div>
                     @endif
                     <div class="border-t pt-3 mt-3">
                         <div class="flex justify-between items-center">
                             <span class="text-lg font-bold text-slate-800">Total Amount Due:</span>
-                            <span class="text-3xl font-bold text-orange-600">${{ number_format($registrant->netAmount, 2) }}</span>
+                            <span class="text-3xl font-bold text-green-600">${{ number_format($registrant->netAmount, 2) }}</span>
                         </div>
                     </div>
                 </div>
@@ -344,7 +351,7 @@
                             <div class="ml-4 flex-1">
                                 <h3 class="text-lg font-semibold text-slate-800 mb-2">Bank Transfer/Cheque Payment</h3>
                                 <p class="text-sm text-slate-600">Transfer directly to our bank account</p>
-                                <p class="text-sm text-slate-600 mb-3">Please use your registration code <strong>{{ $registrant->regCode }}</strong> as payment reference</p>
+                                <p class="text-sm text-slate-600 mb-3">Please use your registration code <strong>{{ $registrant->confirmationCode }}</strong> as payment reference</p>
                                 
                                 <div class="bg-blue-100/50 border border-blue-200 rounded-lg p-4 space-y-2 text-sm mb-4 relative">
                                     <!-- Loading indicator -->
@@ -403,8 +410,9 @@
                                         </div>
                                     @endif
                                     <div class="border-t border-blue-200 pt-2 mt-2">
-                                        <p class="text-md text-slate-600">
-                                            <strong>Reference:</strong> {{ $registrant->regCode }}
+                                        <p class="text-md text-slate-600 flex items-center justify-between">
+                                            <strong>Confirmation Code:</strong> 
+                                            <span class="text-slate-800 font-semibold">{{ $registrant->confirmationCode }}</span>
                                         </p>
                                     </div>
                                 </div>
@@ -487,7 +495,7 @@
             <div class="flex flex-col sm:flex-row gap-4 justify-center py-8">
                 @if($isPaid)
                     <!-- Show confirmation page button if paid -->
-                    <a href="{{ route('registration.confirmation', ['regCode' => $registrant->regCode]) }}" 
+                    <a href="{{ route('registration.confirmation', ['confirmationCode' => $registrant->confirmationCode]) }}" 
                        class="inline-flex border border-green-600 duration-300 transition-all items-center justify-center px-6 py-3 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700">
                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />

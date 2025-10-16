@@ -34,6 +34,7 @@ class Registrant extends Model
         'payment_initiated_at',
         'payment_completed_at',
         'regStatus',
+        'confirmationCode',
         'groupRegistrationID',
         'promocode_id',
         'promotion_id',

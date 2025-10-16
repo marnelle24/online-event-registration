@@ -13,6 +13,10 @@
             hasActivePromocodes: @json($hasActivePromocodes),
             programmeCode: '{{ $programmeCode }}',
             programmeId: {{ $programme->id }},
+            hasActivePromotion: @json($programme->active_promotion ? true : false),
+            activePromotion: @json($programme->active_promotion),
+            formattedPrice: '{{ $programme->formatted_price }}',
+            discountedPrice: @json($programme->discounted_price),
             userTitle: @if($user && $user->firstname && $user->lastname) 
                 @php
                     // Try to determine title from name patterns
@@ -63,7 +67,12 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
                                 @if($programme->price > 0)
-                                        {{ $programme->formattedPrice }}
+                                    @if($programme->active_promotion)
+                                        <span class="font-bold text-green-600">{{ '$'.number_format($programme->discountedPrice, 2) }}</span>
+                                        <span class="text-slate-400 line-through ml-1">{{ '$'.number_format($programme->formattedPrice, 2) }}</span>
+                                    @else
+                                        {{ '$'.number_format($programme->formattedPrice, 2) }}
+                                    @endif
                                 @else
                                     <span class="capitalize font-bold text-slate-600">
                                         Free Event

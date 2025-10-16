@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('registrants', function (Blueprint $table) {
             $table->id();
-            $table->string('regCode')->unique(); // orderNumber
+            $table->string('regCode')->unique()->nullable(); // orderNumber
             $table->string('programCode');
             $table->foreignId('programme_id')->constrained('programmes')->onDelete('cascade');
             $table->string('nric')->nullable();
@@ -33,6 +33,7 @@ return new class extends Migration
             $table->string('paymentOption')->nullable(); // paynow|card
             $table->string('paymentReferenceNo')->nullable();
             $table->string('regStatus')->nullable();
+            $table->string('confirmationCode')->nullable();
             $table->string('groupRegistrationID')->nullable();
             $table->unsignedBigInteger('promocode_id')->nullable();
             $table->unsignedBigInteger('promotion_id')->nullable();

@@ -1,6 +1,6 @@
-@props(['regCode', 'amount', 'currency' => 'SGD'])
+@props(['confirmationCode', 'amount', 'currency' => 'SGD'])
 
-<div class="payment-methods-container" x-data="paymentMethodsComponent('{{ $regCode }}')">
+<div class="payment-methods-container" x-data="paymentMethodsComponent('{{ $confirmationCode }}')">
     <!-- Loading State -->
     <div id="payment-loader" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50">
         <div class="bg-white p-6 rounded-lg shadow-xl">
@@ -81,62 +81,62 @@
 </div>
 
 @push('scripts')
-<script>
-    function paymentMethodsComponent(regCode) {
-        return {
-            regCode: regCode,
-            paymentService: null,
-            paymentMethods: [],
-            selectedMethod: null,
-            processing: false,
-            errorMessage: null,
+    <script>
+        function paymentMethodsComponent(confirmationCode) {
+            return {
+                confirmationCode: confirmationCode,
+                paymentService: null,
+                paymentMethods: [],
+                selectedMethod: null,
+                processing: false,
+                errorMessage: null,
 
-            init() {
-                this.paymentService = new PaymentService(this.regCode);
-                this.loadPaymentMethods();
-                
-                // Make paymentService available globally for modal actions
-                window.paymentService = this.paymentService;
-            },
-
-            async loadPaymentMethods() {
-                try {
-                    const data = await this.paymentService.getPaymentMethods();
-                    this.paymentMethods = data.payment_methods.filter(method => method.enabled);
+                init() {
+                    this.paymentService = new PaymentService(this.confirmationCode);
+                    this.loadPaymentMethods();
                     
-                    // Auto-select first enabled method
-                    if (this.paymentMethods.length > 0) {
-                        this.selectedMethod = this.paymentMethods[0].key;
+                    // Make paymentService available globally for modal actions
+                    window.paymentService = this.paymentService;
+                },
+
+                async loadPaymentMethods() {
+                    try {
+                        const data = await this.paymentService.getPaymentMethods();
+                        this.paymentMethods = data.payment_methods.filter(method => method.enabled);
+                        
+                        // Auto-select first enabled method
+                        if (this.paymentMethods.length > 0) {
+                            this.selectedMethod = this.paymentMethods[0].key;
+                        }
+                    } catch (error) {
+                        this.errorMessage = 'Failed to load payment methods. Please refresh the page.';
+                        console.error('Error loading payment methods:', error);
                     }
-                } catch (error) {
-                    this.errorMessage = 'Failed to load payment methods. Please refresh the page.';
-                    console.error('Error loading payment methods:', error);
-                }
-            },
+                },
 
-            selectPaymentMethod(methodKey) {
-                this.selectedMethod = methodKey;
-                this.errorMessage = null;
-            },
+                selectPaymentMethod(methodKey) {
+                    this.selectedMethod = methodKey;
+                    this.errorMessage = null;
+                },
 
-            async processPayment() {
-                if (!this.selectedMethod || this.processing) {
-                    return;
-                }
+                async processPayment() {
+                    if (!this.selectedMethod || this.processing) {
+                        return;
+                    }
 
-                this.processing = true;
-                this.errorMessage = null;
+                    this.processing = true;
+                    this.errorMessage = null;
 
-                try {
-                    await this.paymentService.initiatePayment(this.selectedMethod);
-                } catch (error) {
-                    this.processing = false;
-                    this.errorMessage = error.message || 'Payment processing failed. Please try again.';
+                    try {
+                        await this.paymentService.initiatePayment(this.selectedMethod);
+                    } catch (error) {
+                        this.processing = false;
+                        this.errorMessage = error.message || 'Payment processing failed. Please try again.';
+                    }
                 }
             }
         }
-    }
-</script>
+    </script>
 @endpush
 
 @push('styles')

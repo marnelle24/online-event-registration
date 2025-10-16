@@ -16,7 +16,7 @@ class BankTransferGateway implements PaymentGatewayInterface
     public function initiatePayment(array $paymentData): array
     {
         // Generate a unique reference number for tracking
-        $referenceNo = $paymentData['regCode'] . '_' . strtoupper(Str::random(6));
+        $referenceNo = $paymentData['confirmationCode'];
 
         return [
             'status' => 'pending_transfer',
@@ -65,7 +65,7 @@ class BankTransferGateway implements PaymentGatewayInterface
         $steps[] = [
             'step' => count($steps) + 1,
             'title' => 'Send Proof',
-            'content' => "After making the transfer, please send your payment proof (screenshot or receipt) to:<br><strong>" . config('mail.from.address', 'payments@example.com') . "</strong><br>Include your registration code: <strong>{$paymentData['regCode']}</strong>",
+            'content' => "After making the transfer, please send your payment proof (screenshot or receipt) to:<br><strong>" . config('mail.from.address', 'payments@example.com') . "</strong><br>Include your registration code: <strong>{$paymentData['confirmationCode']}</strong>",
         ];
         
         $steps[] = [

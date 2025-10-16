@@ -43,7 +43,7 @@
                                         </p>
                                         <div>
                                             <h5 class="font-medium text-black dark:text-white">{{$registrant->firstName.' '.$registrant->lastName}}</h5>
-                                            <p class="text-[0.7rem] font-mono font-thin"><span>Reg Code: </span>{{$registrant->regCode}}</p>
+                                            <p class="text-[0.7rem] font-mono font-thin"><span>Confirmation Code: </span>{{$registrant->confirmationCode}}</p>
                                         </div>
                                     </td>
                                     <td class="border-b border-[#eee] px-4 py-5 dark:border-strokedark">

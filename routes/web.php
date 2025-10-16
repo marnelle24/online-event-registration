@@ -29,8 +29,8 @@ Route::get('/categories/{slug}', function ($slug) {
 
 Route::get('/programme/{programmeCode}', [ProgrammeController::class, 'publicShow'])->name('programme.show');
 Route::get('/programme/{programmeCode}/register', [RegistrantController::class, 'register'])->name('programme.register');
-Route::get('/registration/confirmation/{regCode}', [RegistrantController::class, 'confirmation'])->name('registration.confirmation');
-Route::get('/registration/payment/{regCode}', [RegistrantController::class, 'payment'])->name('registration.payment');
+Route::get('/registration/confirmation/{confirmationCode}', [RegistrantController::class, 'confirmation'])->name('registration.confirmation');
+Route::get('/registration/payment/{confirmationCode}', [RegistrantController::class, 'payment'])->name('registration.payment');
 
 // Payment routes
 Route::get('/payment/callback', [RegistrantController::class, 'paymentCallback'])->name('payment.callback');
