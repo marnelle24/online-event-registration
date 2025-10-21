@@ -88,6 +88,15 @@ class Registrant extends Model
     }
 
     /**
+     * Get group members relationship
+     */
+    public function groupMembersRelation()
+    {
+        return $this->hasMany(Registrant::class, 'groupRegistrationID', 'groupRegistrationID')
+            ->where('id', '!=', $this->id);
+    }
+
+    /**
      * Check if this registrant is the main registrant of a group
      *
      * @return bool

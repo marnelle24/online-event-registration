@@ -13,7 +13,7 @@
                         </svg>
                     </div>
                 </div>
-                @if($registrant->paymentStatus == 'paid')
+                @if($registrant->paymentStatus == 'paid' || $registrant->netAmount <= 0)
                     <h1 class="text-3xl font-bold text-center text-slate-800 mb-2">Registration Successful!</h1>
                     <p class="text-center text-slate-600 mb-6">Your payment has been successfully processed</p>
                     

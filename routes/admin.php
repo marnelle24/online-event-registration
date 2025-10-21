@@ -57,6 +57,13 @@ Route::middleware(['admin'])->prefix('admin')->group(function () {
         Route::put('/{id}', [AdminController::class, 'update'])->name('admin.users.update');
     });
 
+    // Registrant routes
+    Route::prefix('registrants')->group(function () {
+        Route::get('/', function () {
+            return view('admin.registrants.index');
+        })->name('admin.registrants');
+    });
+
     // Payment verification routes
     Route::prefix('payments')->group(function () {
         Route::post('/verify-bank-transfer/{confirmationCode}', [RegistrantController::class, 'verifyBankTransfer'])->name('admin.payments.verify-bank-transfer');
