@@ -9,5 +9,8 @@
             </button>
         </div>
     @endif
-    @livewire('speaker.all-speaker', key('all-speakers'))
+    
+    <div class="py-6">
+        @livewire('speaker.all-speaker', key('all-speakers'))
+    </div>
 </x-app-layout> 

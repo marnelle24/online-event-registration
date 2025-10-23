@@ -1,14 +1,11 @@
 <div class="relative" x-data="{ show: false }" @close-modal.window="show = false">
-    <!-- Trigger button -->
     <button 
         @click="show = true" 
-        type="button" 
-        class="tracking-widest font-thin uppercase inline-flex items-center bg-green-600 hover:scale-105 hover:bg-green-500 duration-300 justify-center rounded-md border border-green-600 py-2 px-3 text-center text-white drop-shadow text-xs"
-    >
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+        class="flex items-center gap-2 shadow border border-blue-600/30 bg-slate-600 drop-shadow text-slate-200 hover:bg-slate-700 rounded-full hover:-translate-y-1 duration-300 py-2 px-4">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
         </svg>
-        Speaker
+        New Speaker
     </button>
 
     <!-- Backdrop and Slide-over Modal -->

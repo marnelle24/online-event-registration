@@ -1,240 +1,265 @@
 <div>
-    <div class="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-        <!-- Header with Title and Add Button -->
-        <div class="w-full flex justify-between items-center border-b border-stroke px-4 py-4.5 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
-            <p class="text-md text-slate-500 uppercase tracking-wider font-thin">
-                Manage Speakers & Professionals
-            </p>
+    <!-- Header Section -->
+    <div class="flex justify-between gap-3 mb-8 lg:flex-row flex-col lg:items-center items-start">
+        <div>
+            <h4 class="text-3xl font-bold text-black capitalize">Speaker Management</h4>
+            <p class="text-sm text-slate-500">Manage Speakers and Professionals for your events</p>
+        </div>
+        <div class="flex lg:gap-3 gap-1">
+            <button wire:click="exportCsv" 
+                class="flex items-center gap-2 border border-slate-500 bg-slate-100 drop-shadow text-slate-500 hover:text-slate-200 hover:bg-slate-600 rounded-full hover:-translate-y-1 duration-300 py-2 px-5">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25ZM6.75 12h.008v.008H6.75V12Zm0 3h.008v.008H6.75V15Zm0 3h.008v.008H6.75V18Z" />
+                </svg>
+                Export CSV
+            </button>
+            <button wire:click="exportExcel" 
+                class="flex items-center gap-2 shadow border border-blue-600/30 bg-green-700 drop-shadow text-slate-200 hover:bg-green-800 rounded-full hover:-translate-y-1 duration-300 py-2 px-5">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" />
+                </svg>
+                Export Excel
+            </button>
             @livewire('speaker.add-speaker', key('add-new-speaker'))
         </div>
+    </div>
 
-        @if(!$speakers->isEmpty())
-            <!-- Search and Filters -->
-            <div class="border-b border-stroke px-4 py-4 dark:border-strokedark md:px-6 2xl:px-7.5">
-                <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                    <!-- Search Input -->
-                    <div class="relative flex-1 max-w-md">
-                        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                            <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                            </svg>
-                        </div>
-                        <input 
-                            wire:model.live.debounce.300ms="search"
-                            type="text" 
-                            placeholder="Search speakers by name, profession, email..." 
-                            class="w-full pl-10 pr-10 py-2 border border-slate-300 rounded-md focus:ring-0 focus:border-primary bg-transparent text-black placeholder-slate-400"
-                        />
-                        @if($search)
-                            <button 
-                                wire:click="clearSearch"
-                                class="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-slate-600"
-                            >
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                                </svg>
-                            </button>
-                        @endif
-                    </div>
-
-                    <!-- Per Page Selector -->
-                    <div class="flex items-center gap-2">
-                        <label class="text-sm text-slate-600">Show:</label>
-                        <select 
-                            wire:model.live="perPage"
-                            class="border border-slate-300 rounded px-4 w-16 py-1 text-sm focus:ring-0 focus:border-primary bg-transparent text-black"
-                        >
-                            <option value="5">5</option>
-                            <option value="10">10</option>
-                            <option value="25">25</option>
-                            <option value="50">50</option>
-                        </select>
-                        <span class="text-sm text-slate-600">per page</span>
-                    </div>
-                </div>
-
-                <!-- Search Results Info -->
-                @if($search)
-                    <div class="mt-2">
-                        <p class="text-sm text-slate-600">
-                            Showing results for "<span class="font-medium">{{ $search }}</span>" 
-                            ({{ $speakers->total() }} {{ Str::plural('result', $speakers->total()) }})
-                        </p>
-                    </div>
-                @endif
+    <!-- Search and Filters Section -->
+    <div class="bg-white shadow-md rounded-lg border border-slate-300 p-6 mb-6">
+        <p class="text-lg font-bold text-slate-700 mb-2">Filter</p>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+            <!-- Search -->
+            <div class="lg:col-span-2 col-span-1">
+                <label class="block text-sm font-medium text-slate-700 mb-2">Search</label>
+                <input 
+                    wire:model.live.debounce.300ms="search" 
+                    type="search" 
+                    placeholder="Search by name, email, profession..."
+                    class="w-full py-2 px-3 border border-slate-300 rounded-none bg-white text-slate-700 focus:outline-none focus:ring-0 focus:ring-slate-500"
+                />
             </div>
 
-            <!-- Table Header with Sorting -->
-            <div class="hidden sm:grid sm:grid-cols-8 border-b border-stroke px-4 py-3 dark:border-strokedark md:px-6 2xl:px-7.5 bg-slate-50">
-                <div class="col-span-3">
-                    <button 
-                        wire:click="sortBy('name')"
-                        class="flex items-center gap-1 text-sm font-medium text-slate-600 hover:text-slate-800 uppercase tracking-wider"
-                    >
-                        Speaker
-                        @if($sortField === 'name')
-                            @if($sortDirection === 'asc')
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
-                                </svg>
-                            @else
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                                </svg>
-                            @endif
-                        @endif
-                    </button>
-                </div>
-                <div class="col-span-2">
-                    <button 
-                        wire:click="sortBy('email')"
-                        class="flex items-center gap-1 text-sm font-medium text-slate-600 hover:text-slate-800 uppercase tracking-wider"
-                    >
-                        Email
-                        @if($sortField === 'email')
-                            @if($sortDirection === 'asc')
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
-                                </svg>
-                            @else
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                                </svg>
-                            @endif
-                        @endif
-                    </button>
-                </div>
-                <div class="col-span-1 text-center">
-                    <button 
-                        wire:click="sortBy('is_active')"
-                        class="flex items-center gap-1 text-sm font-medium text-slate-600 hover:text-slate-800 uppercase tracking-wider"
-                    >
-                        Status
-                        @if($sortField === 'is_active')
-                            @if($sortDirection === 'asc')
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
-                                </svg>
-                            @else
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                                </svg>
-                            @endif
-                        @endif
-                    </button>
-                </div>
+            <!-- Status Filter -->
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-2">Status</label>
+                <select 
+                    wire:model.live="statusFilter" 
+                    class="w-full py-2 px-3 border border-slate-300 rounded-none bg-white text-slate-700 focus:outline-none focus:ring-0 focus:ring-slate-500"
+                >
+                    <option value="">All Status</option>
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                </select>
             </div>
-        @endif
-        <!-- Speaker List -->
-        <div>
-            @if($speakers->isEmpty())
-                <div class="flex flex-col justify-center items-center h-full py-16">
-                    @if($search)
-                        <svg class="w-16 h-16 text-slate-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                        </svg>
-                        <p class="text-lg text-slate-500 font-medium mb-2">No speakers found</p>
-                        <p class="text-sm text-slate-400 mb-4">Try adjusting your search terms</p>
-                        <button 
-                            wire:click="clearSearch"
-                            class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
-                        >
-                            Clear Search
-                        </button>
+
+            <!-- Profession Filter -->
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-2">Profession</label>
+                <select 
+                    wire:model.live="professionFilter" 
+                    class="w-full py-2 px-3 border border-slate-300 rounded-none bg-white text-slate-700 focus:outline-none focus:ring-0 focus:ring-slate-500"
+                >
+                    <option value="">All Professions</option>
+                    @foreach($professions as $profession)
+                        <option value="{{ $profession }}">{{ $profession }}</option>
+                    @endforeach
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Results Table -->
+    <div class="rounded-sm border border-stroke">
+        <div class="max-w-full overflow-x-auto">
+            <table class="w-full table-auto">
+                <thead>
+                    <tr class="bg-slate-200 border border-slate-300 text-slate-500 text-left">
+                        <th class="p-4 font-bold cursor-pointer hover:bg-slate-300" wire:click="sortByName">
+                            Name
+                            @if($sortBy === 'name')
+                                <span class="ml-1">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                            @else
+                                <span class="ml-1">↓</span>
+                            @endif
+                        </th>
+                        <th class="p-4 font-bold cursor-pointer hover:bg-slate-300" wire:click="sortByEmail">
+                            Email
+                            @if($sortBy === 'email')
+                                <span class="ml-1">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                            @else
+                                <span class="ml-1">↓</span>
+                            @endif
+                        </th>
+                        <th class="p-4 font-bold cursor-pointer hover:bg-slate-300" wire:click="sortByProfession">
+                            Profession
+                            @if($sortBy === 'profession')
+                                <span class="ml-1">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                            @else
+                                <span class="ml-1">↓</span>
+                            @endif
+                        </th>
+                        <th class="p-4 font-bold cursor-pointer hover:bg-slate-300" wire:click="sortByStatus">
+                            Status
+                            @if($sortBy === 'is_active')
+                                <span class="ml-1">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                            @else
+                                <span class="ml-1">↓</span>
+                            @endif
+                        </th>
+                        <th class="p-4 font-bold cursor-pointer hover:bg-slate-300" wire:click="sortByCreatedAt">
+                            Created
+                            @if($sortBy === 'created_at')
+                                <span class="ml-1">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                            @else
+                                <span class="ml-1">↓</span>
+                            @endif
+                        </th>
+                        <th class="p-4 font-bold text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if($speakers->count())
+                        @foreach ($speakers as $speaker)
+                            <tr class="hover:bg-slate-400/10 duration-300 border border-slate-300 dark:border-slate-700 bg-white">
+                                <td class="p-4 pl-6 w-[25%]">
+                                    <div class="flex items-center gap-3">
+                                        <div class="rounded-full">
+                                            @if($speaker->getFirstMediaUrl('speaker'))
+                                                <img src="{{ $speaker->getFirstMediaUrl('speaker') }}" alt="{{ $speaker->name }}" class="w-10 h-10 rounded-full object-cover border border-slate-300">
+                                            @else
+                                                <div class="w-10 h-10 rounded-full bg-slate-200 border border-slate-300 flex items-center justify-center">
+                                                    <span class="text-sm font-medium text-slate-600">
+                                                        {{ \App\Helpers\Helper::getInitials($speaker->name) }}
+                                                    </span>
+                                                </div>
+                                            @endif
+                                        </div>
+                                        <div class="flex flex-col">
+                                            <span class="font-bold text-slate-800">
+                                                {{ $speaker->title }} {{ $speaker->name }}
+                                            </span>
+                                            <span class="text-xs text-slate-500">{{ $speaker->profession }}</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="p-4">
+                                    <div class="flex flex-col">
+                                        <span class="font-medium text-sm text-slate-600">{{ $speaker->email ?? 'N/A' }}</span>
+                                    </div>
+                                </td>
+                                <td class="p-4">
+                                    <div class="flex flex-col text-left">
+                                        <span class="font-medium text-slate-600 dark:text-slate-200">
+                                            {{ $speaker->profession ?? 'N/A' }}
+                                        </span>
+                                    </div>
+                                </td>
+                                <td class="p-4">
+                                    <div class="flex justify-start">
+                                        @php
+                                            $statusColors = [
+                                                'active' => 'bg-green-100 text-green-800 border-green-600',
+                                                'inactive' => 'bg-red-100 text-red-800 border-red-600',
+                                            ];
+                                            $statusColor = $statusColors[$speaker->is_active ? 'active' : 'inactive'] ?? 'bg-gray-100 text-gray-800 border-gray-600';
+                                        @endphp
+                                        <span class="px-3 py-1 text-xs rounded-full border {{ $statusColor }}">
+                                            {{ $speaker->is_active ? 'Active' : 'Inactive' }}
+                                        </span>
+                                    </div>
+                                </td>
+                                <td class="p-4">
+                                    <div class="flex flex-col">
+                                        <span class="text-sm text-slate-600 dark:text-slate-200">
+                                            {{ $speaker->created_at->format('M j, Y') }}
+                                        </span>
+                                        <span class="text-xs text-slate-500 dark:text-slate-400">
+                                            {{ $speaker->created_at->format('g:i A') }}
+                                        </span>
+                                    </div>
+                                </td>
+                                <td class="p-4">
+                                    <div class="flex justify-end items-center space-x-2">
+                                        <button type="button" title="Edit Speaker" x-cloak x-data="{ showToolTip: false }" class="relative flex items-center gap-3">
+                                            <svg 
+                                                wire:click="callEditSpeakerModal('{{ $speaker->id }}')"
+                                                @mouseover="showToolTip = true" 
+                                                @mouseleave="showToolTip = false"
+                                                class="cursor-pointer w-5 h-5 stroke-blue-500 hover:-translate-y-0.5 duration-300 hover:stroke-blue-600"
+                                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+                                            >
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+                                            </svg>
+                                            {{-- add tooltip --}}
+                                            <div x-show="showToolTip" x-transition class="absolute top-5 -left-4 transition-all duration-300 ease-in-out hover:opacity-100 hover:translate-y-0 bg-slate-800 text-white text-xs rounded px-2 py-1 shadow-lg z-50">
+                                                Edit
+                                            </div>
+                                        </button>
+                                        <button type="button" title="Delete Speaker" x-cloak x-data="{ showToolTip: false }" class="relative flex items-center gap-3"
+                                            wire:click="toggleStatus({{ $speaker->id }})"
+                                            wire:confirm="Are you sure you want to delete this speaker?"
+                                            type="button" 
+                                            title="Delete Promotion" 
+                                            class="transform hover:scale-110 transition-all duration-300"
+                                            x-data="{ showToolTip: false }"
+                                            @mouseover="showToolTip = true" 
+                                            @mouseleave="showToolTip = false"
+                                        >
+                                            @php
+                                                $statusColor = $speaker->is_active ? 'stroke-green-500 hover:stroke-green-600' : 'stroke-red-400 hover:stroke-red-600';
+                                            @endphp
+                                            <svg 
+                                                class="w-5 h-5 {{ $statusColor }}"
+                                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 21 3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" />
+                                            </svg>
+
+                                            <div x-show="showToolTip" x-transition class="absolute top-5 -right-4 transition-all duration-300 ease-in-out hover:opacity-100 hover:translate-y-0 bg-slate-800 text-white text-xs rounded px-2 py-1 shadow-lg z-50">
+                                                {{ $speaker->is_active ? 'Disable' : 'Enable' }}
+                                            </div>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforeach
                     @else
-                        <svg class="w-16 h-16 text-slate-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                        </svg>
-                        <p class="text-lg text-slate-500 font-medium mb-2">No speakers yet</p>
-                        <p class="text-sm text-slate-400">Get started by adding your first speaker</p>
-                    @endif
-                </div>
-            @else
-                @foreach ($speakers as $key => $speaker)
-                    <div class="hover:bg-slate-100/50 duration-300 grid grid-cols-10 border-t border-stroke px-4 py-4.5 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
-                        <div class="col-span-3 flex items-center gap-4">
-                            <div class="rounded-md">
-                                @if($speaker->getFirstMediaUrl('speaker'))
-                                    <img src="{{ $speaker->getFirstMediaUrl('speaker') }}" alt="{{ $speaker->name }}" class="w-10 h-10 rounded-full object-cover border border-slate-300">
-                                @else
-                                    <p class="text-sm flex justify-center items-center font-normal rounded-full text-slate-400 bg-slate-200 border border-slate-400 w-10 h-10 drop-shadow tracking-widest">
-                                        {{ \App\Helpers\Helper::getInitials($speaker->name) }}
-                                    </p>
-                                @endif
-                            </div>
-                            <div class="flex flex-col">
-                                <p class="capitalize duration-300 text-md font-medium text-black dark:text-white">{{ $speaker->title }} {{ $speaker->name }}</p>
-                                <p class="text-sm text-slate-500">
-                                    {{ $speaker->profession }}
-                                </p>
-                            </div>
-                        </div>
-                        <div class="col-span-2 hidden items-center sm:flex">
-                            <p class="text-sm font-medium text-black dark:text-white">
-                                {{ $speaker->email ?? 'N/A' }}
-                            </p>
-                        </div>
-                        {{-- <div class="col-span-1 hidden items-center sm:flex text-slate-600/60 justify-center italic">
-                            {{ $speaker->programmes->count() . ' programme(s)' }}
-                        </div> --}}
-                        <div class="col-span-2 hidden items-center sm:flex">
-                            @if($speaker->is_active)
-                                <p class="inline-flex border border-success rounded-full bg-success bg-opacity-10 px-3 py-1 text-sm font-medium text-success">Active</p>
-                            @else
-                                <p class="inline-flex border border-danger rounded-full bg-danger bg-opacity-10 px-3 py-1 text-sm font-medium text-danger">Inactive</p>
-                            @endif
-                        </div>
-                        <div class="col-span-1 flex justify-end items-center gap-3">
-                            @livewire('speaker.edit-speaker', ['speaker' => $speaker], key('edit-speaker-'.$speaker->id))
-                            <button 
-                                wire:click="deleteSpeaker({{ $speaker->id }})"
-                                wire:confirm="Are you sure you want to delete this speaker?"
-                                type="button" 
-                                title="Delete Speaker" 
-                                class="transform hover:scale-110 transition-all duration-300"
-                                x-data="{ showToolTip: false }"
-                                @mouseover="showToolTip = true" 
-                                @mouseleave="showToolTip = false"
-                            >
-                                <svg class="w-5 h-5 stroke-red-400 hover:stroke-red-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
-                                </svg>
-                                <div x-show="showToolTip" x-transition class="absolute top-5 left-2 transition-all duration-300 ease-in-out hover:opacity-100 hover:translate-y-0 w-max bg-slate-800 text-white text-xs rounded px-2 py-1 shadow-lg z-20">
-                                    Delete
+                        <tr class="group bg-white duration-300">
+                            <td colspan="6" class="text-center">
+                                <div class="flex flex-col items-center bg-white group-hover:bg-slate-50/70 duration-300 py-8">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-12 text-slate-400 dark:text-slate-500 mb-4">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
+                                    </svg>
+                                    <p class="text-slate-500 text-lg font-medium">No speakers found</p>
+                                    <p class="text-slate-400 text-sm">Try adjusting your search or filter criteria</p>
                                 </div>
-                            </button>
-                        </div>
-                    </div>
-                @endforeach
-            @endif
+                            </td>
+                        </tr>
+                    @endif
+                </tbody>
+            </table>
         </div>
+    </div>
 
-        <!-- Pagination -->
-        @if($speakers->hasPages())
-            <div class="border-t border-stroke px-4 py-4 dark:border-strokedark md:px-6 2xl:px-7.5">
-                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                    <!-- Pagination Info -->
-                    <div class="text-sm text-slate-600">
-                        Showing {{ $speakers->firstItem() ?? 0 }} to {{ $speakers->lastItem() ?? 0 }} of {{ $speakers->total() }} results
-                    </div>
-                    
-                    <!-- Pagination Links -->
-                    <div class="flex justify-center sm:justify-end">
-                        {{ $speakers->links('vendor.livewire.custom-pagination') }}
-                    </div>
-                </div>
+    <!-- Pagination -->
+    <div class="mt-6 flex justify-between items-center">
+        <div class="flex items-center gap-4">
+            <div class="flex lg:flex-row flex-col lg:items-center items-start lg:gap-2 gap-1">
+                <label class="block text-sm font-medium text-slate-700 mb-1">Per Page</label>
+                <select 
+                    wire:model.live="perPage" 
+                    class="py-1 px- w-20 border border-slate-300 rounded-none bg-white text-slate-700 focus:outline-none focus:ring-0"
+                >
+                    <option value="5">5</option>
+                    <option value="10">10</option>
+                    <option value="25">25</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                </select>
             </div>
-        @endif
+        </div>
+
+        {{ $speakers->links() }}
     </div>
 
-    <!-- Loading Overlay -->
-    <div wire:loading class="fixed inset-0 bg-black bg-opacity-25 flex items-center justify-center z-50">
-        <div class="bg-white rounded-lg p-6 flex items-center gap-3">
-            <svg class="animate-spin h-5 w-5 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-            <span class="text-slate-700">Loading...</span>
-        </div>
-    </div>
+    @livewire('speaker.edit-speaker', key('edit-speaker'))
 </div>

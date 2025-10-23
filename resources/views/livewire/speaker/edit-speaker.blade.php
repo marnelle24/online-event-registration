@@ -1,24 +1,8 @@
-<div class="relative" x-data="{ show: false }" @close-modal.window="show = false">
-    <!-- Trigger button -->
-    <button 
-        @click="show = true" 
-        type="button" 
-        title="Edit Speaker"
-        class="transform hover:scale-110 transition-all duration-300"
-        x-data="{ showToolTip: false }"
-        @mouseover="showToolTip = true" 
-        @mouseleave="showToolTip = false"
-    >
-        <svg class="w-5 h-5 mt-1 stroke-blue-400 hover:stroke-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
-        </svg>
-        <div x-show="showToolTip" x-transition class="absolute top-5.5 left-2 transition-all duration-300 ease-in-out hover:opacity-100 hover:translate-y-0 w-max bg-slate-800 text-white text-xs rounded px-2 py-1 shadow-lg z-20">
-            Edit
-        </div>
-    </button>
-
+<div class="relative">
     <!-- Backdrop and Slide-over Modal -->
+    @if($show)
     <div 
+        x-data="{ show: @entangle('show') }"
         x-show="show" 
         x-transition:enter="transition ease-out duration-300"
         x-transition:enter-start="opacity-0"
@@ -27,12 +11,11 @@
         x-transition:leave-start="opacity-100"
         x-transition:leave-end="opacity-0"
         class="fixed inset-0 z-50 overflow-hidden"
-        x-cloak
         @keydown.escape="show = false">
         
         <!-- Backdrop -->
         <div class="absolute inset-0 bg-black bg-opacity-50 transition-opacity"
-             @click="show = false"></div>
+             wire:click="closeModal"></div>
              
         <!-- Slide Panel -->
         <div 
@@ -51,7 +34,7 @@
                 <div class="flex justify-between items-center p-4 border-b-2 border-slate-500/60 bg-slate-400">
                     <h2 class="text-white text-xl tracking-wider uppercase font-light">Edit Speaker</h2>
                     <button 
-                        @click="show = false" 
+                        wire:click="closeModal"
                         class="text-slate-600 hover:text-slate-900 text-xl p-2 rounded-full hover:bg-slate-300/50 transition-colors duration-200">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 stroke-white hover:stroke-slate-200 duration-300">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
@@ -61,6 +44,14 @@
 
                 <!-- Content -->
                 <div class="flex-1 overflow-y-auto p-6">
+                    @if($loading)
+                        <!-- Loading State -->
+                        <div class="flex flex-col items-center justify-center h-full py-12">
+                            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-4"></div>
+                            <p class="text-slate-600 text-lg font-medium">Loading speaker data...</p>
+                            <p class="text-slate-400 text-sm mt-2">Please wait while we fetch the speaker information</p>
+                        </div>
+                    @else
                     <x-validation-errors :class="'mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-md'" />
                     
                     @if (session()->has('message'))
@@ -205,12 +196,12 @@
 
                             <!-- Status Toggle -->
                             <div x-data="{ isActive: @entangle('is_active') }" class="flex">
-                                <label :for="editSpeakerStatus+{{ $speaker->id }}" class="flex cursor-pointer select-none items-center">
+                                <label for="editSpeakerStatus{{ $speaker->id }}" class="flex cursor-pointer select-none items-center">
                                     <span class="text-sm font-medium text-black mr-1">Status</span>
                                     <div class="relative">
                                         <input 
                                             wire:model="is_active"
-                                            type="checkbox" :id="editSpeakerStatus+{{ $speaker->id }}" class="sr-only" />
+                                            type="checkbox" id="editSpeakerStatus{{ $speaker->id }}" class="sr-only" />
                                         <div :class="isActive && '!bg-success'" class="block h-8 w-14 rounded-full bg-black"></div>
                                         <div :class="isActive && '!right-1 !translate-x-full'" class="absolute left-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-white transition"></div>
                                     </div>
@@ -258,8 +249,10 @@
                             </div>
                         </div>
                     </form>
+                    @endif
                 </div>
             </div>
         </div>
     </div>
+    @endif
 </div>

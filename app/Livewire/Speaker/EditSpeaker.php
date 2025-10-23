@@ -20,27 +20,57 @@ class EditSpeaker extends Component
     public $socials = [];
     public $is_active;
     public $thumbnail;
+    public $show = false;
+    public $loading = false;
 
-    public function mount($speaker)
+    protected $listeners = [
+        'callEditSpeakerModal' => 'openModal',
+    ];
+
+    public function getSpeakerData($speakerId)
     {
-        $this->speaker = $speaker;
+        $this->speaker = Speaker::find($speakerId);
+        
+        if (!$this->speaker) {
+            throw new \Exception('Speaker not found');
+        }
 
         // Populate form fields with existing data
-        $this->title = $speaker->title;
-        $this->name = $speaker->name;
-        $this->profession = $speaker->profession;
-        $this->email = $speaker->email;
-        $this->about = $speaker->about;
-        $this->is_active = $speaker->is_active;
+        $this->title = $this->speaker->title;
+        $this->name = $this->speaker->name;
+        $this->profession = $this->speaker->profession;
+        $this->email = $this->speaker->email;
+        $this->about = $this->speaker->about;
+        $this->is_active = $this->speaker->is_active;
         
         // Handle socials array
-        $speakerSocials = $speaker->processedSocials();
+        $speakerSocials = $this->speaker->processedSocials();
 
         if (is_array($speakerSocials) && !empty($speakerSocials)) {
             $this->socials = $speakerSocials;
         } else {
             $this->socials = [['platform' => '', 'url' => '']];
         }
+    }
+
+    public function openModal($id)
+    {
+        $this->loading = true;
+        $this->show = true;
+        
+        try {
+            $this->getSpeakerData($id);
+            $this->loading = false;
+        } catch (\Exception $e) {
+            $this->loading = false;
+            $this->show = false;
+            Toaster::error('Error loading speaker data: ' . $e->getMessage());
+        }
+    }
+
+    public function closeModal()
+    {
+        $this->show = false;
     }
 
     public function addSocMedAccount()
@@ -114,7 +144,7 @@ class EditSpeaker extends Component
 
             if ($updated) {
                 Toaster::success('Speaker updated successfully!');
-                $this->dispatch('close-modal');
+                $this->show = false;
                 $this->dispatch('updatedSpeaker');
             } else {
                 Toaster::error('Error updating speaker!');
