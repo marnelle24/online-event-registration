@@ -1,12 +1,16 @@
 @section('title', 'Category Management')
 <x-app-layout>
-    <h4 class="text-2xl font-bold text-black dark:text-slate-600 mb-8 capitalize">Category Management</h4>
-    <div class="flex lg:flex-row md:flex-row sm:flex-col flex-col gap-4">
-        <div class="w-2/3">
-            <livewire:category.category-list />
+    @if(session('success'))
+        <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 2000)" x-transition:leave.duration.500ms
+            class="mb-5 bg-green-300 bg-opacity-50 border border-green-600/70 text-green-600 p-4 rounded-md flex justify-between items-center">
+            <span class="text-md">{{ session('success') }}</span>
+            <button type="button" @click="show = false" class="ml-4 text-[30px] leading-none opacity-50 hover:opacity-75 duration-300" aria-label="Close">
+                &times;
+            </button>
         </div>
-        <div class="w-1/3">
-            <livewire:category.category-form />
-        </div>
+    @endif
+
+    <div class="py-6">
+        @livewire('category.all-category', key('all-categories'))
     </div>
 </x-app-layout>

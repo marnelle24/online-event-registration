@@ -15,6 +15,11 @@ Route::middleware(['admin'])->prefix('admin')->group(function () {
 
     Route::get('/categories', [CategoryController::class, 'index'])->name('admin.categories');
 
+    // Category Management (Livewire)
+    Route::get('/category-management', function () {
+        return view('admin.category.index');
+    })->name('admin.category-management');
+
     // Ministry routes
     Route::prefix('ministry')->group(function () {
         Route::get('/', [MinistryController::class, 'index'])->name('admin.ministry');
