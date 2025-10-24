@@ -3,12 +3,14 @@
 namespace App\Models;
 
 use Spatie\Sluggable\HasSlug;
+use Spatie\MediaLibrary\HasMedia;
 use Spatie\Sluggable\SlugOptions;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
-class Ministry extends Model
+class Ministry extends Model implements HasMedia
 {
-    use HasSlug;
+    use HasSlug, InteractsWithMedia;
 
     protected $table = 'ministries';
     
@@ -24,7 +26,7 @@ class Ministry extends Model
         'searcheable',   
         'approvedBy',    
         'status',        
-        'createdBy',
+        'requestedBy',
         'approvedBy',
         'created_at',
         'updated_at',

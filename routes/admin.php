@@ -26,6 +26,11 @@ Route::middleware(['admin'])->prefix('admin')->group(function () {
         Route::delete('/{id}', [MinistryController::class, 'destroy'])->name('admin.ministry.destroy');
     });
 
+    // Ministry Management (Livewire)
+    Route::get('/ministries', function () {
+        return view('admin.ministry.index');
+    })->name('admin.ministries');
+
     // Programme routes
     Route::prefix('programmes')->group(function () {
         Route::get('/', [ProgrammeController::class, 'index'])->name('admin.programmes');

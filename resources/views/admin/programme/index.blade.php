@@ -66,14 +66,17 @@
                                 @endif
                                 <div class="flex flex-col">
                                     <a href="{{ route('admin.programmes.show', $programme->programmeCode) }}" class="text-md md:text-lg font-semibold text-slate-800 dark:text-slate-200 hover:text-orange-600 hover:-translate-y-1 duration-300">
-                                        {{ Str::words($programme->title, 4) }}
+                                        {{ Str::words($programme->title, 10) }}
                                     </a>
                                     <a href="#" class="hover:-translate-y-0.5 duration-300 dark:text-slate-400">
                                         <span class="text-xs text-slate-500 capitalize bg-slate-300/60 hover:bg-slate-300/80 px-2 py-1 rounded-md border border-slate-300 drop-shadow-sm hover:text-orange-600 ">
                                             {{ $programme->ministry->name }}
                                         </span>
                                     </a>
-                                    <p class="text-md capitalize my-2 italic @if($programme->status === 'draft') text-slate-500 @elseif($programme->status === 'pending') text-red-500 @else text-green-500 @endif">
+                                    @php
+                                        $statusColor = $programme->status === 'draft' ? 'text-slate-500' : ($programme->status === 'pending' ? 'text-red-500' : 'text-green-500');
+                                    @endphp
+                                    <p class="text-md capitalize my-2 italic {{ $statusColor }}">
                                         {{ $programme->status }}
                                     </p>
                                 </div>

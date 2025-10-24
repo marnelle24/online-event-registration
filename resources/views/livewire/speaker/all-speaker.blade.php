@@ -195,7 +195,7 @@
                                                 Edit
                                             </div>
                                         </button>
-                                        <button type="button" title="Delete Speaker" x-cloak x-data="{ showToolTip: false }" class="relative flex items-center gap-3"
+                                        {{-- <button type="button" title="Delete Speaker" x-cloak x-data="{ showToolTip: false }" class="relative flex items-center gap-3"
                                             wire:click="toggleStatus({{ $speaker->id }})"
                                             wire:confirm="Are you sure you want to delete this speaker?"
                                             type="button" 
@@ -217,7 +217,7 @@
                                             <div x-show="showToolTip" x-transition class="absolute top-5 -right-4 transition-all duration-300 ease-in-out hover:opacity-100 hover:translate-y-0 bg-slate-800 text-white text-xs rounded px-2 py-1 shadow-lg z-50">
                                                 {{ $speaker->is_active ? 'Disable' : 'Enable' }}
                                             </div>
-                                        </button>
+                                        </button> --}}
                                     </div>
                                 </td>
                             </tr>
