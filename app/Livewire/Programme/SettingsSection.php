@@ -15,11 +15,11 @@ class SettingsSection extends Component
     public bool  $publishable;
     public bool $allowPreRegistration;
     public $externalUrl;
-    public int $limit;
+    public $limit;
     public $adminFee;
     public $chequeNumber;
-    public string $contactEmail;
-    public string $programmeStatus;
+    public $contactEmail;
+    public $programmeStatus;
     public $activeUntil;
     public bool $allowBreakoutSession;
 
@@ -31,10 +31,10 @@ class SettingsSection extends Component
         $this->publishable = $this->programme->publishable;
         $this->limit = $this->programme->limit;
         $this->adminFee = $this->programme->adminFee;
-        $this->chequeNumber = $this->programme->chequeCode;
-        $this->contactEmail = $this->programme->contactEmail;
+        $this->chequeNumber = $this->programme->chequeCode ?? NULL;
+        $this->contactEmail = $this->programme->contactEmail ?? NULL;
         $this->externalUrl = $this->programme->externalUrl ?? NULL;
-        $this->activeUntil = $this->programme->activeUntil;
+        $this->activeUntil = $this->programme->activeUntil ?? NULL;
         $this->programmeStatus = $this->programme->status;
         $this->allowPreRegistration = $this->programme->allowPreRegistration;
         $this->allowBreakoutSession = $this->programme->allowBreakoutSession;

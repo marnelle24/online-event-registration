@@ -59,13 +59,15 @@ class Programme extends Model implements HasMedia
         'groupRegistrationMax',
         'groupRegIndividualFee',
         'allowBreakoutSession',
+        'isHybridMode',
+        'hybridPlatformDetails',
         'soft_delete',
         'status',
     ];
 
     public function getLocationAttribute()
     {
-        return $this->address . ', ' . $this->city . ', ' . $this->postalCode;
+        return ($this->address ? $this->address.', ': '') . ($this->city ? $this->city.', ': '') . ($this->postalCode ? $this->postalCode.', ': '');
     }
 
     public function getProgrammeDatesAttribute()
@@ -105,10 +107,6 @@ class Programme extends Model implements HasMedia
     {
         static::addGlobalScope('active', function (Builder $builder) {
             $builder->where('soft_delete', false);
-            // $builder->where('status', 'published');
-            // $builder->where('publishable', true);
-            // $builder->where('searchable', true);
-            // $builder->where('private_only', false);
         });
     }
 
@@ -160,9 +158,9 @@ class Programme extends Model implements HasMedia
     public function getFormattedPriceAttribute()
     {
         if ($this->price <= 0) {
-            return 'Free';
+            return 'FREE';
         }
-        return number_format($this->price, 2);
+        return '$'.number_format($this->price, 2);
     }
 
     public function getDiscountedPriceAttribute()
@@ -172,20 +170,7 @@ class Programme extends Model implements HasMedia
         if (!$activePromo)
             return null;
 
-        return number_format($activePromo->price, 2);
-
-        // $discountAmount = 0;
-        // if ($activePromo->discount_type === 'percentage') 
-        // {
-        //     $discountAmount = $this->price * ($activePromo->discount_value / 100);
-        // } 
-        // else 
-        // {
-        //     $discountAmount = $activePromo->discount_value;
-        // }
-
-        // $discountedPrice = $this->price - $discountAmount;
-        // return $discountedPrice > 0 ? 'SGD ' . number_format($discountedPrice, 2) : 'Free';
+        return '$'.number_format($activePromo->price, 2);
     }
 
     public function getTotalRegistrationsAttribute()

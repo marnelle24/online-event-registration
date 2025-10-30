@@ -1,6 +1,5 @@
 @section('title', $programme->title)
 <x-app-layout>
-
     @if(session('success'))
         <div x-data="{ showAlert: true }" x-show="showAlert"
             class="bg-green-300/30 flex justify-between items-center border border-green-600/50 text-green-800 px-4 py-3 rounded relative mb-8">
@@ -11,21 +10,13 @@
         </div>
     @endif
 
+    
+    {{-- @dump($programme) --}}
+
     <div class="flex lg:flex-row flex-col gap-4">
         <img src="{{$programme->thumbnail}}" alt="{{$programme->title}}" class="lg:rounded-full rounded-tl-md rounded-tr-md lg:w-48 w-full h-48 border border-zinc-400 shadow-md" />
         <div class="lg:w-3/4 w-full">
-            {{-- @dump($programme) --}}
-            <div class="flex justify-between gap-1">
-                <h1 class="text-2xl text-slate-600 drop-shadow font-bold">{{$programme->title}}</h1>
-                <div class="flex gap-2">
-                    <a href="{{route('admin.programmes.edit', $programme->id)}}" class="hover:bg-slate-200 rounded-full hover:scale-105 duration-300 px-4 py-2 border border-slate-400/70 bg-slate-300">Edit</a>
-                    @if($programme->status === 'published')
-                        <p class="capitalize flex items-center justify-center border border-green-600 bg-green-500 text-white drop-shadow rounded-full px-4 py-1">{{$programme->status}}</p>
-                    @else
-                        <p class="capitalize flex items-center justify-center border border-slate-600 bg-slate-500 text-white drop-shadow rounded-full px-4 py-1">{{$programme->status}}</p>
-                    @endif
-                </div>
-            </div>
+            <h1 class="text-2xl text-slate-600 drop-shadow font-bold">{{$programme->title}}</h1>
             <table class="my-4">
                 <tr>
                     <td class="text-md py-1 text-slate-600 dark:text-white flex items-start">
@@ -35,7 +26,7 @@
                         </svg>
                     </td>
                     <td class="text-md p-1 text-slate-600 dark:text-white capitalize overflow-ellipsis">
-                        {{ $programme->programmeLocation }}
+                        {{ $programme->location }}
                     </td>
                 </tr>
                 <tr>
@@ -80,7 +71,7 @@
                     </td>
                     <td class="text-md p-1 text-slate-600 dark:text-white">
                         <p class="text-md">
-                            40 / {{ $programme->limit > 0 ? $programme->limit : 'No limit' }}
+                            {{ $programme->getTotalRegistrationsAttribute() }} / {{ $programme->limit > 0 ? $programme->limit : 'No limit' }}
                         </p>
                     </td>
                 </tr>

@@ -11,6 +11,7 @@
         "laravel/jetstream": "^5.3",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.9",
+        "league/iso3166": "^4.3",
         "livewire/livewire": "^3.0",
         "masmerise/livewire-toaster": "^2.7",
         "spatie/laravel-medialibrary": "^11.12",

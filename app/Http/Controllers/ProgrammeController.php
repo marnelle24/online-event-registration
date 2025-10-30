@@ -13,21 +13,6 @@ use App\Http\Requests\UpdateProgrammeRequest;
 class ProgrammeController extends Controller
 {
 
-    public function index(Request $request)
-    {
-        $searchQuery = $request->get('search');
-
-        $programmes = Programme::when($searchQuery, function ($query) use ($searchQuery) {
-            $query->where('title', 'like', "%{$searchQuery}%");
-            $query->orWhere('programmeCode', 'like', "%{$searchQuery}%");
-        })
-        ->with('categories')
-        ->latest()
-        ->paginate(10);
-
-        return view('admin.programme.index', compact('searchQuery', 'programmes'));
-    }
-
     public function create()
     {
         $ministries = Ministry::pluck('name', 'id');
