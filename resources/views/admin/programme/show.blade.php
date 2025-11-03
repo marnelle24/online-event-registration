@@ -1,5 +1,10 @@
 @section('title', $programme->title)
 <x-app-layout>
+    @if(empty(request('p')) || request('p') === null)
+        <script>
+            window.location.href = "{{ url()->current() }}?p=dashboard";
+        </script>
+    @endif
     @if(session('success'))
         <div x-data="{ showAlert: true }" x-show="showAlert"
             class="bg-green-300/30 flex justify-between items-center border border-green-600/50 text-green-800 px-4 py-3 rounded relative mb-8">
@@ -77,14 +82,25 @@
                 </tr>
             </table>
             <div class="flex gap-3 pl-2 border-b-2 border-zinc-500/70">
-                <a href="{{ url()->current() }}?p=dashboard" class="@if(request('p') === 'dashboard') bg-sky-200 border-b-1 border-sky-600 scale-105 @else bg-zinc-200 border-slate-500 @endif hover:bg-sky-200 duration-300 hover:scale-105 border border-b-0 px-3 py-2 rounded-tr-md rounded-tl-md text-md">Dashboard</a>
-                <a href="{{ url()->current() }}?p=information" class="@if(request('p') === 'information') bg-sky-200 border-b-1 border-sky-600 scale-105 @else bg-zinc-200 border-slate-500 @endif hover:bg-sky-200 duration-300 hover:scale-105 border border-b-0 px-3 py-2 rounded-tr-md rounded-tl-md text-md">Information</a>
-                <a href="{{ url()->current() }}?p=speaker-trainer" class="@if(request('p') === 'speaker-trainer') bg-sky-200 border-b-1 border-sky-600 scale-105 @else bg-zinc-200 border-slate-500 @endif hover:bg-sky-200 duration-300 hover:scale-105 border border-b-0 px-3 py-2 rounded-tr-md rounded-tl-md text-md">Speakers</a>
-                <a href="{{ url()->current() }}?p=promotion" class="@if(request('p') === 'promotion') bg-sky-200 border-b-1 border-sky-600 scale-105 @else bg-zinc-200 border-slate-500 @endif hover:bg-sky-200 duration-300 hover:scale-105 border border-b-0 px-3 py-2 rounded-tr-md rounded-tl-md text-md">Promotions</a>
-                <a href="{{ url()->current() }}?p=promocode" class="@if(request('p') === 'promocode') bg-sky-200 border-b-1 border-sky-600 scale-105 @else bg-zinc-200 border-slate-500 @endif hover:bg-sky-200 duration-300 hover:scale-105 border border-b-0 px-3 py-2 rounded-tr-md rounded-tl-md text-md">Promocodes</a>
-                <a href="{{ url()->current() }}?p=registrants" class="@if(request('p') === 'registrants') bg-sky-200 border-b-1 border-sky-600 scale-105 @else bg-zinc-200 border-slate-500 @endif hover:bg-sky-200 duration-300 hover:scale-105 border border-b-0 px-3 py-2 rounded-tr-md rounded-tl-md text-md">Registrants</a>
-                <a href="{{ url()->current() }}?p=settings" class="@if(request('p') === 'settings') bg-sky-200 border-b-1 border-sky-600 scale-105 @else bg-zinc-200 border-slate-500 @endif hover:bg-sky-200 duration-300 hover:scale-105 border border-b-0 px-3 py-2 rounded-tr-md rounded-tl-md text-md">Settings</a>
-                <a href="{{ url()->current() }}?p=breakout-session" class="@if(request('p') === 'breakout-session') bg-sky-200 border-b-1 border-sky-600 scale-105 @else bg-zinc-200 border-slate-500 @endif hover:bg-sky-200 duration-300 hover:scale-105 border border-b-0 px-3 py-2 rounded-tr-md rounded-tl-md text-md">Breakout Sessions</a>
+                @php
+                    $tabs = [
+                        'dashboard' => 'Dashboard',
+                        'information' => 'Information',
+                        'speaker-trainer' => 'Speakers',
+                        'promotion' => 'Promotions',
+                        'promocode' => 'Promocodes',
+                        'registrants' => 'Registrants',
+                        'settings' => 'Settings',
+                        'breakout-session' => 'Breakout Sessions'
+                    ];
+                @endphp
+                @foreach($tabs as $tab => $label)
+                    @php
+                        $isActive = (request('p') === $tab || (empty(request('p')) && $tab === 'dashboard'));
+                        $tabColorToggle = $isActive ? 'bg-slate-700 text-white border-b-1 border-slate-600' : 'bg-white border-slate-500';
+                    @endphp
+                    <a href="{{ url()->current() }}?p={{ $tab }}" class="{{$tabColorToggle}} hover:bg-slate-700 hover:text-white duration-300 hover:scale-105 border border-b-0 px-3 py-2 rounded-tr-md rounded-tl-md text-md">{{ $label }}</a>
+                @endforeach
             </div>
             {{-- <hr class="border border-zinc-500/70" /> --}}
 
