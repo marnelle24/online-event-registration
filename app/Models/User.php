@@ -88,4 +88,12 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    /**
+     * Get the ministries that belong to the user.
+     */
+    public function ministries()
+    {
+        return $this->belongsToMany(Ministry::class);
+    }
 }

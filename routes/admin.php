@@ -62,14 +62,10 @@ Route::middleware(['admin'])->prefix('admin')->group(function () {
         Route::delete('/{id}', [SpeakerController::class, 'destroy'])->name('admin.speakers.destroy');
     });
 
-    Route::prefix('users')->group(function () {
-        Route::get('/', [AdminController::class, 'index'])->name('admin.users');
-        Route::get('/create', [AdminController::class, 'create'])->name('admin.users.create');
-        Route::post('/', [AdminController::class, 'store'])->name('admin.users.store');
-        Route::get('/{id}', [AdminController::class, 'show'])->name('admin.users.show');
-        Route::get('/{id}/edit', [AdminController::class, 'edit'])->name('admin.users.edit');
-        Route::put('/{id}', [AdminController::class, 'update'])->name('admin.users.update');
-    });
+    // User Management (Livewire)
+    Route::get('/users', function () {
+        return view('admin.user.index');
+    })->name('admin.users');
 
     // Registrant routes
     Route::prefix('registrants')->group(function () {
