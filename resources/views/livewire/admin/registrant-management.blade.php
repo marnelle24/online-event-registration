@@ -25,7 +25,6 @@
 
     <!-- Search and Filters Section -->
     <div class="bg-white shadow-md rounded-lg border border-slate-300 p-6 mb-6">
-        <p class="text-lg font-bold text-slate-700 mb-2">Filter</p>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-4">
             <!-- Search -->
             <div class="lg:col-span-2 col-span-1">
@@ -85,11 +84,11 @@
 
     <!-- Results Table -->
     <div class="rounded-sm border border-stroke">
-        <div class="max-w-full overflow-x-auto">
+        <div class="max-w-full md:overflow-x-visible overflow-x-auto">
             <table class="w-full table-auto">
                 <thead>
                     <tr class="bg-slate-200 border border-slate-300 text-slate-500 text-left">
-                        <th class="p-4 font-bold cursor-pointer hover:bg-slate-300" wire:click="sortByConfirmationCode">
+                        <th class="p-4 font-bold cursor-pointer hover:bg-slate-300 text-nowrap" wire:click="sortByConfirmationCode">
                             Confirmation Code
                             @if($sortBy === 'confirmationCode')
                                 <span class="ml-1">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
@@ -97,7 +96,7 @@
                                 <span class="ml-1">↓</span>
                             @endif
                         </th>
-                        <th class="p-4 font-bold cursor-pointer hover:bg-slate-300" wire:click="sortByFirstName">
+                        <th class="p-4 font-bold cursor-pointer hover:bg-slate-300 text-nowrap" wire:click="sortByFirstName">
                             Name
                             @if($sortBy === 'firstName')
                                 <span class="ml-1">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
@@ -106,7 +105,7 @@
                             @endif
                         </th>
                         {{-- <th class="p-4 font-bold">Contact</th> --}}
-                        <th class="p-4 font-bold cursor-pointer hover:bg-slate-300" wire:click="sortByPaymentStatus">
+                        <th class="p-4 font-bold cursor-pointer hover:bg-slate-300 text-nowrap" wire:click="sortByPaymentStatus">
                             Payment
                             @if($sortBy === 'paymentStatus')
                                 <span class="ml-1">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
@@ -115,7 +114,7 @@
                             @endif
                         </th>
                         <th class="p-4 font-bold">Amount</th>
-                        <th class="p-4 font-bold cursor-pointer hover:bg-slate-300" wire:click="sortByCreatedAt">
+                        <th class="p-4 font-bold cursor-pointer hover:bg-slate-300 text-nowrap" wire:click="sortByCreatedAt">
                             Registered
                             @if($sortBy === 'created_at')
                                 <span class="ml-1">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
@@ -123,7 +122,7 @@
                                 <span class="ml-1">↓</span>
                             @endif
                         </th>
-                        <th class="p-4 font-bold cursor-pointer hover:bg-slate-300" wire:click="sortByRegStatus">
+                        <th class="p-4 font-bold cursor-pointer hover:bg-slate-300 text-nowrap" wire:click="sortByRegStatus">
                             Status
                             @if($sortBy === 'regStatus')
                                 <span class="ml-1">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
@@ -145,10 +144,10 @@
                                 </td>
                                 <td class="p-4">
                                     <div class="flex flex-col">
-                                        <span class="font-bold text-slate-800">
+                                        <span class="font-bold text-slate-800 truncate">
                                             {{ $registrant->title }} {{ $registrant->firstName }} {{ $registrant->lastName }}
                                         </span>
-                                        <span class="text-xs text-slate-500">{{ $registrant->regCode }}</span>
+                                        <span class="text-xs text-slate-500 truncate">{{ $registrant->regCode }}</span>
                                     </div>
                                 </td>
                                 <td class="p-4">

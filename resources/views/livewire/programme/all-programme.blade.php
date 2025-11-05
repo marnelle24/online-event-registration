@@ -5,16 +5,16 @@
             <h4 class="text-3xl font-bold text-black capitalize">Programme Management</h4>
             <p class="text-sm text-slate-500">Manage Programmes and Events for your organization</p>
         </div>
-        <div class="flex lg:gap-3 gap-1">
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-2">
             <button wire:click="exportCsv"
-                class="flex items-center gap-2 border border-slate-500 bg-slate-100 drop-shadow text-slate-500 hover:text-slate-200 hover:bg-slate-600 rounded-full hover:-translate-y-1 duration-300 py-2 px-5">
+                class="flex items-center gap-2 border border-slate-500 bg-slate-100 drop-shadow text-slate-500 hover:text-slate-200 hover:bg-slate-600 rounded-full hover:-translate-y-0.5 duration-300 py-2 px-5">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25ZM6.75 12h.008v.008H6.75V12Zm0 3h.008v.008H6.75V15Zm0 3h.008v.008H6.75V18Z" />
                 </svg>
                 Export CSV
             </button>
             <button wire:click="exportExcel"
-                class="flex items-center gap-2 shadow border border-blue-600/30 bg-green-700 drop-shadow text-slate-200 hover:bg-green-800 rounded-full hover:-translate-y-1 duration-300 py-2 px-5">
+                class="flex items-center gap-2 shadow border border-blue-600/30 bg-green-700 drop-shadow text-slate-200 hover:bg-green-800 rounded-full hover:-translate-y-0.5 duration-300 py-2 px-5">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" />
                 </svg>
@@ -82,11 +82,11 @@
 
     <!-- Results Table -->
     <div class="rounded-sm border border-stroke">
-        <div class="max-w-full overflow-x-auto">
+        <div class="max-w-full md:overflow-x-visible overflow-x-auto">
             <table class="w-full table-auto">
                 <thead>
                     <tr class="bg-slate-200 border border-slate-300 text-slate-500 text-left">
-                        <th class="p-4 font-bold cursor-pointer hover:bg-slate-300" wire:click="sortByTitle">
+                        <th class="p-4 font-bold cursor-pointer hover:bg-slate-300 text-nowrap" wire:click="sortByTitle">
                             Programme
                             @if($sortBy === 'title')
                                 <span class="ml-1">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
@@ -95,7 +95,7 @@
                             @endif
                         </th>
                         <th class="p-4 font-bold">&nbsp;</th>
-                        <th class="p-4 font-bold cursor-pointer hover:bg-slate-300" wire:click="sortByMinistry">
+                        <th class="p-4 font-bold cursor-pointer hover:bg-slate-300 text-nowrap" wire:click="sortByMinistry">
                             Ministry
                             @if($sortBy === 'ministry_id')
                                 <span class="ml-1">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
@@ -103,7 +103,7 @@
                                 <span class="ml-1">↓</span>
                             @endif
                         </th>
-                        <th class="p-4 font-bold cursor-pointer hover:bg-slate-300" wire:click="sortByPrice">
+                        <th class="p-4 font-bold cursor-pointer hover:bg-slate-300 text-nowrap" wire:click="sortByPrice">
                             Price
                             @if($sortBy === 'price')
                                 <span class="ml-1">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
@@ -119,7 +119,7 @@
                     @if($programmes->count())
                         @foreach ($programmes as $programme)
                             <tr class="hover:bg-slate-400/10 duration-300 border border-slate-300 dark:border-strokedark bg-white">
-                                <td class="p-4 pl-6 w-[30%]">
+                                <td class="p-4 pl-6 md:w-[30%] w-full">
                                     <div class="relative flex items-start gap-3">
                                         @if($programme->active_promotion)
                                             <div class="absolute top-0 -left-2 bg-green-500 text-white text-[10px] font-bold px-2 py-1 rounded-full shadow-md animate-bounce">
@@ -163,7 +163,7 @@
                                     </div>
                                 </td>
                                 <td class="p-4">
-                                    <div class="flex-grow space-y-2 justify-start">
+                                    <div class="flex-grow space-y-2 justify-start truncate">
                                         <div class="flex gap-1 items-start text-slate-600 dark:text-slate-300">
                                             <p class="flex">
                                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
@@ -193,7 +193,7 @@
                                 </td>
                                 <td class="p-4">
                                     <div class="flex flex-col">
-                                        <span class="font-medium text-sm text-slate-600">{{ $programme->ministry->name ?? 'N/A' }}</span>
+                                        <span class="font-medium text-sm text-slate-600 text-nowrap">{{ $programme->ministry->name ?? 'N/A' }}</span>
                                     </div>
                                 </td>
                                 <td class="p-4">

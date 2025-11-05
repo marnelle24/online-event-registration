@@ -5,16 +5,16 @@
             <h4 class="text-3xl font-bold text-black capitalize">Speaker Management</h4>
             <p class="text-sm text-slate-500">Manage Speakers and Professionals for your events</p>
         </div>
-        <div class="flex lg:gap-3 gap-1">
+        <div class="grid grid-cols-1 md:grid-cols-3 lg:gap-3 gap-1">
             <button wire:click="exportCsv" 
-                class="flex items-center gap-2 border border-slate-500 bg-slate-100 drop-shadow text-slate-500 hover:text-slate-200 hover:bg-slate-600 rounded-full hover:-translate-y-1 duration-300 py-2 px-5">
+                class="flex items-center gap-2 border border-slate-500 bg-slate-100 drop-shadow text-slate-500 hover:text-slate-200 hover:bg-slate-600 rounded-full hover:-translate-y-0.5 duration-300 py-2 px-5">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25ZM6.75 12h.008v.008H6.75V12Zm0 3h.008v.008H6.75V15Zm0 3h.008v.008H6.75V18Z" />
                 </svg>
                 Export CSV
             </button>
             <button wire:click="exportExcel" 
-                class="flex items-center gap-2 shadow border border-blue-600/30 bg-green-700 drop-shadow text-slate-200 hover:bg-green-800 rounded-full hover:-translate-y-1 duration-300 py-2 px-5">
+                class="flex items-center gap-2 shadow border border-blue-600/30 bg-green-700 drop-shadow text-slate-200 hover:bg-green-800 rounded-full hover:-translate-y-0.5 duration-300 py-2 px-5">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" />
                 </svg>
@@ -70,11 +70,11 @@
 
     <!-- Results Table -->
     <div class="rounded-sm border border-stroke">
-        <div class="max-w-full overflow-x-auto">
+        <div class="max-w-full md:overflow-x-visible overflow-x-auto">
             <table class="w-full table-auto">
                 <thead>
                     <tr class="bg-slate-200 border border-slate-300 text-slate-500 text-left">
-                        <th class="p-4 font-bold cursor-pointer hover:bg-slate-300" wire:click="sortByName">
+                        <th class="p-4 font-bold cursor-pointer hover:bg-slate-300 text-nowrap" wire:click="sortByName">
                             Name
                             @if($sortBy === 'name')
                                 <span class="ml-1">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
@@ -82,7 +82,7 @@
                                 <span class="ml-1">↓</span>
                             @endif
                         </th>
-                        <th class="p-4 font-bold cursor-pointer hover:bg-slate-300" wire:click="sortByEmail">
+                        <th class="p-4 font-bold cursor-pointer hover:bg-slate-300 text-nowrap" wire:click="sortByEmail">
                             Email
                             @if($sortBy === 'email')
                                 <span class="ml-1">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
@@ -90,7 +90,7 @@
                                 <span class="ml-1">↓</span>
                             @endif
                         </th>
-                        <th class="p-4 font-bold cursor-pointer hover:bg-slate-300" wire:click="sortByProfession">
+                        <th class="p-4 font-bold cursor-pointer hover:bg-slate-300 text-nowrap" wire:click="sortByProfession">
                             Profession
                             @if($sortBy === 'profession')
                                 <span class="ml-1">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
@@ -98,7 +98,7 @@
                                 <span class="ml-1">↓</span>
                             @endif
                         </th>
-                        <th class="p-4 font-bold cursor-pointer hover:bg-slate-300" wire:click="sortByStatus">
+                        <th class="p-4 font-bold cursor-pointer hover:bg-slate-300 text-nowrap" wire:click="sortByStatus">
                             Status
                             @if($sortBy === 'is_active')
                                 <span class="ml-1">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
@@ -106,7 +106,7 @@
                                 <span class="ml-1">↓</span>
                             @endif
                         </th>
-                        <th class="p-4 font-bold cursor-pointer hover:bg-slate-300" wire:click="sortByCreatedAt">
+                        <th class="p-4 font-bold cursor-pointer hover:bg-slate-300 text-nowrap" wire:click="sortByCreatedAt">
                             Created
                             @if($sortBy === 'created_at')
                                 <span class="ml-1">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
@@ -121,8 +121,8 @@
                     @if($speakers->count())
                         @foreach ($speakers as $speaker)
                             <tr class="hover:bg-slate-400/10 duration-300 border border-slate-300 dark:border-slate-700 bg-white">
-                                <td class="p-4 pl-6 w-[25%]">
-                                    <div class="flex items-center gap-3">
+                                <td class="p-4 pl-6 md:w-[25%] w-full text-nowrap">
+                                    <div class="flex md:flex-row flex-col md:items-start items-center gap-3">
                                         <div class="rounded-full">
                                             @if($speaker->getFirstMediaUrl('speaker'))
                                                 <img src="{{ $speaker->getFirstMediaUrl('speaker') }}" alt="{{ $speaker->name }}" class="w-10 h-10 rounded-full object-cover border border-slate-300">
@@ -134,7 +134,7 @@
                                                 </div>
                                             @endif
                                         </div>
-                                        <div class="flex flex-col">
+                                        <div class="flex flex-col md:items-start items-center text-center md:text-left">
                                             <span class="font-bold text-slate-800">
                                                 {{ $speaker->title }} {{ $speaker->name }}
                                             </span>
@@ -148,8 +148,8 @@
                                     </div>
                                 </td>
                                 <td class="p-4">
-                                    <div class="flex flex-col text-left">
-                                        <span class="font-medium text-slate-600 dark:text-slate-200">
+                                    <div class="flex flex-col text-left text-nowrap">
+                                        <span class="font-medium text-slate-600 text-nowrap">
                                             {{ $speaker->profession ?? 'N/A' }}
                                         </span>
                                     </div>
@@ -170,10 +170,10 @@
                                 </td>
                                 <td class="p-4">
                                     <div class="flex flex-col">
-                                        <span class="text-sm text-slate-600 dark:text-slate-200">
+                                        <span class="text-sm text-slate-600 text-nowrap">
                                             {{ $speaker->created_at->format('M j, Y') }}
                                         </span>
-                                        <span class="text-xs text-slate-500 dark:text-slate-400">
+                                        <span class="text-xs text-slate-500 text-nowrap">
                                             {{ $speaker->created_at->format('g:i A') }}
                                         </span>
                                     </div>

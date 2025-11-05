@@ -67,7 +67,8 @@ class Programme extends Model implements HasMedia
 
     public function getLocationAttribute()
     {
-        return ($this->address ? $this->address.', ': '') . ($this->city ? $this->city.', ': '') . ($this->postalCode ? $this->postalCode.', ': '');
+        $fullLocation = ($this->address ? $this->address.', ': '') . ($this->city ? $this->city.', ': '') . ($this->postalCode ? $this->postalCode.', ': '');
+        return $fullLocation ? $fullLocation : 'TBA';
     }
 
     public function getProgrammeDatesAttribute()

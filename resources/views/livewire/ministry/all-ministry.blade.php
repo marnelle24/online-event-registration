@@ -5,16 +5,16 @@
             <h4 class="text-3xl font-bold text-black capitalize">Ministry Management</h4>
             <p class="text-sm text-slate-500">Manage Ministries and Organizations for your events</p>
         </div>
-        <div class="flex lg:gap-3 gap-1">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
             <button wire:click="exportCsv"
-                class="flex items-center gap-2 border border-slate-500 bg-slate-100 drop-shadow text-slate-500 hover:text-slate-200 hover:bg-slate-600 rounded-full hover:-translate-y-1 duration-300 py-2 px-5">
+                class="flex items-center gap-2 border border-slate-500 bg-slate-100 drop-shadow text-slate-500 hover:text-slate-200 hover:bg-slate-600 rounded-full hover:-translate-y-0.5 duration-300 py-2 px-5">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25ZM6.75 12h.008v.008H6.75V12Zm0 3h.008v.008H6.75V15Zm0 3h.008v.008H6.75V18Z" />
                 </svg>
                 Export CSV
             </button>
             <button wire:click="exportExcel"
-                class="flex items-center gap-2 shadow border border-blue-600/30 bg-green-700 drop-shadow text-slate-200 hover:bg-green-800 rounded-full hover:-translate-y-1 duration-300 py-2 px-5">
+                class="flex items-center gap-2 shadow border border-blue-600/30 bg-green-700 drop-shadow text-slate-200 hover:bg-green-800 rounded-full hover:-translate-y-0.5 duration-300 py-2 px-5">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" />
                 </svg>
@@ -69,7 +69,7 @@
 
     <!-- Results Table -->
     <div class="rounded-sm border border-stroke">
-        <div class="max-w-full overflow-x-auto">
+        <div class="max-w-full md:overflow-x-visible overflow-x-auto">
             <table class="w-full table-auto">
                 <thead>
                     <tr class="bg-slate-200 border border-slate-300 text-slate-500 text-left">
@@ -81,10 +81,10 @@
                                 <span class="ml-1">↓</span>
                             @endif
                         </th>
-                        <th class="p-4 font-bold cursor-pointer hover:bg-slate-300">
+                        <th class="p-4 font-bold cursor-pointer hover:bg-slate-300 text-nowrap">
                             Contact Person
                         </th>
-                        <th class="p-4 font-bold cursor-pointer hover:bg-slate-300" wire:click="sortByStatus">
+                        <th class="p-4 font-bold cursor-pointer hover:bg-slate-300 text-nowrap" wire:click="sortByStatus">
                             Status
                             @if($sortBy === 'status')
                                 <span class="ml-1">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
@@ -92,18 +92,18 @@
                                 <span class="ml-1">↓</span>
                             @endif
                         </th>
-                        <th class="p-4 font-bold">
+                        <th class="p-4 font-bold text-nowrap text-center">
                             Timestamps
                         </th>
-                        <th class="p-4 font-bold text-right">Actions</th>
+                        <th class="p-4 font-bold text-right text-nowrap">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     @if($ministries->count())
                         @foreach ($ministries as $ministry)
                             <tr class="hover:bg-slate-400/10 duration-300 border border-slate-300 dark:border-slate-700 bg-white">
-                                <td class="p-4 pl-6 w-full flex items-start">
-                                    <div class="flex items-start gap-3 w-full">
+                                <td class="p-4 pl-6">
+                                    <div class="flex md:flex-row flex-col gap-3 md:items-start items-center">
                                         <div class="rounded-full">
                                             @if($ministry->getFirstMediaUrl('ministry'))
                                                 <img src="{{ $ministry->getFirstMediaUrl('ministry') }}" alt="{{ $ministry->name }}" class="w-10 h-10 rounded-full object-cover border border-slate-300">
@@ -115,7 +115,7 @@
                                                 </div>
                                             @endif
                                         </div>
-                                        <div class="flex flex-col items-start">
+                                        <div class="flex flex-col md:items-start items-center md:justify-start justify-center text-nowrap">
                                             <p class="font-bold text-slate-800">
                                                 {{ $ministry->name }}
                                             </p>
@@ -123,8 +123,8 @@
                                         </div>
                                     </div>
                                 </td>
-                                <td class="p-4">
-                                    <div class="flex flex-col">
+                                <td class="p-4 justify-center items-start">
+                                    <div class="flex flex-col justify-center items-start text-nowrap">
                                         <p class="font-bold text-slate-800 capitalize">
                                             {{ $ministry->contactPerson ?? '--' }}
                                         </p>
@@ -155,7 +155,7 @@
                                     </div>
                                 </td>
                                 <td class="p-4">
-                                    <div class="flex flex-col gap-1 justify-start">
+                                    <div class="flex flex-col gap-1 justify-start items-start">
                                         @php
                                             $statusColors = [
                                                 'active' => 'bg-green-100 text-green-800 border-green-600',
@@ -203,13 +203,13 @@
                                 </td>
                                 <td class="p-4">
                                     <div class="flex flex-col">
-                                        <p class="text-sm text-slate-400">Created By: <span class="italic font-bold text-slate-500">{{ $ministry->requestedBy ? $ministry->requestedBy : '--' }}</span></p>
-                                        <p class="text-sm text-slate-400">Approved By: <span class="italic font-bold text-slate-500">{{ $ministry->approvedBy ? $ministry->approvedBy : '--'  }}</span></p>
-                                        <p class="text-sm text-slate-400">Created: <span class="italic font-bold text-slate-500">{{ $ministry->created_at->format('F j, Y') }} {{ $ministry->created_at->format('g:i A') }}</span></p>
-                                        <p class="text-sm text-slate-400">Last Updated: <span class="italic font-bold text-slate-500">{{ $ministry->updated_at->format('F j, Y') }} {{ $ministry->updated_at->format('g:i A') }}</span></p>
+                                        <p class="text-nowrap text-sm text-slate-400">Created By: <span class="italic font-bold text-slate-500">{{ $ministry->requestedBy ? $ministry->requestedBy : '--' }}</span></p>
+                                        <p class="text-nowrap text-sm text-slate-400">Approved By: <span class="italic font-bold text-slate-500">{{ $ministry->approvedBy ? $ministry->approvedBy : '--'  }}</span></p>
+                                        <p class="text-nowrap text-sm text-slate-400">Created: <span class="italic font-bold text-slate-500">{{ $ministry->created_at->format('F j, Y') }} {{ $ministry->created_at->format('g:i A') }}</span></p>
+                                        <p class="text-nowrap text-sm text-slate-400">Last Updated: <span class="italic font-bold text-slate-500">{{ $ministry->updated_at->format('F j, Y') }} {{ $ministry->updated_at->format('g:i A') }}</span></p>
                                     </div>
                                 </td>
-                                <td class="p-4 flex justify-end items-start gap-2">
+                                <td class="p-4 flex justify-end items-center gap-2">
                                     <button type="button" x-cloak x-data="{ showToolTip: false }" class="relative flex items-center gap-3">
                                         <svg 
                                             wire:click="callEditMinistryModal('{{ $ministry->id }}')"
