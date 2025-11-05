@@ -109,7 +109,17 @@ class ResetPasswordModal extends Component
                     Toaster::success('Password reset and email sent successfully!');
                 } catch (\Exception $e) {
                     \Log::error('Error sending password reset email: ' . $e->getMessage());
-                    Toaster::warning('Password reset successfully, but email could not be sent: ' . $e->getMessage());
+                    \Log::error('Email stack trace: ' . $e->getTraceAsString());
+                    
+                    // Provide more helpful error message
+                    $errorMessage = $e->getMessage();
+                    if (str_contains($errorMessage, '535') || str_contains($errorMessage, 'BadCredentials')) {
+                        $errorMessage = 'Email authentication failed. Please check your Gmail App Password in .env file. Make sure you\'re using a 16-character App Password, not your regular Gmail password. See MAIL_CONFIGURATION.md for detailed instructions.';
+                    } elseif (str_contains($errorMessage, 'Connection')) {
+                        $errorMessage = 'Cannot connect to email server. Please check your MAIL_HOST and MAIL_PORT settings.';
+                    }
+                    
+                    Toaster::warning('Password reset successfully, but email could not be sent. ' . $errorMessage);
                 }
             } else {
                 Toaster::success('Password reset successfully!');
