@@ -83,16 +83,16 @@ class Programme extends Model implements HasMedia
         if ($this->endDate) {
             $endDate = \Carbon\Carbon::parse($this->endDate);
             
-            if ($startDate->year === $endDate->year && $startDate->month !== $endDate->month && $startDate->day !== $endDate->day) {
+            if ($startDate->year === $endDate->year && $startDate->month !== $endDate->month && $startDate->day !== $endDate->day)
                 return $formattedStartDate . ' - ' . $endDate->format('j, Y');
-            }
-            if ($startDate->year === $endDate->year && $startDate->month === $endDate->month && $startDate->day === $endDate->day) {
-                return $startDate->format('M j, Y');
-            }
+
+            if ($this->startDate == $this->endDate)
+                return $startDate->format('F j, Y');
+            
             return $formattedStartDate . ', ' . $startDate->format('Y') . ' - ' . $endDate->format('M j, Y');
         }
         
-        return $startDate->format('M j, Y');
+        return $startDate->format('F j, Y');
     }
 
     public function getProgrammeTimesAttribute()
