@@ -34,7 +34,7 @@
 
     <!-- Programmes Carousel Section -->
     <div class="relative">
-        @if($programmes->isEmpty())
+        @if(!$programmes || $programmes->isEmpty())
             <!-- Empty State -->
             <div class="flex flex-col items-center justify-center py-16 text-center">
                 <svg class="w-16 h-16 text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

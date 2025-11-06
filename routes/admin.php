@@ -78,6 +78,11 @@ Route::middleware(['admin'])->prefix('admin')->group(function () {
     Route::prefix('payments')->group(function () {
         Route::post('/verify-bank-transfer/{confirmationCode}', [RegistrantController::class, 'verifyBankTransfer'])->name('admin.payments.verify-bank-transfer');
     });
+
+    // Logs Viewer
+    Route::get('/logs', function () {
+        return view('admin.logs.index');
+    })->name('admin.logs');
     
 });
     

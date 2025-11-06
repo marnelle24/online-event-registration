@@ -46,11 +46,5 @@
         @stack('script')
         <x-toaster-hub />
         @livewireScripts
-
-        {{-- @push('script')
-            @if (request()->routeIs('admin.programmes.show'))
-                @vite('resources/js/programme-dashboard-graph-1.js')
-            @endif
-        @endpush --}}
     </body>
 </html>

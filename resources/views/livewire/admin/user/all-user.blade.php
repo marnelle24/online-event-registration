@@ -137,11 +137,11 @@
                                             </div>
                                         @endif
                                         <div class="flex md:justify-start justify-center flex-col text-center md:text-left">
-                                            <h1 class="text-lg font-bold text-slate-800 leading-tight text-nowrap">
+                                            <h1 class="text-lg capitalize font-bold text-slate-800 leading-tight text-nowrap">
                                                 {{ $user->name }}
                                             </h1>
                                             @if($user->firstname || $user->lastname)
-                                                <span class="text-xs text-slate-500 text-nowrap">
+                                                <span class="text-xs capitalize text-slate-500 text-nowrap">
                                                     {{ trim(($user->firstname ?? '') . ' ' . ($user->lastname ?? '')) }}
                                                 </span>
                                             @endif

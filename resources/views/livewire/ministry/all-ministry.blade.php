@@ -104,11 +104,11 @@
                             <tr class="hover:bg-slate-400/10 duration-300 border border-slate-300 dark:border-slate-700 bg-white">
                                 <td class="p-4 pl-6">
                                     <div class="flex md:flex-row flex-col gap-3 md:items-start items-center">
-                                        <div class="rounded-full">
+                                        <div class="w-18">
                                             @if($ministry->getFirstMediaUrl('ministry'))
-                                                <img src="{{ $ministry->getFirstMediaUrl('ministry') }}" alt="{{ $ministry->name }}" class="w-10 h-10 rounded-full object-cover border border-slate-300">
+                                                <img src="{{ $ministry->getFirstMediaUrl('ministry') }}" alt="{{ $ministry->name }}" class="object-cover">
                                             @else
-                                                <div class="w-10 h-10 rounded-full bg-slate-200 border border-slate-300 flex items-center justify-center">
+                                                <div class="bg-slate-200 border border-slate-300 flex items-center justify-center">
                                                     <span class="text-sm font-medium text-slate-600">
                                                         {{ \App\Helpers\Helper::getInitials($ministry->name) }}
                                                     </span>

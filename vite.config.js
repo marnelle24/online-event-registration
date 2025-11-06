@@ -7,7 +7,9 @@ export default defineConfig({
             input: [
                 'resources/css/app.css', 
                 'resources/js/app.js',
-                'resources/js/registration-form.js'
+                'resources/js/registration-form.js',
+                'resources/js/programme-dashboard-graph.js',
+                'resources/js/admin-dashboard-registration-trends.js'
             ],
             refresh: true,
         }),

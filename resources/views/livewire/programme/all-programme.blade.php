@@ -20,7 +20,9 @@
                 </svg>
                 Export Excel
             </button>
-            @livewire('programme.add-programme', key('add-new-programme'))
+            <div class="md:col-span-1 col-span-3">
+                @livewire('programme.add-programme', key('add-new-programme'))
+            </div>
         </div>
     </div>
 

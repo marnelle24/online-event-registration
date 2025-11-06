@@ -21,6 +21,7 @@ class AddUser extends Component
     public $ministries = [];
     public $ministrySearch = '';
     public $show = false;
+    public $selectAllMinistries = false;
 
     protected $listeners = [
         'callAddUserModal' => 'openModal',
@@ -107,6 +108,13 @@ class AddUser extends Component
             \Log::error('Error creating user: ' . $e->getMessage());
             Toaster::error('Error creating user: ' . $e->getMessage());
         }
+    }
+    public function selectAllMinistriesCheckbox()
+    {
+        if($this->selectAllMinistries)
+            $this->ministries = Ministry::orderBy('name')->get()->pluck('id')->toArray();
+        else
+            $this->ministries = [];
     }
 
     public function render()

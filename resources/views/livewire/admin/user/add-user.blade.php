@@ -223,6 +223,17 @@
                                         <p class="text-sm text-slate-400 text-center py-2">No ministries found</p>
                                     @endif
                                 </div>
+                                <!-- Select All Ministries -->
+                                <div class="flex items-center gap-2">
+                                    <input 
+                                        wire:change="selectAllMinistriesCheckbox"
+                                        type="checkbox" 
+                                        id="selectAllMinistries" 
+                                        wire:model="selectAllMinistries" 
+                                        class="rounded border-slate-300"
+                                    />
+                                    <label for="selectAllMinistries" class="text-sm font-medium text-slate-700">Select All</label>
+                                </div>
                                 @error('ministries')
                                     <span class="text-red-500 text-xs">{{ $message }}</span>
                                 @enderror
