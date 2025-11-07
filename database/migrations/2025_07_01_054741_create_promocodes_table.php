@@ -16,8 +16,8 @@ return new class extends Migration
             $table->foreignId('programme_id')->constrained()->cascadeOnDelete();
             $table->string('programCode');
             $table->string('promocode');
-            $table->date('startDate');
-            $table->date('endDate');
+            $table->datetime('startDate');
+            $table->datetime('endDate');
             $table->decimal('price', 10, 2)->default(0);
             $table->boolean('isActive')->default(true);
             $table->integer('usedCount')->default(0);

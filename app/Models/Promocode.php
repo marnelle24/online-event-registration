@@ -22,6 +22,10 @@ class Promocode extends Model
 
     protected $casts = [
         'isActive' => 'boolean',
+        'startDate' => 'datetime',
+        'endDate' => 'datetime',
+        'maxUses' => 'integer',
+        'usedCount' => 'integer',
     ];
 
     public function programme()

@@ -3,7 +3,7 @@
     <div class="flex md:flex-row flex-col gap-4">
         <img src="{{$programme->thumbnail}}" alt="{{$programme->title}}" class="lg:rounded-lg object-cover bg-center rounded-tl-md rounded-tr-md lg:w-60 w-full h-48 border border-zinc-400 shadow-md" />
         <div>
-            <h1 class="text-2xl text-slate-600 drop-shadow font-bold">{{$programme->title}}</h1>
+            <h1 class="text-2xl text-slate-600 font-bold">{{$programme->title}}</h1>
             <table class="my-4">
                 <tr>
                     <td class="text-md py-1 text-slate-600 flex items-start">
@@ -65,7 +65,7 @@
             </table>
         </div>
     </div>
-    <div class="flex gap-3 pl-2 border-b-2 border-zinc-500/70 w-full">
+    <div class="flex gap-3 pl-2 border-b-2 border-zinc-500/70 w-full overflow-x-auto">
         @php
             $tabs = [
                 'dashboard' => 'Dashboard',
@@ -83,10 +83,10 @@
                 $isActive = (request('p') === $tab || (empty(request('p')) && $tab === 'dashboard'));
                 $tabColorToggle = $isActive ? 'bg-slate-700 text-white border-b-1 border-slate-600' : 'bg-white border-slate-500';
             @endphp
-            <a href="{{ url()->current() }}?p={{ $tab }}" class="{{$tabColorToggle}} hover:bg-slate-700 hover:text-white duration-300 hover:scale-105 border border-b-0 px-3 py-2 rounded-tr-md rounded-tl-md text-md">{{ $label }}</a>
+            <a href="{{ url()->current() }}?p={{ $tab }}" class="{{$tabColorToggle}} text-nowrap hover:bg-slate-700 hover:text-white duration-300 hover:scale-105 border border-b-0 px-3 py-2 rounded-tr-md rounded-tl-md text-md">{{ $label }}</a>
         @endforeach
     </div>
-    <div class="flex gap-4 w-full mt-4">
+    <div class="flex gap-4 w-full md:mb-0 mb-12">
         {{-- <hr class="border border-zinc-500/70" /> --}}
 
         @if(request('p') === 'dashboard' || !request('p'))
@@ -215,31 +215,31 @@
         @endif
         
         @if(request('p') === 'information')
-            @livewire('programme.information-details', ['programmeId' => $programme->id], key('information-details'))
+            @livewire('admin.programme.information-details', ['programmeId' => $programme->id], key('information-details'))
         @endif
 
         @if(request('p') === 'speaker-trainer')
-            @livewire('programme.speaker.all-speaker', ['programmeId' => $programme->id], key('all-speaker'))
+            @livewire('admin.programme.speaker.all-speaker', ['programmeId' => $programme->id], key('all-speaker'))
         @endif
 
         @if(request('p') === 'promotion')
-            @livewire('promotion.all-promotion', ['programmeId' => $programme->id], key('all-promotion'))
+            @livewire('admin.promotion.all-promotion', ['programmeId' => $programme->id], key('all-promotion'))
         @endif
         
         @if(request('p') === 'promocode')
-            @livewire('promocode.all-promocode', ['programmeId' => $programme->id], key('all-promocode'))
+            @livewire('admin.promocode.all-promocode', ['programmeId' => $programme->id], key('all-promocode'))
         @endif
 
         @if(request('p') === 'registrants')
-            @livewire('registrant.index', ['programmeId' => $programme->id], key('registrant-index'))
+            @livewire('admin.registrant.index', ['programmeId' => $programme->id], key('registrant-index'))
         @endif
 
         @if(request('p') === 'settings')
-            @livewire('programme.settings-section', ['programmeId' => $programme->id], key('settings-section'))
+            @livewire('admin.programme.settings-section', ['programmeId' => $programme->id], key('settings-section'))
         @endif
 
         @if(request('p') === 'breakout-session')
-            @livewire('programme.breakout-session', ['programmeId' => $programme->id], key('breakout-session'))
+            @livewire('admin.programme.breakout-session', ['programmeId' => $programme->id], key('breakout-session'))
         @endif
     </div>
     <style>

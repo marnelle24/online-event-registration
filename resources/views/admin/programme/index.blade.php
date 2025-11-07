@@ -11,6 +11,6 @@
     @endif
 
     <div class="py-6">
-        @livewire('programme.all-programme', key('all-programmes'))
+        @livewire('admin.programme.all-programme', key('all-programmes'))
     </div>
 </x-app-layout>

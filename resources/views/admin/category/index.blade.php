@@ -11,6 +11,6 @@
     @endif
 
     <div class="py-6">
-        @livewire('category.all-category', key('all-categories'))
+        @livewire('admin.category.all-category', key('all-categories'))
     </div>
 </x-app-layout>

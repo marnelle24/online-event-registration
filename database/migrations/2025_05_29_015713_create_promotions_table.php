@@ -17,8 +17,8 @@ return new class extends Migration
             $table->string('programCode');
             $table->string('title');
             $table->text('description')->nullable();
-            $table->date('startDate');
-            $table->date('endDate');
+            $table->datetime('startDate');
+            $table->datetime('endDate');
             $table->decimal('price', 10, 2)->default(0);
             $table->boolean('isActive')->default(true);
             $table->integer('arrangement')->default(1);

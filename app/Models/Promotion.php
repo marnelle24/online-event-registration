@@ -21,7 +21,7 @@ class Promotion extends Model
         'createdBy',
     ];
 
-    protected $cast = [
+    protected $casts = [
         'startDate' => 'datetime',
         'endDate' => 'datetime',
         'counter' => 'integer',
