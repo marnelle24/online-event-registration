@@ -92,10 +92,10 @@
         <div class="mt-4 flex flex-col justify-between">
             <div class="flex items-center gap-1">
                 <p class="text-sm italic text-slate-500 py-2 border-slate-400">Categories:</p>
-                @livewire('programme.update-category', ['programmeId' => $programme->id, 'programmeCategories' => $programme->categories], key('update-category'))
+                @livewire('admin.programme.update-category', ['programmeId' => $programme->id, 'programmeCategories' => $programme->categories], key('update-category'))
             </div>
             <div class="flex flex-wrap whitespace-normal gap-2">
-                @livewire('category.bubble-list', ['programmeId' => $programme->id, 'canRemove' => false], key('bubble-list'))
+                @livewire('admin.category.bubble-list', ['programmeId' => $programme->id, 'canRemove' => false], key('bubble-list'))
             </div>
         </div>
     </div>

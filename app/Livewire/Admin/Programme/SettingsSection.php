@@ -115,13 +115,15 @@ class SettingsSection extends Component
     public function toogleAllowGroupRegistration()
     {
         $this->allowGroupRegistration = !$this->allowGroupRegistration;
-        $isUpdated = $this->programme->update(['allowGroupRegistration' => $this->allowGroupRegistration]);
-        if($isUpdated)
-            Toaster::success($this->allowGroupRegistration ? 
-                'Group registration is now enabled.' : 
-                'Group registration is now disabled.');
-        else
-            Toaster::error('Something\'s wrong, please try again later.');
+
+        if(!$this->allowGroupRegistration)
+        {
+            $isUpdated = $this->programme->update(['allowGroupRegistration' => $this->allowGroupRegistration]);
+            if($isUpdated)
+                Toaster::success('Group registration settings disabled successfully.');
+            else
+                Toaster::error('Something\'s wrong, please try again later.');
+        }
     }
 
     //toogle for allow group registration
@@ -147,9 +149,10 @@ class SettingsSection extends Component
         }
 
         $isUpdated = $this->programme->update([
+            'allowGroupRegistration' => $this->allowGroupRegistration,
             'groupRegistrationMin' => $this->groupRegistrationMin, 
             'groupRegistrationMax' => $this->groupRegistrationMax, 
-            'groupRegistrationFee' => $this->groupRegistrationFee
+            'groupRegIndividualFee' => $this->groupRegistrationFee
         ]);
 
         if($isUpdated)

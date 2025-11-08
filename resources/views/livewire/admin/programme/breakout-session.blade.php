@@ -1,17 +1,20 @@
-<div>
+<div class="w-full">
     <div class="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
         <div class="flex justify-between items-center border-b border-stroke px-4 py-4.5 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
             <p class="text-md text-slate-500 uppercase tracking-wider font-thin">
                 Breakout Sessions
             </p>
-            @livewire('programme.breakout-session-slide-form', ['programmeId' => $programmeId])
+            @livewire('admin.programme.breakout-session-slide-form', ['programmeId' => $programmeId])
         </div>
         <div>
             @if($breakouts->isEmpty())
                 <div class="flex flex-col justify-center items-center h-full">
-                    <p class="text-md text-slate-500 uppercase tracking-wider font-thin py-12">
-                        No Breakout Sessions
-                    </p>
+                    <div class="flex flex-col items-center bg-white group-hover:bg-slate-50/70 duration-300 py-8">
+                        <svg class="size-16 text-slate-300 mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3.375 19.5h17.25m-17.25 0a1.125 1.125 0 0 1-1.125-1.125M3.375 19.5h7.5c.621 0 1.125-.504 1.125-1.125m-9.75 0V5.625m0 12.75v-1.5c0-.621.504-1.125 1.125-1.125m18.375 2.625V5.625m0 12.75c0 .621-.504 1.125-1.125 1.125m1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125m0 3.75h-7.5A1.125 1.125 0 0 1 12 18.375m9.75-12.75c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125m19.5 0v1.5c0 .621-.504 1.125-1.125 1.125M2.25 5.625v1.5c0 .621.504 1.125 1.125 1.125m0 0h17.25m-17.25 0h7.5c.621 0 1.125.504 1.125 1.125M3.375 8.25c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125m17.25-3.75h-7.5c-.621 0-1.125.504-1.125 1.125m8.625-1.125c.621 0 1.125.504 1.125 1.125v1.5c0 .621-.504 1.125-1.125 1.125m-17.25 0h7.5m-7.5 0c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125M12 10.875v-1.5m0 1.5c0 .621-.504 1.125-1.125 1.125M12 10.875c0 .621.504 1.125 1.125 1.125m-2.25 0c.621 0 1.125.504 1.125 1.125M13.125 12h7.5m-7.5 0c-.621 0-1.125.504-1.125 1.125M20.625 12c.621 0 1.125.504 1.125 1.125v1.5c0 .621-.504 1.125-1.125 1.125m-17.25 0h7.5M12 14.625v-1.5m0 1.5c0 .621-.504 1.125-1.125 1.125M12 14.625c0 .621.504 1.125 1.125 1.125m-2.25 0c.621 0 1.125.504 1.125 1.125m0 1.5v-1.5m0 0c0-.621.504-1.125 1.125-1.125m0 0h7.5" />
+                        </svg>
+                        <p class="text-slate-400 text-lg font-medium">No breakout sessions found</p>
+                    </div>
                 </div>
             @else
                 @foreach ($breakouts as $key => $breakout)
@@ -66,7 +69,7 @@
                             </p>
                         </div>
                         <div class="col-span-1 flex justify-end items-center gap-3">
-                            @livewire('programme.edit-breakout-session-slide-form', ['breakout' => $breakout], key($key))
+                            @livewire('admin.programme.edit-breakout-session-slide-form', ['breakout' => $breakout], key($key))
                             <button 
                                 wire:click="deleteBreakout({{ $breakout->id }})"
                                 wire:confirm="Are you sure you want to delete this breakout session?"

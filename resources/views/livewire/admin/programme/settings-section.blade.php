@@ -485,11 +485,11 @@
                                 <label for="allowGroupRegistration" class="cursor-pointer select-none items-center">
                                     <div 
                                         class="relative"
-                                        wire:click="toogleAllowGroupRegistration"
                                         @mouseover="showToolTip = true" 
                                         @mouseleave="showToolTip = false"
                                     >
                                         <input 
+                                            wire:change="toogleAllowGroupRegistration"
                                             wire:model.live.debounce.500ms="allowGroupRegistration"
                                             type="checkbox" id="allowGroupRegistration" class="sr-only flex" 
                                         />

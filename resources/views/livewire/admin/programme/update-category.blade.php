@@ -97,7 +97,7 @@
                         @endif
 
                         @if ($programmeCategories->count() > 0)
-                            @livewire('category.bubble-list', ['categories' => $programmeCategories, 'programmeId' => $programmeId, 'canRemove' => true], key('bubble-list'))
+                            @livewire('admin.category.bubble-list', ['categories' => $programmeCategories, 'programmeId' => $programmeId, 'canRemove' => true], key('bubble-list'))
                         @endif
                     </div>
                 </div>
