@@ -24,11 +24,13 @@ class InformationDetails extends Component
     public function toogleShowEdit()
     {
         $this->showEdit = !$this->showEdit;
+        $this->excerpt = $this->programme->excerpt;
     }
 
     public function toogleShowEditDescription()
     {
         $this->showEditDescription = !$this->showEditDescription;
+        $this->description = $this->programme->description;
     }
 
     public function updatedProgramme($value)

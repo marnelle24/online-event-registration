@@ -472,6 +472,58 @@
 
                         </td>
                     </tr>
+                    {{-- Is it Hybrid Programme --}}
+                    <tr class="border border-slate-400 p-4">
+                        <td class="p-4 text-nowrap">Is it Hybrid Programme 
+                            <p class="text-xs italic text-slate-500">Is it a hybrid programme? If yes, the programme will be held both online and offline.</p>
+                        </td>
+                        <td x-cloak x-data="{showEdit:false, showToolTip:false}" class="p-4 flex">
+                            <div x-cloak x-data="{showToolTip:false, isActive: @entangle('isHybridMode')}" class="relative w-full">
+                                <label for="isHybridMode" class="cursor-pointer select-none items-center">
+                                    <div 
+                                        class="relative"
+                                        @mouseover="showToolTip = true" 
+                                        @mouseleave="showToolTip = false"
+                                    >
+                                        <input 
+                                            wire:change="toogleIsHybridProgramme"
+                                            wire:confirm="Are you sure to make this changes?"
+                                            wire:model.live.debounce.500ms="isHybridMode"
+                                            type="checkbox" id="isHybridMode" class="sr-only flex" 
+                                        />
+                                        <p :class="isActive && '!bg-primary'" class="block h-8 w-14 rounded-full bg-black"></p>
+                                        <p :class="isActive && '!right-1 !translate-x-full'" class="absolute left-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-white transition"></p>
+                                        <div x-show="showToolTip" x-transition class="absolute mt-1 transition-all duration-300 ease-in-out hover:opacity-100 hover:translate-y-0 w-max bg-slate-700 rounded px-2 py-1 shadow-lg z-50">
+                                            <p class="text-left text-xs text-white flex flex-col p-1">
+                                                Is it a hybrid programme?
+                                            </p>
+                                        </div>
+                                    </div>
+                                </label>
+                                <div x-show="isActive" class="border border-slate-400 p-2 rounded-md mt-3">
+                                    <div class="flex flex-col w-full gap-2">
+                                        <div class="flex flex-col gap-2">
+                                            <label for="hybridDetails" class="text-xs italic text-slate-500 text-left leading-4 my-1">Details of the online platform</label>
+                                            <textarea 
+                                                wire:model.live.debounce.500ms="hybridPlatformDetails"
+                                                class="w-full rounded-md border border-slate-400 focus:ring-0 focus:border-slate-600 outline-none" 
+                                                placeholder="Details of the online platform"
+                                                rows="3"
+                                            ></textarea>
+                                        </div>
+                                        <div class="flex justify-end items-center pt-1">
+                                                <button 
+                                                wire:click="saveHybridProgrammeSettings" 
+                                                wire:confirm="Are you sure to make this changes?"
+                                                class="flex items-center bg-blue-600 text-white px-4 py-3 text-xs rounded-md hover:bg-blue-700 duration-300">
+                                                    Save
+                                                </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
                     {{-- allow Group Registration --}}
                     <tr class="border border-slate-400 p-4">
                         <td class="p-4">

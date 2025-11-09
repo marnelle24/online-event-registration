@@ -28,6 +28,9 @@ class SettingsSection extends Component
     public $groupRegistrationMin;
     public $groupRegistrationMax;
     public $groupRegistrationFee;
+    public $hybridDetails;
+    public bool $isHybridMode = false;
+    public $hybridPlatformDetails;
 
 
     public function mount()
@@ -50,6 +53,8 @@ class SettingsSection extends Component
         $this->groupRegistrationMin = $this->programme->groupRegistrationMin;
         $this->groupRegistrationMax = $this->programme->groupRegistrationMax;
         $this->groupRegistrationFee = $this->programme->groupRegistrationFee;
+        $this->hybridPlatformDetails = $this->programme->hybridPlatformDetails;
+        $this->isHybridMode = $this->programme->isHybridMode ?? false;
     }
 
     public function toogleAllowBreakoutSession()
@@ -77,6 +82,50 @@ class SettingsSection extends Component
                 'Programme set to public mode successfully.';
             Toaster::success($msg);
         }
+        else
+            Toaster::error('Something\'s wrong, please try again later.');
+    }
+
+    // Toogle for Is Hybrid Programme
+    public function toogleIsHybridProgramme()
+    {
+        $this->isHybridMode = !$this->isHybridMode;
+
+        if(!$this->isHybridMode)
+        {
+            $isUpdated = $this->programme->update(['isHybridMode' => false ]);
+            if($isUpdated)
+                Toaster::success('Hybrid programme settings disabled successfully.');
+            else
+                Toaster::error('Something\'s wrong, please try again later.');
+        }
+    }
+
+    // Save Hybrid Programme Settings
+    public function saveHybridProgrammeSettings()
+    {
+        $validator = Validator::make([
+            'hybridDetails' => $this->hybridPlatformDetails
+        ], [
+            'hybridDetails' => 'required|string|max:255'
+        ]);
+
+        if($validator->fails())
+        {
+            foreach($validator->errors()->all() as $error)
+            {
+                Toaster::error($error);
+            }
+            return;
+        }
+
+        $isUpdated = $this->programme->update([
+            'isHybridMode' => $this->isHybridMode,
+            'hybridPlatformDetails' => $this->hybridPlatformDetails
+        ]);
+
+        if($isUpdated)
+            Toaster::success('Hybrid programme settings enabled successfully.');
         else
             Toaster::error('Something\'s wrong, please try again later.');
     }

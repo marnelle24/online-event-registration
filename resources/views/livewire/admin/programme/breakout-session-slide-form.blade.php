@@ -1,15 +1,18 @@
-<div class="relative" x-data="{ show: false }">
+<div class="relative" x-cloak x-data="{ show: false, isAllowedBreakoutSession: @entangle('allowBreakoutSession') }">
     <!-- Trigger button -->
     <button 
         @click="show = true" 
+        :disabled="!isAllowedBreakoutSession"
         type="button" 
-        class="tracking-widest font-thin uppercase inline-flex items-center bg-green-600 hover:scale-105 hover:bg-green-500 duration-300 justify-center rounded-md border border-green-600 py-2 px-3 text-center text-white drop-shadow text-xs"
+        class="tracking-widest font-thin uppercase inline-flex items-center disabled:opacity-50 disabled:scale-100 disabled:cursor-not-allowed bg-green-600 hover:scale-105 hover:bg-green-500 duration-300 justify-center rounded-md border border-green-600 py-2 px-3 text-center text-white drop-shadow text-xs"
     >
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
         </svg>
         Breakout Session
     </button>
+
+    {{-- @dump($programme->allowBreakoutSession) --}}
 
     <!-- Backdrop and Slide-over Modal -->
     <div 

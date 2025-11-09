@@ -13,6 +13,7 @@ class BreakoutSessionSlideForm extends Component
     public $programmeId;
     public $programme;
     public $allSpeakers = [];
+    public bool $allowBreakoutSession;
     
     // Form properties
     public $session_title = '';
@@ -29,6 +30,7 @@ class BreakoutSessionSlideForm extends Component
         $this->programmeId = $programmeId;
         $this->programme = Programme::find($programmeId);
         $this->allSpeakers = Speaker::all();
+        $this->allowBreakoutSession = $this->programme->allowBreakoutSession;
     }
 
     public function resetForm()
