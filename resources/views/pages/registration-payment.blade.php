@@ -267,7 +267,7 @@
                     @if($registrant->programme->active_promotion)
                         <div class="flex justify-between items-center">
                             <span class="text-green-600 capitalize italic">{{ $registrant->programme->active_promotion->title }}</span>
-                            <span class="font-semibold text-green-600">${{ number_format($registrant->programme->discounted_price, 2) }}</span>
+                            <span class="font-semibold text-green-600">${{ number_format(intval($registrant->programme->discounted_price), 2) }}</span>
                         </div>
                     @endif
                     
