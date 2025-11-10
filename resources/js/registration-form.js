@@ -20,6 +20,7 @@ document.addEventListener('alpine:init', () => {
         activePromotion: config.activePromotion || null,
         formattedPrice: config.formattedPrice || '',
         discountedPrice: config.discountedPrice || null,
+        promotionParameter: config.promotionParameter || null,
         
         // Form State
         validating: false,
@@ -29,11 +30,22 @@ document.addEventListener('alpine:init', () => {
         discountAmount: 0,
         finalPrice: (() => {
             // Initialize finalPrice with active promotion discount if available
-            if (config.hasActivePromotion && config.discountedPrice) {
-                const match = config.discountedPrice.match(/[\d.]+/);
-                return match ? parseFloat(match[0]) : config.programmePrice;
+            if (config.hasActivePromotion) {
+                if (config.activePromotion && config.activePromotion.price !== undefined && config.activePromotion.price !== null) {
+                    return parseFloat(config.activePromotion.price);
+                }
+
+                if (config.discountedPrice) {
+                    const match = config.discountedPrice.match(/[\d.]+/);
+                    if (match) {
+                        return parseFloat(match[0]);
+                    }
+                }
+
+                return 0;
             }
-            return config.programmePrice;
+
+            return parseFloat(config.programmePrice);
         })(),
         isGroupRegistration: false,
         groupMembers: [],
@@ -47,6 +59,7 @@ document.addEventListener('alpine:init', () => {
         formData: {
             programmeCode: config.programmeCode,
             programmeId: config.programmeId,
+            promotionId: config.activePromotion ? config.activePromotion.id : null,
             promocode: '',
             promocodeId: null,
             registrationType: config.user ? 'user' : 'guest',
@@ -229,8 +242,16 @@ document.addEventListener('alpine:init', () => {
 
         getEffectivePrice() {
             // Return the effective price (promotion price if active, otherwise original price)
-            if (this.hasActivePromotion && this.discountedPrice) {
-                return this.parsePrice(this.discountedPrice);
+            if (this.hasActivePromotion) {
+                if (this.activePromotion && this.activePromotion.price !== undefined && this.activePromotion.price !== null) {
+                    return parseFloat(this.activePromotion.price);
+                }
+
+                if (this.discountedPrice) {
+                    return this.parsePrice(this.discountedPrice);
+                }
+
+                return 0;
             }
             return parseFloat(this.programmePrice);
         },

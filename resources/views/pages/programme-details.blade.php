@@ -1,15 +1,12 @@
 <x-guest-layout>
     @section('title', $programme->title)
-    
-    {{-- <div class="relative min-h-screen bg-gradient-to-b bg-white"> --}}
     <div class="relative min-h-screen bg-gradient-to-b from-white via-teal-100/70 to-white/30">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
             <!-- Programme Header -->
-            <div class="bg-white rounded-lg shadow-lg overflow-hidden mb-8">
-                @if($programme->getFirstMediaUrl('banner'))
-                    <div class="h-96 md:h-80 bg-cover bg-center border-b border-slate-400/70 bg-teal-900/30" style="background-image: url('{{ $programme->getFirstMediaUrl('banner') }}')"></div>
+            <div class="bg-white rounded-lg shadow overflow-hidden mb-8">
+                @if($programme->getFirstMediaUrl('thumbnail'))
+                    <div class="md:h-80 h-48 md:bg-cover bg-cover bg-no-repeat bg-center border-b border-slate-400/70 bg-teal-900" style="background-image: url('{{ $programme->getFirstMediaUrl('thumbnail') }}')"></div>
                 @endif
-                
                 <div class="p-6 md:p-8">
                     <div class="flex flex-wrap items-center gap-2 mb-4">
                         @foreach($programme->categories as $category)
@@ -57,30 +54,13 @@
                         
                         <!-- Price -->
                         <div class="flex items-start space-x-3">
-                            {{-- <svg class="text-teal-500 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
-                            </svg> --}}
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 stroke-teal-500">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                             </svg>
 
                             <div>
                                 <h3 class="font-semibold text-slate-900">Price</h3>
-                                @if($programme->active_promotion)
-                                    <div class="flex gap-1 items-center">
-                                        <p class="text-green-600 font-bold text-lg">
-                                            {{ $programme->discounted_price }}
-                                        </p>
-                                        <p class="text-green-700 text-sm font-medium capitalize italic">
-                                            ({{ $programme->active_promotion->title }})
-                                        </p>
-                                    </div>
-                                    <p class="text-slate-500 line-through text-md">
-                                        {{ $programme->formatted_price }}
-                                    </p>
-                                @else
-                                    <p class="text-slate-600 font-bold text-lg">{{ $programme->formatted_price }}</p>
-                                @endif
+                                <p class="text-slate-600 font-bold text-lg {{ $programme->active_promotion ? 'line-through' : '' }}">{{ $programme->formatted_price }}</p>
                             </div>
                         </div>
                         
@@ -97,13 +77,11 @@
                             </div>
                         @endif
                     </div>
-                    <br />
-                    <br />
                     <!-- Register Button -->
-                    <div class="flex justify-center">
-                        <a href="{{ route('programme.register', $programme->programmeCode) }}" class="uppercase font-thin tracking-widest bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white py-4 px-8 rounded-lg text-lg transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2">
-                            Register Now
-                        </a>
+                    <hr class="border-slate-200 my-4 mx-auto border-dashed" />
+                    <br />
+                    <div class="flex justify-center w-full">
+                        @livewire('frontpage.register.promotion-options', ['programme' => $programme])
                     </div>
                 </div>
             </div>
@@ -114,6 +92,47 @@
                     <h2 class="text-md uppercase tracking-widest font-bold text-teal-500 mb-4">About This Programme</h2>
                     <div class="prose prose-lg max-w-none text-slate-700">
                         {!! $programme->description !!}
+                    </div>
+                </div>
+            @endif
+
+            <!-- Speakers -->
+            @if($programme->speakers->isNotEmpty())
+                @php
+                    // Group speakers by ID to avoid duplicates
+                    $uniqueSpeakers = $programme->speakers->unique('id');
+                @endphp
+                <div class="bg-white rounded-lg shadow-lg p-6 md:p-8 mb-8">
+                    <h2 class="text-2xl font-bold text-slate-900 mb-6">Speakers</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        @foreach($uniqueSpeakers as $speaker)
+                            <div class="text-center">
+                                @if($speaker->getFirstMediaUrl('speaker'))
+                                    <img src="{{ $speaker->getFirstMediaUrl('speaker') }}" alt="{{ $speaker->name }}" class="w-24 h-24 border border-slate-300 shadow-lg rounded-full mx-auto mb-4 object-cover">
+                                @else
+                                    <div class="w-24 h-24 rounded-full mx-auto mb-4 bg-slate-200 flex items-center justify-center">
+                                        <span class="text-slate-500 text-lg font-bold">{{ \App\Helpers\Helper::getInitials($speaker->name) }}</span>
+                                    </div>
+                                @endif
+                                <h3 class="font-semibold text-slate-900">{{ $speaker->title }} {{ $speaker->name }}</h3>
+                                <p class="text-slate-600 text-sm">{{ $speaker->profession }}</p>
+                                
+                                <!-- Show speaker roles/types if available -->
+                                @php
+                                    // Get all the roles/types this speaker has in this programme
+                                    $speakerRoles = $programme->speakers->where('id', $speaker->id)->pluck('pivot.type')->filter()->unique();
+                                @endphp
+                                @if($speakerRoles->isNotEmpty())
+                                    <div class="mt-2 flex flex-wrap justify-center gap-1">
+                                        @foreach($speakerRoles as $role)
+                                            <span class="bg-teal-100 text-teal-700 px-2 py-1 rounded-full text-xs font-medium border border-teal-300">
+                                                {{ ucfirst($role) }}
+                                            </span>
+                                        @endforeach
+                                    </div>
+                                @endif
+                            </div>
+                        @endforeach
                     </div>
                 </div>
             @endif
@@ -139,8 +158,8 @@
                                     <div class="absolute left-8 md:left-1/2 transform -translate-x-1/2 w-4 h-4 bg-teal-500 border-4 border-white rounded-full shadow-lg z-10"></div>
                                     
                                     <!-- Content Card -->
-                                    <div class="ml-12 md:ml-0 {{ $index % 2 == 0 ? 'md:mr-8 md:-ml-3 md:w-1/2' : 'md:ml-8 md:-mr-3 md:w-1/2' }}">
-                                        <div class="bg-gradient-to-br from-white to-slate-50 border border-slate-200 rounded-xl p-6 shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
+                                    <div class="ml-12 {{ $index % 2 == 0 ? 'md:mr-8 md:-ml-4 md:w-1/2' : 'md:ml-8 md:-mr-3 md:w-1/2' }}">
+                                        <div class="bg-gradient-to-br from-white to-slate-50 border border-slate-200 rounded-xl md:p-6 p-4 shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
                                             <!-- Date Badge -->
                                             <div class="flex items-center justify-between mb-4">
                                                 <div class="bg-teal-100 text-teal-800 px-3 py-1 border border-teal-800/30 rounded-full text-xs font-semibold">
@@ -152,7 +171,7 @@
                                             </div>
                                             
                                             <!-- Session Title -->
-                                            <h3 class="text-xl font-bold text-slate-900">{{ $breakout->title }}</h3>
+                                            <h3 class="md:text-xl text-lg font-bold text-slate-900">{{ $breakout->title }}</h3>
                                             
                                             <!-- Description -->
                                             @if($breakout->description)
@@ -220,58 +239,8 @@
                         </div>
                     </div>
                     
-                    <!-- Timeline Footer -->
-                    <div class="mt-12 text-center">
-                        {{-- <div class="inline-flex items-center space-x-2 bg-gradient-to-r from-teal-50 to-teal-100 border border-teal-200 rounded-full px-6 py-3">
-                            <svg class="w-5 h-5 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                            </svg>
-                            <span class="text-sm font-medium text-teal-800">
-                                {{ $programme->breakouts->where('isActive', true)->count() }} specialized sessions designed to enhance your experience
-                            </span>
-                        </div> --}}
-                    </div>
-                </div>
-            @endif
-
-            <!-- Speakers -->
-            @if($programme->speakers->isNotEmpty())
-                @php
-                    // Group speakers by ID to avoid duplicates
-                    $uniqueSpeakers = $programme->speakers->unique('id');
-                @endphp
-                <div class="bg-white rounded-lg shadow-lg p-6 md:p-8 mb-8">
-                    <h2 class="text-2xl font-bold text-slate-900 mb-6">Speakers</h2>
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        @foreach($uniqueSpeakers as $speaker)
-                            <div class="text-center">
-                                @if($speaker->getFirstMediaUrl('speaker'))
-                                    <img src="{{ $speaker->getFirstMediaUrl('speaker') }}" alt="{{ $speaker->name }}" class="w-24 h-24 border border-slate-300 shadow-lg rounded-full mx-auto mb-4 object-cover">
-                                @else
-                                    <div class="w-24 h-24 rounded-full mx-auto mb-4 bg-slate-200 flex items-center justify-center">
-                                        <span class="text-slate-500 text-lg font-bold">{{ \App\Helpers\Helper::getInitials($speaker->name) }}</span>
-                                    </div>
-                                @endif
-                                <h3 class="font-semibold text-slate-900">{{ $speaker->title }} {{ $speaker->name }}</h3>
-                                <p class="text-slate-600 text-sm">{{ $speaker->profession }}</p>
-                                
-                                <!-- Show speaker roles/types if available -->
-                                @php
-                                    // Get all the roles/types this speaker has in this programme
-                                    $speakerRoles = $programme->speakers->where('id', $speaker->id)->pluck('pivot.type')->filter()->unique();
-                                @endphp
-                                @if($speakerRoles->isNotEmpty())
-                                    <div class="mt-2 flex flex-wrap justify-center gap-1">
-                                        @foreach($speakerRoles as $role)
-                                            <span class="bg-teal-100 text-teal-700 px-2 py-1 rounded-full text-xs font-medium border border-teal-300">
-                                                {{ ucfirst($role) }}
-                                            </span>
-                                        @endforeach
-                                    </div>
-                                @endif
-                            </div>
-                        @endforeach
-                    </div>
+                    <!-- Timeline Footer (optional) -->
+                    <div class="mt-12 text-center"></div>
                 </div>
             @endif
         </div>

@@ -44,7 +44,8 @@
         'md:fixed top-0 left-0 right-0 z-50 transform translate-y-0 py-3 bg-zinc-50/60 backdrop-blur-md': isFixed && !isMobile,
         'relative py-6 bg-zinc-50/60': !isFixed || isMobile
     }"
-    class="shadow-lg w-full px-4 transition-all duration-500 ease-in-out {{ Route::is('frontpage') ? 'border-b border-slate-400/30' : '' }}"
+    class="shadow-lg w-full px-4 transition-all duration-500 ease-in-out border-b border-slate-400/30"
+    {{-- class="shadow-lg w-full px-4 transition-all duration-500 ease-in-out {{ Route::is('frontpage') ? 'border-b border-slate-400/30' : '' }}" --}}
 >
     <div 
         class="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between"

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Programme;
+use App\Models\Promotion;
 use App\Models\Promocode;
 use App\Models\Registrant;
 use App\Services\Payment\PaymentService;
@@ -12,13 +13,19 @@ use Illuminate\Support\Facades\Log;
 
 class RegistrantController extends Controller
 {
-    public function register($programmeCode)
+    public function register(Request $request, $programmeCode)
     {
-        $programme = Programme::where('programmeCode', $programmeCode)->first();
+        $programme = Programme::where('programmeCode', $programmeCode)
+            ->with('promotions')
+            ->first();
         
         if (!$programme) {
             abort(404);
         }
+
+        
+        $selectedPromotion = $this->resolveSelectedPromotion($programme, $request->query('promotion'));
+        $promotionForRegister = $selectedPromotion ?: $this->getDefaultActivePromotion($programme);
         
         // Get authenticated user data if available
         $user = auth()->user();
@@ -43,7 +50,9 @@ class RegistrantController extends Controller
             ->with('programme', $programme)
             ->with('programmeCode', $programmeCode)
             ->with('user', $user)
-            ->with('hasActivePromocodes', $hasActivePromocodes);
+            ->with('hasActivePromocodes', $hasActivePromocodes)
+            ->with('promotionForRegister', $promotionForRegister)
+            ->with('selectedPromotionParam', $request->query('promotion'));
     }
 
     public function validatePromocode(Request $request)
@@ -118,15 +127,24 @@ class RegistrantController extends Controller
             'groupMembers.*.email' => 'required_with:groupMembers|email',
             'groupMembers.*.contactNumber' => 'required_with:groupMembers|string',
             'groupMembers.*.nric' => 'nullable|string',
+            'promotionId' => 'nullable|exists:promotions,id',
             'totalCost' => 'sometimes|numeric'
         ]);
 
         $programme = Programme::findOrFail($request->programmeId);
+        $programme->loadMissing('promotions');
 
-        $activePromotion = $programme->active_promotion;
-        $discountAmount = $activePromotion ? $activePromotion->price : 0;
-        $netAmount = $activePromotion ? $activePromotion->price : $programme->price;
-        $promotionId = $activePromotion ? $activePromotion->id : null;
+        $selectedPromotion = $this->resolvePromotionById($programme, $request->input('promotionId'));
+
+        if (!$selectedPromotion) {
+            $selectedPromotion = $this->getDefaultActivePromotion($programme);
+        }
+
+        $promotionId = $selectedPromotion?->id;
+        $promotionPrice = $selectedPromotion?->price;
+
+        $discountAmount = $promotionPrice ?? 0;
+        $netAmount = $promotionPrice ?? $programme->price;
 
         $promocodeId = null;
         if ($request->promocodeId) 
@@ -547,6 +565,66 @@ class RegistrantController extends Controller
         }
 
         return null;
+    }
+
+    protected function resolveSelectedPromotion(Programme $programme, ?string $promotionParameter): ?Promotion
+    {
+        if (!$promotionParameter) {
+            return null;
+        }
+
+        $normalized = Str::slug($promotionParameter, ' ');
+
+        return $programme->promotions
+            ->first(function (Promotion $promotion) use ($normalized) {
+                return Str::slug($promotion->title, ' ') === $normalized
+                    && $this->promotionIsCurrentlyActive($promotion);
+            });
+    }
+
+    protected function resolvePromotionById(Programme $programme, ?int $promotionId): ?Promotion
+    {
+        if (!$promotionId) {
+            return null;
+        }
+
+        $promotion = $programme->promotions->firstWhere('id', $promotionId);
+
+        if (!$promotion) {
+            return null;
+        }
+
+        return $this->promotionIsCurrentlyActive($promotion) ? $promotion : null;
+    }
+
+    protected function getDefaultActivePromotion(Programme $programme): ?Promotion
+    {
+        return $programme->promotions
+            ->filter(fn (Promotion $promotion) => $this->promotionIsCurrentlyActive($promotion))
+            ->sortBy([
+                ['arrangement', 'asc'],
+                ['startDate', 'asc'],
+            ])
+            ->first();
+    }
+
+    protected function promotionIsCurrentlyActive(Promotion $promotion): bool
+    {
+        $now = now();
+
+        if (!$promotion->isActive) {
+            return false;
+        }
+
+        if ($promotion->startDate && $promotion->startDate->gt($now)) {
+            return false;
+        }
+
+        if ($promotion->endDate && $promotion->endDate->lt($now)) {
+            return false;
+        }
+
+        return true;
     }
 
     private function generateRegCode($programmeCode)

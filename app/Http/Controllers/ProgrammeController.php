@@ -12,81 +12,11 @@ use App\Http\Requests\UpdateProgrammeRequest;
 
 class ProgrammeController extends Controller
 {
-
-    public function create()
-    {
-        $ministries = Ministry::pluck('name', 'id');
-        $categories = Category::pluck('name', 'id');
-        return view('admin.programme.create', compact(['categories', 'ministries']));
-    }
-
-    public function store(StoreProgrammeRequest $request)
-    {
-        $validated = $request->validated();
-        
-        $validated['private_only'] = $request->has('private_only') ? 1 : 0;
-        $validated['searchable'] = $request->has('searchable') ? 1 : 0;
-        $validated['publishable'] = $request->has('publishable') ? 1 : 0;
-        $validated['settings'] = $this->programmeSettings($request);
-
-        $programme = Programme::create($validated);
-        $programme->categories()->sync($validated['categories'] ?? []);
-
-        if($request->has('thumb'))
-            $programme->addMediaFromRequest('thumb')->toMediaCollection('thumbnail');
-
-        if($request->has('a3_poster'))
-            $programme->addMediaFromRequest('a3_poster')->toMediaCollection('banner');
-
-        return redirect()
-            ->route('admin.programmes.show', $programme->programmeCode)
-            ->with('success', 'Programme created successfully.');
-    }
-
-    public function edit($id)
-    {
-        $categories = Category::pluck('name', 'id');
-        $programme = Programme::whereId($id)
-            ->with('categories')
-            ->with('ministry')
-            ->first();
-
-        if(isset($programme->settings))
-        {
-            $programme['onlineHybrid'] = $this->settingsData(json_decode($programme->settings, true), 'onlineHybrid');
-            $programme['onlineDetails'] = $this->settingsData(json_decode($programme->settings, true), 'onlineDetails');
-        }
-        
-        $programme['thumbnail'] = $programme->getFirstMediaUrl('thumbnail');
-        $programme['banner'] = $programme->getFirstMediaUrl('banner');
-
-        return view('admin.programme.edit', compact(['programme', 'categories']));
-        
-    }
-
-    // convert additional data into json forwat then cnovert to string and store in the settings field
-    public function programmeSettings($request)
-    {
-        $settings = [];
-        $settings['onlineHybrid'] = $request->has('isOnline') ? true : false;
-        $settings['onlineDetails'] = ($request->has('isOnline') && $request->has('onlineDetails')) ?  $request->get('onlineDetails') : null;
-        return json_encode($settings);
-    }
-
-    // convert the string array to array variables
-    public function settingsData($settingsData, $key)
-    {
-
-        return (!is_null($settingsData) && array_key_exists($key, $settingsData)) ? $settingsData[$key] : NULL;
-    }
-
     public function show($programmeCode)
     {
-        $programme = Programme::where('programmeCode', $programmeCode)->with('speakers')->first();
-
+        $programme = Programme::where('programmeCode', $programmeCode)->firstOrFail();
         $programme['thumbnail'] = $programme->getFirstMediaUrl('thumbnail');
         $programme['banner'] = $programme->getFirstMediaUrl('banner');
-
         return view('admin.programme.show', compact('programme'));
     }
 
@@ -105,31 +35,6 @@ class ProgrammeController extends Controller
         }
 
         return view('pages.programme-details', compact('programme'));
-    }
-
-    public function update($id, UpdateProgrammeRequest $request)
-    {
-        $validated = $request->validated();
-        
-        $programme = Programme::find($id);
-        
-        $programme->update($validated);
-
-        $programme->categories()->sync($validated['categories'] ?? []);
-
-        if($request->has('thumb'))
-        {
-            $programme->clearMediaCollection('thumbnail');
-            $programme->addMediaFromRequest('thumb')->toMediaCollection('thumbnail');
-        }
-
-        if($request->has('a3_poster'))
-        {
-            $programme->clearMediaCollection('banner');
-            $programme->addMediaFromRequest('a3_poster')->toMediaCollection('banner');
-        }
-
-        return redirect()->route('admin.programmes.show', $programme->programmeCode);
     }
 
     public function softDelete($id)

@@ -1,81 +1,59 @@
 @section('title', 'Register for '.$programme->title)
 
-@push('styles')
-    <script>
-        // Registration form configuration
-        window.registrationConfig = {
-            user: @json($user ? true : false),
-            allowGroupRegistration: @json($programme->allowGroupRegistration),
-            groupRegistrationMin: {{ $programme->groupRegistrationMin ?? 2 }},
-            groupRegistrationMax: {{ $programme->groupRegistrationMax ?? 10 }},
-            groupRegIndividualFee: {{ $programme->groupRegIndividualFee ?? $programme->price }},
-            programmePrice: {{ $programme->price }},
-            hasActivePromocodes: @json($hasActivePromocodes),
-            programmeCode: '{{ $programmeCode }}',
-            programmeId: {{ $programme->id }},
-            hasActivePromotion: @json($programme->active_promotion ? true : false),
-            activePromotion: @json($programme->active_promotion),
-            formattedPrice: '{{ $programme->formatted_price }}',
-            discountedPrice: @json($programme->discounted_price),
-            userTitle: @if($user && $user->firstname && $user->lastname) 
-                @php
-                    // Try to determine title from name patterns
-                    $fullName = $user->name ?? '';
-                    $firstName = $user->firstname ?? '';
-                    if (str_contains(strtolower($fullName), 'dr.') || str_contains(strtolower($firstName), 'dr')) {
-                        echo "'Dr'";
-                    } elseif (str_contains(strtolower($fullName), 'rev.') || str_contains(strtolower($firstName), 'rev')) {
-                        echo "'Rev'";
-                    } else {
-                        echo "''";
-                    }
-                @endphp
-            @else null @endif,
-            userFirstName: @if($user && $user->firstname) '{{ $user->firstname }}' @else null @endif,
-            userLastName: @if($user && $user->lastname) '{{ $user->lastname }}' @else null @endif,
-            userEmail: @if($user && $user->email) '{{ $user->email }}' @else null @endif,
-        };
-    </script>
-    @vite(['resources/js/registration-form.js'])
-@endpush
+@php
+    $selectedPromotion = $promotionForRegister ?? null;
+    $defaultPriceLabel = $programme->price > 0 ? '$'.number_format($programme->price, 2) : 'Free';
+    $promotionPriceLabel = $selectedPromotion
+        ? ($selectedPromotion->price > 0 ? '$'.number_format($selectedPromotion->price, 2) : 'Free')
+        : null;
+    $activePromotionPayload = $selectedPromotion ? [
+        'id' => $selectedPromotion->id,
+        'title' => $selectedPromotion->title,
+        'price' => $selectedPromotion->price,
+        'parameter' => \Illuminate\Support\Str::slug($selectedPromotion->title, ' '),
+    ] : null;
+@endphp
 
 <x-guest-layout>
     <div class="relative min-h-screen bg-gradient-to-b from-white via-teal-100/70 to-white/30 py-12">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             
             <!-- Programme Header -->
-            <div class="bg-white rounded-lg shadow-lg border-t border-zinc-300/40 overflow-hidden mb-8 p-6 md:p-8">
-                <div class="flex items-start justify-between">
+            <div class="bg-white rounded-lg shadow-lg">
+                @if($programme->getFirstMediaUrl('thumbnail'))
+                    <div class="md:h-80 h-48 rounded-t-lg md:bg-cover bg-cover bg-no-repeat bg-center border-b border-slate-400/70 bg-teal-900" style="background-image: url('{{ $programme->getFirstMediaUrl('thumbnail') }}')"></div>
+                @endif
+                <div class="flex items-start justify-between overflow-hidden mb-8 p-6 md:p-8">
                     <div>
                         <h1 class="text-2xl md:text-3xl font-bold text-slate-800 mb-2">{{ $programme->title }}</h1>
-                        <p class="text-xs text-teal-700/80 font-thin mb-4">{{ 'By '.$programme->ministry->name }}</p>
+                        <p class="text-base text-teal-700/80 font-thin mb-4">{{ 'By '.$programme->ministry->name }}</p>
                         <div class="flex flex-col gap-2 text-sm text-slate-600">
                             <div class="flex items-center">
-                                <svg class="w-4 h-4 mr-2 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-5 h-5 mr-2 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                 </svg>
-                                {{ $programme->programmeDates }}
+                                <span class="text-base text-slate-600">{{ $programme->programmeDates }}</span>
                             </div>
                             <div class="flex items-center">
-                                <svg class="w-4 h-4 mr-2 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-5 h-5 mr-2 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0Z" />
                                 </svg>
-                                {{ $programme->programmeTimes }}
+                                <span class="text-base text-slate-600">{{ $programme->programmeTimes }}</span>
                             </div>
                             <div class="flex items-center">
-                                <svg class="w-4 h-4 mr-2 stroke-teal-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-5 h-5 mr-2 stroke-teal-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
                                 @if($programme->price > 0)
-                                    @if($programme->active_promotion)
-                                        <span class="font-bold text-green-600">{{ $programme->discountedPrice }}</span>
-                                        <span class="text-slate-400 line-through ml-1">{{ $programme->formattedPrice }}</span>
+                                    @if($selectedPromotion)
+                                        <span class="text-base font-bold text-green-600">{{ $promotionPriceLabel }}</span>
+                                        <span class="text-base text-slate-400 line-through ml-1">{{ $defaultPriceLabel }}</span>
                                     @else
-                                        {{ '$'.number_format($programme->formattedPrice, 2) }}
+                                        <span class="text-base font-bold text-slate-800">{{ $defaultPriceLabel }}</span>
                                     @endif
                                 @else
-                                    <span class="capitalize font-bold text-slate-600">
-                                        Free Event
+                                    <span class="text-base font-bold uppercase text-slate-600">
+                                        Free
                                     </span>
                                 @endif
                             </div>
@@ -164,5 +142,46 @@
         </div>
     </div>
     <x-footer-public />
+
+@push('styles')
+    @vite(['resources/js/registration-form.js'])
+    <script>
+        // Registration form configuration
+        window.registrationConfig = {
+            user: @json($user ? true : false),
+            allowGroupRegistration: @json($programme->allowGroupRegistration),
+            groupRegistrationMin: {{ $programme->groupRegistrationMin ?? 2 }},
+            groupRegistrationMax: {{ $programme->groupRegistrationMax ?? 10 }},
+            groupRegIndividualFee: {{ $programme->groupRegIndividualFee ?? $programme->price }},
+            programmePrice: {{ $programme->price }},
+            hasActivePromocodes: @json($hasActivePromocodes),
+            programmeCode: '{{ $programmeCode }}',
+            programmeId: {{ $programme->id }},
+            hasActivePromotion: @json($selectedPromotion ? true : false),
+            activePromotion: @json($activePromotionPayload),
+            formattedPrice: '{{ $defaultPriceLabel }}',
+            discountedPrice: @json($promotionPriceLabel),
+            promotionParameter: @json($selectedPromotionParam),
+            userTitle: @if($user && $user->firstname && $user->lastname) 
+                @php
+                    // Try to determine title from name patterns
+                    $fullName = $user->name ?? '';
+                    $firstName = $user->firstname ?? '';
+                    if (str_contains(strtolower($fullName), 'dr.') || str_contains(strtolower($firstName), 'dr')) {
+                        echo "'Dr'";
+                    } elseif (str_contains(strtolower($fullName), 'rev.') || str_contains(strtolower($firstName), 'rev')) {
+                        echo "'Rev'";
+                    } else {
+                        echo "''";
+                    }
+                @endphp
+            @else null @endif,
+            userFirstName: @if($user && $user->firstname) '{{ $user->firstname }}' @else null @endif,
+            userLastName: @if($user && $user->lastname) '{{ $user->lastname }}' @else null @endif,
+            userEmail: @if($user && $user->email) '{{ $user->email }}' @else null @endif,
+        };
+    </script>
+@endpush
+
 </x-guest-layout>
 
