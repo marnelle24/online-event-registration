@@ -44,6 +44,7 @@
             @include('partials.navigation')
             <!-- Navigation Spacer - prevents content jump when nav becomes fixed -->
             <div 
+                x-cloak
                 x-data="{ 
                     isFixed: false,
                     ticking: false,

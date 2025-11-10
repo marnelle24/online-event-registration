@@ -1,4 +1,5 @@
 <nav 
+    x-cloak
     x-data="{ 
         isFixed: false,
         ticking: false,

@@ -71,12 +71,12 @@
                             <div class="absolute top-3 right-3">
                                 @if($programme->active_promotion)
                                     <div class="bg-red-500 text-white px-3 py-1 rounded-full text-sm font-bold shadow-lg">
-                                        {{ '$'.$programme->discounted_price }}
-                                        <span class="line-through text-white ml-1 text-sm">{{ '$'.$programme->formatted_price }}</span>
+                                        {{ $programme->discounted_price }}
+                                        <span class="line-through text-white ml-1 text-sm">{{ $programme->formatted_price }}</span>
                                     </div>
                                 @else
                                     <div class="bg-white/90 backdrop-blur-sm text-slate-600 px-3 py-1 rounded-full text-sm font-bold shadow-lg">
-                                        {{ '$'.$programme->formatted_price }}
+                                        {{ $programme->formatted_price }}
                                     </div>
                                 @endif
                             </div>

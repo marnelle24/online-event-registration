@@ -68,8 +68,8 @@
                                 </svg>
                                 @if($programme->price > 0)
                                     @if($programme->active_promotion)
-                                        <span class="font-bold text-green-600">{{ '$'.number_format($programme->discountedPrice, 2) }}</span>
-                                        <span class="text-slate-400 line-through ml-1">{{ '$'.number_format($programme->formattedPrice, 2) }}</span>
+                                        <span class="font-bold text-green-600">{{ $programme->discountedPrice }}</span>
+                                        <span class="text-slate-400 line-through ml-1">{{ $programme->formattedPrice }}</span>
                                     @else
                                         {{ '$'.number_format($programme->formattedPrice, 2) }}
                                     @endif
