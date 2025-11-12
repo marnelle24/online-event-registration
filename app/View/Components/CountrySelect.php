@@ -17,6 +17,7 @@ class CountrySelect extends Component
     public $withFlags;
     public $withCode;
     public $withPhoneCode;
+    public $format;
 
     /**
      * Create a new component instance.
@@ -30,25 +31,32 @@ class CountrySelect extends Component
         $placeholder = 'Select Country',
         $withFlags = true,
         $withCode = false,
-        $withPhoneCode = false
+        $withPhoneCode = false,
+        $format = 'name'
     ) {
+
         $countryService = new CountryService();
         
-        if ($withFlags) {
-            $this->countries = $countryService->getCountriesWithFlags($withCode, $withPhoneCode);
-        } else {
-            $this->countries = $countryService->getCountriesWithCommonFirst(false, $withCode, $withPhoneCode);
+        if ($format == 'phonecode') 
+            $this->countries = $countryService->getCountryPhoneCodeAndFlag();
+        else 
+        {
+            if ($withFlags)
+                $this->countries = $countryService->getCountriesWithFlags($withCode, $withPhoneCode);
+            else
+                $this->countries = $countryService->getCountriesWithCommonFirst(false, $withCode, $withPhoneCode);
         }
-        
+
         $this->selected = $selected;
         $this->name = $name;
         $this->id = $id;
         $this->class = $class;
         $this->required = $required;
-        $this->placeholder = $placeholder;
+        $this->placeholder = $format == 'phonecode' ? 'Code' : $placeholder;
         $this->withFlags = $withFlags;
         $this->withCode = $withCode;
         $this->withPhoneCode = $withPhoneCode;
+        $this->format = $format;
     }
 
     /**

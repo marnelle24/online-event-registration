@@ -24,8 +24,20 @@ class RegistrantController extends Controller
         }
 
         
-        $selectedPromotion = $this->resolveSelectedPromotion($programme, $request->query('promotion'));
-        $promotionForRegister = $selectedPromotion ?: $this->getDefaultActivePromotion($programme);
+        $promotionParameter = $request->query('promotion');
+        $selectedPromotion = null;
+
+        if ($promotionParameter) {
+            $selectedPromotion = $this->resolveSelectedPromotion($programme, $promotionParameter);
+
+            if ($selectedPromotion) {
+                $promotionParameter = Str::slug($selectedPromotion->title, ' ');
+            } else {
+                $promotionParameter = null;
+            }
+        }
+
+        $promotionForRegister = $selectedPromotion;
         
         // Get authenticated user data if available
         $user = auth()->user();
@@ -52,7 +64,59 @@ class RegistrantController extends Controller
             ->with('user', $user)
             ->with('hasActivePromocodes', $hasActivePromocodes)
             ->with('promotionForRegister', $promotionForRegister)
-            ->with('selectedPromotionParam', $request->query('promotion'));
+            ->with('selectedPromotionParam', $promotionParameter);
+    }
+
+    public function registerV2(Request $request, $programmeCode)
+    {
+        $programme = Programme::where('programmeCode', $programmeCode)
+            ->with('promotions')
+            ->first();
+
+        if (!$programme) {
+            abort(404);
+        }
+
+        $promotionParameter = $request->query('promotion');
+        $selectedPromotion = null;
+
+        if ($promotionParameter) {
+            $selectedPromotion = $this->resolveSelectedPromotion($programme, $promotionParameter);
+
+            if ($selectedPromotion) {
+                $promotionParameter = Str::slug($selectedPromotion->title, ' ');
+            } else {
+                $promotionParameter = null;
+            }
+        }
+
+        $promotionForRegister = $selectedPromotion;
+
+        $user = auth()->user();
+
+        $hasActivePromocodes = $programme->promocodes()
+            ->where('isActive', true)
+            ->where(function ($query) {
+                $now = now();
+                $query->whereNull('startDate')
+                      ->orWhere(function ($q) use ($now) {
+                          $q->where('startDate', '<=', $now)
+                            ->where(function ($q2) use ($now) {
+                                $q2->whereNull('endDate')
+                                   ->orWhere('endDate', '>=', $now);
+                            });
+                      });
+            })
+            ->exists();
+
+        return view('pages.programme-register-v2', [
+            'programme' => $programme,
+            'programmeCode' => $programmeCode,
+            'user' => $user,
+            'hasActivePromocodes' => $hasActivePromocodes,
+            'promotionForRegister' => $promotionForRegister,
+            'selectedPromotionParam' => $promotionParameter,
+        ]);
     }
 
     public function validatePromocode(Request $request)

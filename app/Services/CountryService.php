@@ -51,6 +51,11 @@ class CountryService
                     $result[$country['alpha3']] = $flag . $phoneCode . $country['name'] ;
                     break;
                 case 'name':
+                    $result[$country['name']] = $flag . $phoneCode . $country['name'] ;
+                    break;
+                case 'phonecode':
+                    $result[$country['name']] = $phoneCode . ' ' . $flag ;
+                    break;
                 default:
                     $result[$country['name']] = $flag . $phoneCode . $country['name'] ;
                     break;
@@ -71,9 +76,9 @@ class CountryService
      * @param bool $withPhoneCode Whether to include phone code
      * @return array
      */
-    public function getCountriesWithCommonFirst($withFlags = false, $withCode = false, $withPhoneCode = false)
+    public function getCountriesWithCommonFirst($format = 'name', $withFlags = false, $withCode = false, $withPhoneCode = false)
     {
-        $allCountries = $this->getCountries('name', $withFlags, $withCode, $withPhoneCode);
+        $allCountries = $this->getCountries($format, $withFlags, $withCode, $withPhoneCode);
         
         // Common countries to show first
         $commonCountries = [
@@ -142,6 +147,102 @@ class CountryService
         } catch (\Exception $e) {
             return null;
         }
+    }
+
+    /**
+     * Get country phone code and flag only
+     * 
+     * @param string $format 'name' for country names, 'alpha2' for country codes, 'alpha3' for 3-letter codes
+     * @param bool $withFlags Whether to include flag emojis
+     * @param bool $withCode Whether to include country code beside the flag
+     * @param bool $withPhoneCode Whether to include phone code
+     * @return array
+     */
+    public function getCountryPhoneCodeAndFlag()
+    {
+        $countries = $this->iso3166->all();
+
+        usort($countries, function ($a, $b) {
+            return strcmp($a['name'], $b['name']);
+        });
+
+        $commonCountries = [
+            'Singapore',
+            'Malaysia',
+            'Indonesia',
+            'Philippines',
+            'Thailand',
+            'Vietnam',
+            'United States',
+            'United Kingdom',
+            'Australia',
+            'Canada',
+            'Japan',
+            'South Korea',
+            'China',
+            'India',
+            'Germany',
+            'France',
+            'Italy',
+            'Spain',
+            'Netherlands',
+            'Sweden',
+            'Norway',
+            'Denmark',
+            'Finland',
+            'New Zealand',
+            'Brazil',
+            'Argentina',
+            'Mexico',
+            'South Africa',
+            'Nigeria',
+            'Egypt',
+        ];
+
+        $countriesByName = [];
+
+        foreach ($countries as $country) {
+            $countriesByName[$country['name']] = $country;
+        }
+
+        $result = [];
+
+        foreach ($commonCountries as $countryName) {
+            if (!isset($countriesByName[$countryName])) {
+                continue;
+            }
+
+            $country = $countriesByName[$countryName];
+            $phoneCode = $this->getCountryPhoneCode($country['alpha2']);
+
+            if (!isset($result[$phoneCode])) {
+                $result[$phoneCode] = sprintf(
+                    '%s (%s)',
+                    $this->getCountryFlag($country['alpha2']),
+                    $phoneCode
+                );
+            }
+
+            unset($countriesByName[$countryName]);
+        }
+
+        $result['---'] = '---';
+
+        foreach ($countriesByName as $country) {
+            $phoneCode = $this->getCountryPhoneCode($country['alpha2']);
+
+            if (isset($result[$phoneCode])) {
+                continue;
+            }
+
+            $result[$phoneCode] = sprintf(
+                '%s (%s)',
+                $this->getCountryFlag($country['alpha2']),
+                $phoneCode
+            );
+        }
+
+        return $result;
     }
 
     /**
@@ -216,7 +317,7 @@ class CountryService
      */
     public function getCountriesWithFlags($withCode = false, $withPhoneCode = false)
     {
-        return $this->getCountriesWithCommonFirst(true, $withCode, $withPhoneCode);
+        return $this->getCountriesWithCommonFirst('name', true, $withCode, $withPhoneCode);
     }
 
     /**
@@ -227,7 +328,7 @@ class CountryService
      */
     public function getCountriesWithFlagsAndCodes($withPhoneCode = false)
     {
-        return $this->getCountriesWithCommonFirst(true, true, $withPhoneCode);
+        return $this->getCountriesWithCommonFirst('name', true, true, $withPhoneCode);
     }
 
     /**
@@ -237,7 +338,7 @@ class CountryService
      */
     public function getCountriesWithFlagsCodesAndPhone()
     {
-        return $this->getCountriesWithCommonFirst(true, true, true);
+        return $this->getCountriesWithCommonFirst('name', true, true, true);
     }
 
     /**

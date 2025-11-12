@@ -1,7 +1,9 @@
 <select 
     name="{{ $name }}" 
     id="{{ $id }}" 
-    class="focus:ring-0 w-full rounded p-2 border-slate-300 bg-transparent px-2 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary {{ $class }}"
+    {{ $attributes->merge([
+        'class' => trim('focus:ring-0 w-full rounded p-2 bg-transparent px-2 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary ' . $class),
+    ]) }}
     @if($required) required @endif
 >
     <option value="">{{ $placeholder }}</option>

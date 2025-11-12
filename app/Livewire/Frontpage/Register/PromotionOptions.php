@@ -17,7 +17,8 @@ class PromotionOptions extends Component
     public function mount(Programme $programme): void
     {
         $this->programme = $programme;
-        $this->defaultRegisterUrl = route('programme.register', $this->programme->programmeCode);
+        // $this->defaultRegisterUrl = route('programme.register', $this->programme->programmeCode);
+        $this->defaultRegisterUrl = route('programme.register.v2', $this->programme->programmeCode);
 
         $now = now();
 
