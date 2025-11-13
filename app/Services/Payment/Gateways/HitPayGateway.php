@@ -5,6 +5,7 @@ namespace App\Services\Payment\Gateways;
 use App\Services\Payment\Contracts\PaymentGatewayInterface;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Carbon\Carbon;
 
 class HitPayGateway implements PaymentGatewayInterface
 {
@@ -46,20 +47,21 @@ class HitPayGateway implements PaymentGatewayInterface
                 'webhook' => $paymentData['webhook_url'],
                 'name' => $paymentData['customer_name'],
                 'phone' => $paymentData['customer_phone'],
+                'expiry_date' => Carbon::now()->addDays(3)->format('Y-m-d H:i:s'),
             ]);
 
             if ($response->successful()) 
             {
                 $data = $response->json();
-                
+
                 return [
                     'status' => 'initiated',
                     'data' => $data,
                     'reference_no' => $data['reference_number'] ?? $paymentData['confirmationCode'],
                     'payment_id' => $data['id'] ?? null,
                     'payment_url' => $data['url'] ?? null,
-                    'redirect_url' => $data['url'] ?? null,
-                    'expires_at' => $data['expires_at'] ?? null,
+                    'redirect_url' => $data['redirect_url'] ?? null,
+                    'expires_at' => $data['expiry_date'] ?? null,
                 ];
             }
 

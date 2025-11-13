@@ -32,6 +32,12 @@ class PaymentService
         ];
     }
 
+    public function getBankDetails(): array
+    {
+        $gateway = $this->getGateway('bank_transfer');
+        return $gateway->getBankDetailsStructured();
+    }
+
     /**
      * Get a specific payment gateway
      *
@@ -58,8 +64,8 @@ class PaymentService
      */
     public function processPayment(Registrant $registrant, string $paymentMethod, array $additionalData = []): array
     {
-        try {
-
+        try 
+        {
             $gateway = $this->getGateway($paymentMethod);
 
             // Prepare payment data
@@ -112,16 +118,16 @@ class PaymentService
     {
 
         // test data after the webhook call
-        $callbackData = [
-            "payment_id" => "9fb9bcfe-b449-41a8-95b4-b4ea759c5931",
-            "payment_request_id" => "9fb9bce6-16b4-4c7b-a98a-0b17555bf8c4",
-            "phone" => "12312312",
-            "amount" => "750.00",
-            "currency" => "SGD",
-            "status" => "completed",
-            "reference_number" => "1235BAVF78_012",
-            "hmac" => "7dc880e0d5b73560039a1fcffe18ebaf814aa25daf2513e1a331023c1ec66ffb"
-        ];
+        // $callbackData = [
+        //     "payment_id" => "9fb9bcfe-b449-41a8-95b4-b4ea759c5931",
+        //     "payment_request_id" => "9fb9bce6-16b4-4c7b-a98a-0b17555bf8c4",
+        //     "phone" => "12312312",
+        //     "amount" => "750.00",
+        //     "currency" => "SGD",
+        //     "status" => "completed",
+        //     "reference_number" => "1235BAVF78_012",
+        //     "hmac" => "7dc880e0d5b73560039a1fcffe18ebaf814aa25daf2513e1a331023c1ec66ffb"
+        // ];
 
         try {
             $gateway = $this->getGateway($paymentMethod);
@@ -271,14 +277,16 @@ class PaymentService
             'registrant_id' => $registrant->id,
             'confirmationCode' => $registrant->confirmationCode,
             'amount' => $registrant->netAmount,
-            'currency' => 'SGD', // Default currency
+            'currency' => 'SGD', // Singapore Dollar - ISO 4217 currency code
             'description' => "Registration for {$registrant->programme->title}",
             'customer_email' => $registrant->email,
             'customer_name' => "{$registrant->firstName} {$registrant->lastName}",
             'customer_phone' => $registrant->contactNumber,
+            'customer_address' => $registrant->address ?? '',
+            'contact_email' => $registrant->programme->contactEmail,
             'return_url' => route('payment.callback'),
             'cancel_url' => route('registration.payment', ['confirmationCode' => $registrant->confirmationCode]),
-            'webhook_url' => '',
+            'webhook_url' => 'https://29e57dff7ed1.ngrok-free.app/payment/webhook', //local ngrok url
         ], $additionalData);
     }
 
@@ -347,26 +355,26 @@ class PaymentService
                 'enabled' => config('services.hitpay.enabled', false),
             ],
             [
-                'key' => 'stripe',
-                'name' => 'Stripe',
-                'description' => 'Pay with credit/debit card',
-                'icon' => 'stripe-icon',
-                'enabled' => config('services.stripe.enabled', false),
-            ],
-            [
-                'key' => 'paypal',
-                'name' => 'PayPal',
-                'description' => 'Pay with PayPal account',
-                'icon' => 'paypal-icon',
-                'enabled' => config('services.paypal.enabled', false),
-            ],
-            [
                 'key' => 'bank_transfer',
                 'name' => 'Bank Transfer',
                 'description' => 'Direct bank transfer',
                 'icon' => 'bank-icon',
                 'enabled' => true,
             ],
+            // [
+            //     'key' => 'stripe',
+            //     'name' => 'Stripe',
+            //     'description' => 'Pay with credit/debit card',
+            //     'icon' => 'stripe-icon',
+            //     'enabled' => config('services.stripe.enabled', false),
+            // ],
+            // [
+            //     'key' => 'paypal',
+            //     'name' => 'PayPal',
+            //     'description' => 'Pay with PayPal account',
+            //     'icon' => 'paypal-icon',
+            //     'enabled' => config('services.paypal.enabled', false),
+            // ],
         ];
     }
 

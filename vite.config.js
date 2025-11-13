@@ -14,4 +14,12 @@ export default defineConfig({
             refresh: true,
         }),
     ],
+    server: {
+        host: '0.0.0.0', // Allow external connections
+        port: 5173,
+        hmr: {
+            host: process.env.VITE_HMR_HOST || 'localhost',
+        },
+        strictPort: false,
+    },
 });

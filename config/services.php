@@ -67,8 +67,8 @@ return [
         'account_name' => env('BANK_ACCOUNT_NAME') ?: 'Streams Of Life Pte Ltd',
         'account_number' => env('BANK_ACCOUNT_NUMBER') ?: '002-1234567-8',
         'swift_code' => env('BANK_SWIFT_CODE') ?: '21321',
-        'branch_code' => env('BANK_BRANCH_CODE', ''), // Optional: Branch code
-        'routing_number' => env('BANK_ROUTING_NUMBER', ''), // Optional: Routing number
+        // 'branch_code' => env('BANK_BRANCH_CODE', ''), // Optional: Branch code
+        // 'routing_number' => env('BANK_ROUTING_NUMBER', ''), // Optional: Routing number
         'iban' => env('BANK_IBAN', ''), // Optional: IBAN for international transfers
         'enabled' => env('BANK_TRANSFER_ENABLED', true),
     ],

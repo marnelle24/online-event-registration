@@ -53,7 +53,7 @@ class BankTransferGateway implements PaymentGatewayInterface
         $steps[] = [
             'step' => count($steps) + 1,
             'title' => 'Transfer Amount',
-            'content' => "Please transfer exactly <strong>{$paymentData['currency']} " . number_format($paymentData['amount'], 2) . "</strong>",
+            'content' => "Please transfer exactly <strong>{$paymentData['currency']}" . number_format($paymentData['amount'], 2) . "</strong>",
         ];
         
         $steps[] = [
@@ -65,7 +65,7 @@ class BankTransferGateway implements PaymentGatewayInterface
         $steps[] = [
             'step' => count($steps) + 1,
             'title' => 'Send Proof',
-            'content' => "After making the transfer, please send your payment proof (screenshot or receipt) to:<br><strong>" . config('mail.from.address', 'payments@example.com') . "</strong><br>Include your registration code: <strong>{$paymentData['confirmationCode']}</strong>",
+            'content' => "After making the transfer, please send your payment proof (screenshot or receipt) to:<br><strong>" . ($paymentData['contact_email'] ?? config('mail.from.address', 'payments@example.com')) . "</strong><br>Include your registration code: <strong>{$paymentData['confirmationCode']}</strong>",
         ];
         
         $steps[] = [
@@ -95,7 +95,7 @@ class BankTransferGateway implements PaymentGatewayInterface
      *
      * @return array
      */
-    protected function getBankDetailsStructured(): array
+    public function getBankDetailsStructured(): array
     {
         $bankConfig = config('services.bank_transfer');
         
@@ -104,9 +104,9 @@ class BankTransferGateway implements PaymentGatewayInterface
             'account_name' => $bankConfig['account_name'] ?? '',
             'account_number' => $bankConfig['account_number'] ?? '',
             'swift_code' => $bankConfig['swift_code'] ?? '',
-            'branch_code' => $bankConfig['branch_code'] ?? '',
-            'routing_number' => $bankConfig['routing_number'] ?? '',
-            'iban' => $bankConfig['iban'] ?? '',
+            // 'branch_code' => $bankConfig['branch_code'] ?? '',
+            // 'routing_number' => $bankConfig['routing_number'] ?? '',
+            // 'iban' => $bankConfig['iban'] ?? '',
         ];
     }
 

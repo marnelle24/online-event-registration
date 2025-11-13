@@ -345,6 +345,21 @@ class RegistrantController extends Controller
         ]);
     }
 
+    public function paymentV2($confirmationCode)
+    {
+        $registrant = Registrant::with(['programme', 'promocode'])
+            ->where('confirmationCode', $confirmationCode)
+            ->firstOrFail();
+
+        if ($registrant->netAmount <= 0) {
+            return redirect()->route('registration.confirmation', ['confirmationCode' => $confirmationCode]);
+        }
+
+        return view('pages.registration-payment-v2', [
+            'confirmationCode' => $confirmationCode,
+        ]);
+    }
+
     public function confirmation($confirmationCode)
     {
         $registrant = Registrant::where('confirmationCode', $confirmationCode)->firstOrFail();

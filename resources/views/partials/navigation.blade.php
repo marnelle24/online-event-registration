@@ -13,9 +13,9 @@
             }
         },
         checkMobile() {
-            this.isMobile = window.innerWidth < 768; // md breakpoint - tablets and up get fixed header
+            this.isMobile = window.innerWidth < 768;
             if (this.isMobile) {
-                this.isFixed = false; // Reset to normal state on mobile
+                this.isFixed = false;
             }
         },
         requestTick() {
@@ -30,7 +30,7 @@
                 return;
             }
             
-            const scrollThreshold = window.innerHeight * 0.10; // 10% of window height
+            const scrollThreshold = window.innerHeight * 0.10;
             const shouldBeFixed = window.scrollY >= scrollThreshold;
             
             if (this.isFixed !== shouldBeFixed) {
