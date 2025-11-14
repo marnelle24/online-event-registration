@@ -163,6 +163,64 @@
                                 </label>
                             </div>
 
+                            <div 
+                                x-data="{ groupOnly: @entangle('isGroup') }" 
+                                class="border border-slate-200 rounded-lg p-4 bg-slate-50/40 space-y-2"
+                            >
+                                @if($errors->has('minGroup') || $errors->has('maxGroup'))
+                                    <div class="bg-red-100 border border-red-400 text-red-700 rounded-md p-3 text-xs mb-4">{{ 'Please fill in the minimum and maximum group size' }}</div>
+                                @endif
+                                <label for="promotion-is-group" class="text-base font-semibold text-black mb-2">Group Promotion</label>
+                                <div class="flex items-center justify-between">
+                                    <p class="text-xs text-slate-500 italic">Enable if this promotion applies to group registrations only.</p>
+                                    <label for="promotion-is-group" class="flex cursor-pointer select-none items-center">
+                                        <div class="relative">
+                                            <input 
+                                                wire:model="isGroup"
+                                                type="checkbox" 
+                                                id="promotion-is-group" 
+                                                class="sr-only" 
+                                            />
+                                            <div :class="groupOnly && '!bg-blue-600'" class="block h-6 w-10 rounded-full bg-black/40 transition-colors duration-200"></div>
+                                            <div :class="groupOnly && '!right-1 !translate-x-full'" class="absolute left-1 top-1 flex h-4 w-4 items-center justify-center rounded-full bg-white transition-all duration-200"></div>
+                                        </div>
+                                    </label>
+                                </div>
+
+                                <div 
+                                    x-show="groupOnly"
+                                    x-transition
+                                    class="grid grid-cols-1 sm:grid-cols-2 gap-4"
+                                >
+                                    <div>
+                                        <label class="mb-1 block text-sm font-medium text-black">Minimum Group Size<span class="text-red-500 px-1">*</span></label>
+                                        <input 
+                                            type="number"
+                                            min="1"
+                                            wire:model="minGroup"
+                                            class="focus:ring-0 w-full rounded p-2 border-slate-300 bg-white px-2 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary" 
+                                            placeholder="e.g. 2"
+                                        />
+                                        @error('minGroup')
+                                            <span class="text-red-500 text-xs">{{ 'Min group size is required' }}</span>
+                                        @enderror
+                                    </div>
+                                    <div>
+                                        <label class="mb-1 block text-sm font-medium text-black">Maximum Group Size<span class="text-red-500 px-1">*</span></label>
+                                        <input 
+                                            type="number"
+                                            min="1"
+                                            wire:model="maxGroup"
+                                            class="focus:ring-0 w-full rounded p-2 border-slate-300 bg-white px-2 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary" 
+                                            placeholder="e.g. 5"
+                                        />
+                                        @error('maxGroup')
+                                            <span class="text-red-500 text-xs">{{ 'Max group size is required' }}</span>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+
                             <div class="flex justify-between items-center gap-4">
                                 <button 
                                     wire:target="save"

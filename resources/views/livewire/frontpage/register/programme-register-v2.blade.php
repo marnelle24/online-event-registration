@@ -47,31 +47,61 @@
                         @endif
                     </div>
                 </div>
+
+                <div class="flex items-center gap-2 flex-wrap mt-6">
+                    @if($programme->categories->isNotEmpty())
+                        @foreach($programme->categories as $category)
+                            <span class="bg-teal-100/70 capitalize text-teal-800 px-3 border border-teal-800/70 py-1 rounded-full text-sm font-medium">
+                                {{ $category->name }}
+                            </span>
+                        @endforeach
+                    @endif
+                </div>
             </div>
 
-            <div class="md:w-72 bg-teal-50 rounded-lg p-6 border border-teal-100">
+            <div class="md:w-80 bg-teal-50 rounded-lg p-6 border border-teal-100">
                 <h3 class="text-sm uppercase font-semibold tracking-wide text-teal-700 mb-4">Registration Summary</h3>
                 <dl class="space-y-3 text-sm text-slate-600">
                     <div class="flex justify-between">
-                        <dt>Programme Fee</dt>
-                        <dd class="font-semibold text-slate-900 text-right">{{ $defaultPriceLabel }}</dd>
+                        <dt>Standard Fee</dt>
+                        <dd class="font-semibold text-slate-900 text-right {{ ($selectedPromotion || $appliedPromocode) ? 'line-through text-slate-400' : '' }}">{{ $defaultPriceLabel }}</dd>
                     </div>
                     <div class="flex justify-between">
-                        <dt>Selected Promotion</dt>
-                        <dd class="font-semibold text-slate-900 text-right">
-                            {{ $selectedPromotion ? $selectedPromotion->title : 'Standard' }}
-                        </dd>
+                        <dt>Admin Fee</dt>
+                        <dd class="font-semibold text-slate-900 text-right">{{ floatval($programme->adminFee) >= 0 ? '$'.number_format(floatval($programme->adminFee), 2) : 'Free' }}</dd>
                     </div>
-                    <div class="flex justify-between">
-                        <dt>Promotion Price</dt>
-                        <dd class="font-semibold text-teal-700 text-right">
-                            {{ $promotionPriceLabel ?? 'N/A' }}
-                        </dd>
-                    </div>
+                    @if($selectedPromotion)
+                        <div class="flex justify-between">
+                            <dt>Promotion</dt>
+                            <dd class="font-semibold text-slate-900 text-right">
+                                {{ $selectedPromotion ? $selectedPromotion->title : 'Standard' }}
+                            </dd>
+                        </div>
+                        <div class="flex justify-between">
+                            <dt>Promotion Price</dt>
+                            <dd class="font-semibold text-teal-700 text-right">
+                                {{ $promotionPriceLabel ?? 'N/A' }}
+                            </dd>
+                        </div>
+                    @endif
+                    @if($appliedPromocode)
+                        <div class="flex justify-between">
+                            <dt>Promocode Applied</dt>
+                            <dd class="font-semibold text-teal-700 text-right">
+                                {{ $appliedPromocode->promocode }}
+                            </dd>
+                        </div>
+                        <div class="flex justify-between">
+                            <dt>Promocode Price</dt>
+                            <dd class="font-semibold text-teal-700 text-right">
+                                {{ '$'.number_format(floatval($appliedPromocode->price), 2) }}
+                            </dd>
+                        </div>
+                    @endif
                     <div class="flex justify-between border-t border-slate-200 pt-3">
                         <dt>Total Due Now</dt>
                         <dd class="text-lg font-bold text-slate-900 text-right">
-                            {{ $finalPrice !== null ? ($finalPrice <= 0 ? 'Free' : '$'.number_format($finalPrice, 2)) : $defaultPriceLabel }}
+                            {{ $finalPrice !== null ? ($finalPrice <= 0 ? 'Free' : '$'.number_format(floatval($finalPrice), 2)) : $defaultPriceLabel }}
                         </dd>
                     </div>
                 </dl>
@@ -389,29 +419,60 @@
                         <hr class="border-slate-300 my-4 border-dashed" />
 
                         <div class="space-y-4 min-h-[200px]">
-                            <div class="flex justify-between items-center">
-                                <p class="text-sm text-slate-600">
-                                    Minimum {{ $programme->groupRegistrationMin ?? 2 }} participants, maximum {{ $programme->groupRegistrationMax ?? 10 }} (including you) 
-                                    <span class="md:inline-flex hidden">members</span>.
-                                </p>
+                            <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-3">
+                                <div class="flex-1">
+                                    <p class="text-sm text-slate-600">
+                                        Minimum <span class="font-semibold text-teal-700">{{ $this->groupMinSize }}</span> participants, maximum 
+                                        <span class="font-semibold text-teal-700">{{ $this->groupMaxSize }}</span> (including main registrant).
+                                    </p>
+                                </div>
                                 @if($isGroupRegistration)
-                                    <button type="button"
-                                            wire:click="addGroupMember"
-                                            class="md:inline-flex hidden items-center px-4 py-2 border border-teal-500 text-teal-600 rounded-lg text-sm font-semibold hover:bg-teal-50">
-                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                                        </svg>
-                                        Add Member ({{ count($groupMembers) + 1 }}/{{ $programme->groupRegistrationMax ?? 10 }})
-                                    </button>
-                                    <div class="md:hidden flex flex-col justify-center items-center gap-1">
+                                    @php
+                                        $currentCount = count($groupMembers) + 1;
+                                        $maxReached = $currentCount >= $this->groupMaxSize;
+                                        $canAddMore = $currentCount < $this->groupMaxSize;
+                                    @endphp
+                                    <div class="flex items-center gap-3">
+                                        <div class="flex items-center gap-2 px-3 py-1.5 bg-slate-100 rounded-lg">
+                                            <span class="text-xs font-medium text-slate-600">Members:</span>
+                                            <span class="text-sm font-semibold {{ $maxReached ? 'text-red-600' : 'text-teal-700' }}">
+                                                {{ $currentCount }}/{{ $this->groupMaxSize }}
+                                            </span>
+                                        </div>
                                         <button type="button"
                                                 wire:click="addGroupMember"
-                                                class="md:hidden flex justify-center items-center p-3 shadow bg-teal-700 text-white rounded-full hover:bg-teal-600">
+                                                wire:loading.attr="disabled"
+                                                @if($maxReached) disabled @endif
+                                                class="md:inline-flex hidden items-center gap-2 px-4 py-2 border {{ $maxReached ? 'border-slate-300 text-slate-400 cursor-not-allowed' : 'border-teal-500 text-teal-600 hover:bg-teal-50' }} rounded-lg text-sm font-semibold transition-colors disabled:opacity-50">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                                             </svg>
+                                            <span wire:loading.remove wire:target="addGroupMember">
+                                                {{ $maxReached ? 'Max Reached' : 'Add Member' }}
+                                            </span>
+                                            <span wire:loading wire:target="addGroupMember" class="inline-flex items-center gap-1">
+                                                <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                                </svg>
+                                                Adding...
+                                            </span>
                                         </button>
-                                        <span class="text-xs text-slate-600">({{ count($groupMembers) + 1 }}/{{ $programme->groupRegistrationMax ?? 10 }})</span>
+                                        <div class="md:hidden flex flex-col justify-center items-center gap-1">
+                                            <button type="button"
+                                                    wire:click="addGroupMember"
+                                                    wire:loading.attr="disabled"
+                                                    @if($maxReached) disabled @endif
+                                                    class="flex justify-center items-center p-3 shadow {{ $maxReached ? 'bg-slate-400 cursor-not-allowed' : 'bg-teal-700 hover:bg-teal-600' }} text-white rounded-full transition-colors disabled:opacity-50">
+                                                <svg wire:loading.remove wire:target="addGroupMember" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                                                </svg>
+                                                <svg wire:loading wire:target="addGroupMember" class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                                </svg>
+                                            </button>
+                                        </div>
                                     </div>
                                 @endif
                             </div>
@@ -561,7 +622,7 @@
                                         </div>
                                     </div>
                                 @empty
-                                    <p class="text-sm text-slate-500">No additional members added yet.</p>
+                                    <p class="text-sm text-slate-500 min-h-10 border border-slate-200 bg-slate-50 rounded-lg p-4">No additional members added yet.</p>
                                 @endforelse
                             </div>
                         </div>
@@ -639,20 +700,22 @@
 
                         <div class="grid md:grid-cols-2 gap-6">
                             <div class="border border-slate-200 bg-slate-50 rounded-lg p-5 space-y-2">
-                                <h4 class="text-base font-semibold text-slate-700 uppercase tracking-wide">Main Registrant</h4>
-                                <p class="text-sm text-slate-600 flex items-center">
+                                <h4 class="text-base font-semibold text-slate-700 uppercase tracking-wide">
+                                    {{ $isGroupRegistration ? 'Main Registrant' : 'Registrant Details' }}
+                                </h4>
+                                <p class="text-base text-slate-600 flex items-center">
                                     <svg class="w-4 h-4 mr-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                     </svg>
                                     {{ $formData['title'] }} {{ $formData['firstName'] }} {{ $formData['lastName'] }}
                                 </p>
-                                <p class="text-sm text-slate-600 flex items-center">
+                                <p class="text-base text-slate-600 flex items-center">
                                     <svg class="w-4 h-4 mr-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9 2.5 2.5 0 000-5z" />
                                     </svg>
                                     <span>{{ $formData['email'] }}</span>
                                 </p>
-                                <p class="text-sm text-slate-600 flex items-center">
+                                <p class="text-base text-slate-600 flex items-center">
                                     <svg class="w-4 h-4 mr-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 0 0 6 3.75v16.5a2.25 2.25 0 0 0 2.25 2.25h7.5A2.25 2.25 0 0 0 18 20.25V3.75a2.25 2.25 0 0 0-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3" />
                                     </svg>
@@ -664,16 +727,18 @@
                                 <h4 class="text-sm font-semibold text-slate-700 uppercase tracking-wide">Pricing</h4>
                                 <div class="flex justify-between text-sm text-slate-600">
                                     <span>Standard Price</span>
-                                    <span>{{ $defaultPriceLabel }}</span>
+                                    <span class="{{ ($selectedPromotion || $appliedPromocode) ? 'line-through text-slate-600' : '' }}">{{ $defaultPriceLabel }}</span>
                                 </div>
-                                <div class="flex justify-between text-sm text-slate-600">
-                                    <span>Promotion</span>
-                                    <span>{{ $selectedPromotion ? $selectedPromotion->title : 'None' }}</span>
-                                </div>
-                                @if($promotionPriceLabel)
+                                @if($selectedPromotion)
+                                    <div class="flex justify-between text-sm text-slate-600">
+                                        <span>Promotion</span>
+                                        <span>{{ $selectedPromotion ? $selectedPromotion->title : 'None' }}</span>
+                                    </div>
+                                @endif
+                                @if($selectedPromotion && $promotionPriceLabel)
                                     <div class="flex justify-between text-sm text-slate-600">
                                         <span>Promotion Price</span>
-                                        <span>{{ $promotionPriceLabel }}</span>
+                                        <span class="font-semibold text-green-600">{{ $promotionPriceLabel }}</span>
                                     </div>
                                 @endif
                                 @if($appliedPromocode)
@@ -681,10 +746,21 @@
                                         <span>Promo Code</span>
                                         <span>{{ $appliedPromocode->promocode }}</span>
                                     </div>
+                                    <div class="flex justify-between text-sm text-slate-600">
+                                        <span>Promocode Price</span>
+                                        <span class="font-semibold text-green-600">{{ '$'.number_format(floatval($appliedPromocode->price), 2) }}</span>
+                                    </div>
                                 @endif
+                                <div class="flex justify-between text-sm text-slate-600">
+                                    <span>Admin Fee</span>
+                                    @php
+                                        $adminFee = floatval($programme->adminFee) <= 0 ? 0 : floatval($programme->adminFee);
+                                    @endphp
+                                    <span class="font-semibold text-slate-600">{{ '$'.number_format($adminFee, 2) }}</span>
+                                </div>
                                 <div class="flex justify-between text-base font-semibold text-slate-800 border-t border-slate-200 pt-3">
                                     <span>Total</span>
-                                    <span>{{ $finalPrice !== null ? ($finalPrice <= 0 ? 'Free' : '$'.number_format($finalPrice, 2)) : $defaultPriceLabel }}</span>
+                                    <span class="font-bold text-green-600">{{ $finalPrice !== null ? ($finalPrice <= 0 ? 'Free' : '$'.number_format($finalPrice, 2)) : $defaultPriceLabel }}</span>
                                 </div>
                             </div>
                         </div>

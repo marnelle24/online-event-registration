@@ -39,8 +39,14 @@
                                 {{ '$ '.number_format($promotion->price, 2) }}
                             </p>
                         </div>
-                        <div class="text-sm md:w-1/3 w-full flex md:justify-start justify-center items-center text-slate-600/60 italic">
-                            {{ $promotion->counter . ' registered' }}
+                        <div class="text-sm md:w-1/3 w-full flex md:flex-col md:items-start md:justify-center justify-center items-center gap-2 text-slate-600/80">
+                            <span class="italic">{{ $promotion->counter . ' registered' }}</span>
+                            @if($promotion->isGroup)
+                                <span class="inline-flex items-center gap-1 text-xs font-medium uppercase tracking-wide">
+                                    Group&nbsp;:
+                                    <span class="normal-case text-slate-600">Min {{ $promotion->minGroup ?? '—' }} / Max {{ $promotion->maxGroup ?? '—' }}</span>
+                                </span>
+                            @endif
                         </div>
                         <div class="md:w-1/3 w-full flex md:justify-start justify-center items-center md:mt-0 mt-5">
                             @if($promotion->isActive)

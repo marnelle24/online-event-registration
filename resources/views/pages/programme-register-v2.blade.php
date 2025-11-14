@@ -8,7 +8,7 @@
                 :programme-code="$programmeCode"
                 :has-active-promocodes="$hasActivePromocodes"
                 :selected-promotion-id="optional($promotionForRegister)->id"
-                :selected-promotion-param="$selectedPromotionParam" />
+            />
         </div>
     </div>
     <x-footer-public />

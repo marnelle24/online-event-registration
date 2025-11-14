@@ -192,7 +192,7 @@ class PaymentPageV2 extends Component
 
     protected function loadRegistrant(): void
     {
-        $registrant = Registrant::with(['programme', 'promocode'])
+        $registrant = Registrant::with(['programme', 'promocode', 'promotion'])
             ->where('confirmationCode', $this->confirmationCode)
             ->firstOrFail();
 

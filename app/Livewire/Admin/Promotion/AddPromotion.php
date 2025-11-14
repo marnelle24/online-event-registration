@@ -18,6 +18,9 @@ class AddPromotion extends Component
     public $price;
     public $isActive;
     public $arrangement = 0;
+    public $isGroup = false;
+    public $minGroup;
+    public $maxGroup;
 
     public function mount()
     {
@@ -34,10 +37,20 @@ class AddPromotion extends Component
             'price' => 'nullable|numeric',
             'isActive' => 'nullable|boolean',
             'arrangement' => 'nullable|integer',
+            'isGroup' => 'boolean',
+            'minGroup' => 'nullable|integer|min:1|required_if:isGroup,true',
+            'maxGroup' => 'nullable|integer|min:1|required_if:isGroup,true|gte:minGroup',
+        ], [
+            'minGroup.required_if' => 'Min group size is required when the promotion is for groups.',
+            'maxGroup.required_if' => 'Max group size is required when the promotion is for groups.',
+            'maxGroup.gte' => 'Max group size must be greater than or equal to the min group size.',
         ]);
 
         try 
         {
+            $minGroup = $this->isGroup ? (int) $this->minGroup : null;
+            $maxGroup = $this->isGroup ? (int) $this->maxGroup : null;
+
             $this->programme->promotions()->create([
                 'title' => $this->title,
                 'programCode' => $this->programme->programmeCode,
@@ -48,6 +61,9 @@ class AddPromotion extends Component
                 'isActive' => $this->isActive,
                 'createdBy' => auth()->user()->name,
                 'arrangement' => $this->arrangement,
+                'isGroup' => (bool) $this->isGroup,
+                'minGroup' => $minGroup,
+                'maxGroup' => $maxGroup,
             ]);
 
             sleep(1);
@@ -74,6 +90,9 @@ class AddPromotion extends Component
         $this->price = 0;
         $this->isActive = false;
         $this->arrangement = 0;
+        $this->isGroup = false;
+        $this->minGroup = null;
+        $this->maxGroup = null;
         $this->resetErrorBag();
     }
 

@@ -21,9 +21,9 @@ class ProgrammeRegisterV2 extends Component
 
     public bool $hasActivePromocodes = false;
 
-    public ?Promotion $selectedPromotion = null;
+    public ?int $selectedPromotionId = null;
 
-    public ?string $selectedPromotionParam = null;
+    public ?Promotion $selectedPromotion = null;
 
     public int $currentStep = 1;
 
@@ -63,43 +63,30 @@ class ProgrammeRegisterV2 extends Component
 
     public ?string $country = null;
 
-    public function mount(int $programmeId, string $programmeCode, bool $hasActivePromocodes = false, ?int $selectedPromotionId = null, ?string $selectedPromotionParam = null): void
+    public function mount(int $programmeId, string $programmeCode, bool $hasActivePromocodes = false, ?int $selectedPromotionId = null): void
     {
+
         $this->programmeId = $programmeId;
         $this->programmeCode = $programmeCode;
-        $this->programme = Programme::with(['promotions', 'ministry'])->findOrFail($programmeId);
+        $this->programme = Programme::with(['promotions', 'ministry', 'categories'])->findOrFail($programmeId);
 
         $this->hasActivePromocodes = $hasActivePromocodes;
-        $this->selectedPromotionParam = $selectedPromotionParam
-            ? Str::slug($selectedPromotionParam, ' ')
-            : null;
+        $this->selectedPromotionId = $selectedPromotionId;
         $this->allowGroupRegistration = (bool) $this->programme->allowGroupRegistration;
 
         $this->selectedPromotion = $this->resolvePromotionById($selectedPromotionId);
-
-        if ($this->selectedPromotion) {
-            $this->selectedPromotionParam = Str::slug($this->selectedPromotion->title, ' ');
-        } elseif ($this->selectedPromotionParam) {
-            $this->selectedPromotion = $this->resolvePromotionByParameter($this->selectedPromotionParam);
-
-            if ($this->selectedPromotion) {
-                $this->selectedPromotionParam = Str::slug($this->selectedPromotion->title, ' ');
-            } else {
-                $this->selectedPromotionParam = null;
-            }
-        }
-
+        
         $this->effectivePrice = $this->selectedPromotion?->price ?? $this->programme->price;
         $this->discountAmount = $this->selectedPromotion ? ($this->selectedPromotion->price ?? 0) : 0;
-        $this->finalPrice = $this->effectivePrice;
-
+        $this->finalPrice = $this->effectivePrice + $this->programme->adminFee;
+        
         $user = Auth::user();
         $this->isAuthenticated = (bool) $user;
-
+        
         $this->formData = [
             'programmeCode' => $this->programme->programmeCode,
             'programmeId' => $this->programme->id,
-            'promotionId' => $this->selectedPromotion?->id,
+            'promotionId' => $this->selectedPromotionId,
             'promocode' => '',
             'promocodeId' => null,
             'registrationType' => $user ? 'user' : 'guest',
@@ -152,6 +139,28 @@ class ProgrammeRegisterV2 extends Component
             : 'Free';
     }
 
+    public function getGroupMinSizeProperty(): int
+    {
+        // If promotion is selected and it's a group promotion, use promotion limits
+        if ($this->selectedPromotion && $this->selectedPromotion->isGroup) {
+            return $this->selectedPromotion->minGroup ?? 2;
+        }
+        
+        // Otherwise use programme defaults
+        return $this->programme->groupRegistrationMin ?? 2;
+    }
+
+    public function getGroupMaxSizeProperty(): int
+    {
+        // If promotion is selected and it's a group promotion, use promotion limits
+        if ($this->selectedPromotion && $this->selectedPromotion->isGroup) {
+            return $this->selectedPromotion->maxGroup ?? 10;
+        }
+        
+        // Otherwise use programme defaults
+        return $this->programme->groupRegistrationMax ?? 10;
+    }
+
     public function selectRegistrationType(string $type): void
     {
         $this->formData['registrationType'] = $type;
@@ -174,15 +183,18 @@ class ProgrammeRegisterV2 extends Component
 
     public function addGroupMember(): void
     {
-        $max = $this->programme->groupRegistrationMax ?? 10;
+        $max = $this->groupMaxSize;
 
         if (!$this->groupStepIsAvailable()) {
             return;
         }
 
+        // Check if we've reached the maximum (including the main registrant)
         if (count($this->groupMembers) >= ($max - 1)) {
             return;
         }
+
+        $memberNumber = count($this->groupMembers) + 2; // +2 because member 1 is the main registrant
 
         $this->groupMembers[] = [
             'title' => 'Mr',
@@ -286,7 +298,7 @@ class ProgrammeRegisterV2 extends Component
 
         $this->appliedPromocode = $promocode;
         $this->formData['promocodeId'] = $promocode->id;
-        $this->finalPrice = (float) $promocode->price;
+        $this->finalPrice = (float) $promocode->price + (float) $this->programme->adminFee;
         $this->discountAmount = max(0, ($this->effectivePrice ?? $this->programme->price) - $this->finalPrice);
         $this->promoMessage = 'Promo code applied successfully.';
         $this->recalculateTotals();
@@ -301,21 +313,19 @@ class ProgrammeRegisterV2 extends Component
         $data = $this->validate($this->rules(), $this->messages(), $this->validationAttributes());
 
         try {
-            $promotion = $this->resolvePromotionById(Arr::get($data, 'formData.promotionId'))
-                ?? $this->getDefaultActivePromotion();
+            $promotion = $this->resolvePromotionById(Arr::get($data, 'formData.promotionId'));
 
             $promotionId = $promotion?->id;
             $promotionPrice = $promotion?->price;
 
             $promocode = null;
-            if ($data['formData']['promocodeId']) {
+            if ($data['formData']['promocodeId']) 
+            {
                 $promocode = Promocode::find($data['formData']['promocodeId']);
             }
 
-            $netAmount = $promocode ? (float) $promocode->price : ($promotionPrice ?? $this->programme->price);
-            $discountAmount = $promocode
-                ? (float) $promocode->price
-                : ($promotionPrice ?? 0);
+            $netAmount = $this->finalPrice;
+            $discountAmount = $promotionPrice ?? 0;
 
             $confirmationCode = $this->programme->programmeCode . '_' . strtoupper(substr(uniqid(), -6));
             $groupRegistrationId = $data['isGroupRegistration'] ? $confirmationCode : null;
@@ -373,7 +383,7 @@ class ProgrammeRegisterV2 extends Component
                         'promotion_id' => $promotionId,
                         'paymentStatus' => $netAmount > 0 ? 'group_member_pending' : 'free',
                         'regStatus' => $netAmount > 0 ? 'group_reg_pending' : 'confirmed',
-                        'registrationType' => 'group_member',
+                        'registrationType' => 'guest_group_member',
                         'groupRegistrationID' => $groupRegistrationId,
                     ]);
                 }
@@ -382,7 +392,7 @@ class ProgrammeRegisterV2 extends Component
             $redirectUrl = route('registration.confirmation', ['confirmationCode' => $confirmationCode]);
 
             if ($netAmount > 0 && !$this->programme->allowPreRegistration) {
-                $redirectUrl = route('registration.payment', ['confirmationCode' => $confirmationCode]);
+                $redirectUrl = route('registration.payment.v2', ['confirmationCode' => $confirmationCode]);
             }
 
             return redirect()->to($redirectUrl);
@@ -514,8 +524,8 @@ class ProgrammeRegisterV2 extends Component
                     break;
                 case 'group':
                     if ($this->isGroupRegistration) {
-                        $min = $this->programme->groupRegistrationMin ?? 2;
-                        $max = $this->programme->groupRegistrationMax ?? 10;
+                        $min = $this->groupMinSize;
+                        $max = $this->groupMaxSize;
                         $totalMembers = count($this->groupMembers) + 1;
 
                         if ($totalMembers < $min || $totalMembers > $max) {
@@ -619,13 +629,17 @@ class ProgrammeRegisterV2 extends Component
     {
         $basePrice = $this->effectivePrice ?? $this->programme->price;
 
-        if ($this->appliedPromocode) {
-            $this->finalPrice = (float) $this->appliedPromocode->price;
+        $adminFee = floatval($this->programme->adminFee) <= 0 ? 0 : floatval($this->programme->adminFee);
+        $basePrice += $adminFee;
+
+        if ($this->appliedPromocode) 
+        {
+            $this->finalPrice = (float) $this->appliedPromocode->price + $adminFee;
             $this->discountAmount = max(0, $basePrice - $this->finalPrice);
             return;
         }
 
-        $this->finalPrice = $basePrice;
+        $this->finalPrice = $basePrice + $adminFee;
         $this->discountAmount = $this->selectedPromotion
             ? max(0, ($this->programme->price - $basePrice))
             : 0;
@@ -633,15 +647,10 @@ class ProgrammeRegisterV2 extends Component
 
     protected function groupStepIsAvailable(): bool
     {
-        if (!$this->allowGroupRegistration) {
-            return false;
-        }
-
-        if (!$this->selectedPromotionParam) {
-            return false;
-        }
-
-        return Str::contains(Str::lower($this->selectedPromotionParam), 'group');
+        if ($this->selectedPromotion && $this->selectedPromotion->isGroup && $this->allowGroupRegistration)
+            return true;
+        
+        return false;
     }
 
     protected function buildStepOrder(): array
@@ -689,32 +698,6 @@ class ProgrammeRegisterV2 extends Component
         }
 
         return $this->promotionIsCurrentlyActive($promotion) ? $promotion : null;
-    }
-
-    protected function resolvePromotionByParameter(?string $parameter): ?Promotion
-    {
-        if (!$parameter) {
-            return null;
-        }
-
-        $normalized = Str::slug($parameter, ' ');
-
-        return $this->programme->promotions
-            ->first(function (Promotion $promotion) use ($normalized) {
-                return Str::slug($promotion->title, ' ') === $normalized
-                    && $this->promotionIsCurrentlyActive($promotion);
-            });
-    }
-
-    protected function getDefaultActivePromotion(): ?Promotion
-    {
-        return $this->programme->promotions
-            ->filter(fn (Promotion $promotion) => $this->promotionIsCurrentlyActive($promotion))
-            ->sortBy([
-                ['arrangement', 'asc'],
-                ['startDate', 'asc'],
-            ])
-            ->first();
     }
 
     protected function promotionIsCurrentlyActive(Promotion $promotion): bool

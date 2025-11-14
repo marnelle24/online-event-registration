@@ -45,15 +45,15 @@ class PromotionOptions extends Component
 
         $this->promotionOptions = $this->activePromotions
             ->map(function ($promotion) {
-                $parameter = Str::slug($promotion->title, ' ');
-
                 return [
                     'id' => $promotion->id,
                     'title' => $promotion->title,
                     'description' => $promotion->description,
                     'price' => $promotion->price,
-                    'parameter' => $parameter,
-                    'url' => $this->defaultRegisterUrl . '?' . http_build_query(['promotion' => $parameter]),
+                    'isGroup' => (bool) $promotion->isGroup,
+                    'minGroup' => $promotion->minGroup,
+                    'maxGroup' => $promotion->maxGroup,
+                    'url' => $this->defaultRegisterUrl . '?promotion=' . $promotion->id,
                 ];
             })
             ->all();

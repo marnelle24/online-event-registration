@@ -17,6 +17,9 @@ class EditPromotion extends Component
     public $price;
     public $isActive;
     public $arrangement;
+    public $isGroup;
+    public $minGroup;
+    public $maxGroup;
 
     public $show = false;
 
@@ -41,6 +44,9 @@ class EditPromotion extends Component
         $this->price = $this->promotion->price;
         $this->isActive = $this->promotion->isActive;
         $this->arrangement = $this->promotion->arrangement;
+        $this->isGroup = $this->promotion->isGroup;
+        $this->minGroup = $this->promotion->minGroup;
+        $this->maxGroup = $this->promotion->maxGroup;
     }
 
     public function save()
@@ -53,9 +59,19 @@ class EditPromotion extends Component
             'price' => 'required|numeric|min:0',
             'isActive' => 'nullable|boolean',
             'arrangement' => 'nullable|integer|min:0',
+            'isGroup' => 'boolean',
+            'minGroup' => 'nullable|integer|min:1|required_if:isGroup,true',
+            'maxGroup' => 'nullable|integer|min:1|required_if:isGroup,true|gte:minGroup',
+        ], [
+            'minGroup.required_if' => 'Min group size is required when the promotion is for groups.',
+            'maxGroup.required_if' => 'Max group size is required when the promotion is for groups.',
+            'maxGroup.gte' => 'Max group size must be greater than or equal to the min group size.',
         ]);
 
         try {
+            $minGroup = $this->isGroup ? (int) $this->minGroup : null;
+            $maxGroup = $this->isGroup ? (int) $this->maxGroup : null;
+
             $updated = $this->promotion->update([
                 'title' => $this->title,
                 'description' => $this->description,
@@ -64,6 +80,9 @@ class EditPromotion extends Component
                 'price' => $this->price,
                 'isActive' => $this->isActive,
                 'arrangement' => $this->arrangement,
+                'isGroup' => (bool) $this->isGroup,
+                'minGroup' => $minGroup,
+                'maxGroup' => $maxGroup,
             ]);
 
             sleep(1);

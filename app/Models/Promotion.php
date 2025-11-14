@@ -15,6 +15,9 @@ class Promotion extends Model
         'startDate',
         'endDate',
         'price',
+        'isGroup',
+        'minGroup',
+        'maxGroup',
         'isActive',
         'arrangement',
         'counter',
@@ -25,17 +28,13 @@ class Promotion extends Model
         'startDate' => 'datetime',
         'endDate' => 'datetime',
         'counter' => 'integer',
+        'minGroup' => 'integer',
+        'maxGroup' => 'integer',
         'arrangement' => 'integer',
         'isActive' => 'boolean',
+        'isGroup' => 'boolean',
     ];
 
-    // protected static function booted()
-    // {
-    //     static::addGlobalScope('active', function (Builder $builder) {
-    //         $builder->where('isActive', true);
-    //     });
-    // }
-    
     public function programme()
     {
         return $this->belongsTo(Programme::class, 'programme_id');

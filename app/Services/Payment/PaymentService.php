@@ -118,16 +118,16 @@ class PaymentService
     {
 
         // test data after the webhook call
-        // $callbackData = [
-        //     "payment_id" => "9fb9bcfe-b449-41a8-95b4-b4ea759c5931",
-        //     "payment_request_id" => "9fb9bce6-16b4-4c7b-a98a-0b17555bf8c4",
-        //     "phone" => "12312312",
-        //     "amount" => "750.00",
-        //     "currency" => "SGD",
-        //     "status" => "completed",
-        //     "reference_number" => "1235BAVF78_012",
-        //     "hmac" => "7dc880e0d5b73560039a1fcffe18ebaf814aa25daf2513e1a331023c1ec66ffb"
-        // ];
+        $callbackData = [
+            "payment_id" => "a058bec6-4452-46a9-b28d-45e156723d6f",
+            "payment_request_id" => "a058bec4-7843-4588-92f6-3bde99916604",
+            "phone" => "+65 9177724780",
+            "amount" => "20.00",
+            "currency" => "SGD",
+            "status" => "completed",
+            "reference_number" => "BSS2026_F5AEB4",
+            "hmac" => "397f266ddc37dfcda214f11804a43613d01981780ad2a57aee4c3ec5eac496e9"
+        ];
 
         try {
             $gateway = $this->getGateway($paymentMethod);
@@ -138,6 +138,8 @@ class PaymentService
             ]);
 
             $result = $gateway->verifyPayment($callbackData);
+
+            return $result; // TESTING - RETURN THE RESULT IMMEDIATELY
 
             // If payment is verified, update registrant status
             if ($result['verified']) {

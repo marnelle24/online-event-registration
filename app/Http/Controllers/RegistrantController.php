@@ -77,20 +77,20 @@ class RegistrantController extends Controller
             abort(404);
         }
 
-        $promotionParameter = $request->query('promotion');
+        $promotionId = $request->query('promotion');
         $selectedPromotion = null;
 
-        if ($promotionParameter) {
-            $selectedPromotion = $this->resolveSelectedPromotion($programme, $promotionParameter);
+        if ($promotionId) {
+
+            $selectedPromotion = $programme->promotions->firstWhere('id', $promotionId);
+            // $selectedPromotion = $this->resolvePromotionById($programme, $promotionId);
 
             if ($selectedPromotion) {
-                $promotionParameter = Str::slug($selectedPromotion->title, ' ');
+                $promotionId = $selectedPromotion->id;
             } else {
-                $promotionParameter = null;
+                $promotionId = null;
             }
         }
-
-        $promotionForRegister = $selectedPromotion;
 
         $user = auth()->user();
 
@@ -114,8 +114,7 @@ class RegistrantController extends Controller
             'programmeCode' => $programmeCode,
             'user' => $user,
             'hasActivePromocodes' => $hasActivePromocodes,
-            'promotionForRegister' => $promotionForRegister,
-            'selectedPromotionParam' => $promotionParameter,
+            'promotionForRegister' => $selectedPromotion,
         ]);
     }
 
@@ -467,6 +466,8 @@ class RegistrantController extends Controller
             $paymentService = new PaymentService();
             $result = $paymentService->verifyPaymentCallback($paymentMethod, $request->all());
 
+            dd($result); // TESTING - RETURN THE RESULT IMMEDIATELY
+
             if ($result['verified']) 
             {
                 $referenceNo = $result['reference_no'];
@@ -648,17 +649,12 @@ class RegistrantController extends Controller
 
     protected function resolveSelectedPromotion(Programme $programme, ?string $promotionParameter): ?Promotion
     {
-        if (!$promotionParameter) {
+        if (!$promotionParameter)
             return null;
-        }
 
-        $normalized = Str::slug($promotionParameter, ' ');
+        $promotion = $programme->promotions->firstWhere('id', $promotionParameter);
 
-        return $programme->promotions
-            ->first(function (Promotion $promotion) use ($normalized) {
-                return Str::slug($promotion->title, ' ') === $normalized
-                    && $this->promotionIsCurrentlyActive($promotion);
-            });
+        return $promotion;
     }
 
     protected function resolvePromotionById(Programme $programme, ?int $promotionId): ?Promotion

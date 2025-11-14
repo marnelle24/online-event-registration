@@ -60,7 +60,8 @@
 
                             <div>
                                 <h3 class="font-semibold text-slate-900">Price</h3>
-                                <p class="text-slate-600 font-bold text-lg {{ $programme->active_promotion ? 'line-through' : '' }}">{{ $programme->formatted_price }}</p>
+                                <p class="text-slate-600 font-bold text-lg">{{ $programme->formatted_price }}</p>
+                                {{-- <p class="text-slate-600 font-bold text-lg {{ $programme->active_promotion ? 'line-through' : '' }}">{{ $programme->formatted_price }}</p> --}}
                             </div>
                         </div>
                         
