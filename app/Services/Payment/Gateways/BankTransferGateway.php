@@ -13,7 +13,7 @@ class BankTransferGateway implements PaymentGatewayInterface
      * @param array $paymentData
      * @return array
      */
-    public function initiatePayment(array $paymentData): array
+    public function initiatePayment(array $paymentData, bool $includeSteps = true): array
     {
         // Generate a unique reference number for tracking
         $referenceNo = $paymentData['confirmationCode'];
@@ -22,7 +22,7 @@ class BankTransferGateway implements PaymentGatewayInterface
             'status' => 'pending_transfer',
             'reference_no' => $referenceNo,
             'payment_method' => 'bank_transfer',
-            'instructions' => $this->getBankTransferInstructions($paymentData, $referenceNo),
+            'instructions' => $this->getBankTransferInstructions($paymentData, $referenceNo, $includeSteps),
         ];
     }
 
@@ -31,9 +31,10 @@ class BankTransferGateway implements PaymentGatewayInterface
      *
      * @param array $paymentData
      * @param string $referenceNo
+     * @param bool $includeSteps
      * @return array
      */
-    protected function getBankTransferInstructions(array $paymentData, string $referenceNo): array
+    protected function getBankTransferInstructions(array $paymentData, string $referenceNo, bool $includeSteps = true): array
     {
         // Get bank details
         $bankDetails = $this->getBankDetails();
@@ -74,13 +75,12 @@ class BankTransferGateway implements PaymentGatewayInterface
             'content' => "Once we verify your payment (usually within 1-2 business days), you will receive a confirmation email.",
         ];
 
-        return [
+        $returnData = [
             'title' => 'Bank Transfer Instructions',
             'amount' => $paymentData['amount'],
             'currency' => $paymentData['currency'],
             'reference_no' => $referenceNo,
             'bank_details' => $this->getBankDetailsStructured(),
-            'steps' => $steps,
             'important_notes' => [
                 'Please ensure the exact amount is transferred to avoid delays in processing.',
                 'Keep your transfer receipt for your records.',
@@ -88,6 +88,12 @@ class BankTransferGateway implements PaymentGatewayInterface
                 'You will receive a confirmation email once payment is verified.',
             ],
         ];
+
+        // add the steps only if allow to include steps
+        if ($includeSteps)
+            $returnData['steps'] = $steps;
+
+        return $returnData;
     }
 
     /**

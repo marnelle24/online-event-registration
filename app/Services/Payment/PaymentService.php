@@ -116,20 +116,8 @@ class PaymentService
      */
     public function verifyPaymentCallback(string $paymentMethod, array $callbackData): array
     {
-
-        // test data after the webhook call
-        $callbackData = [
-            "payment_id" => "a058bec6-4452-46a9-b28d-45e156723d6f",
-            "payment_request_id" => "a058bec4-7843-4588-92f6-3bde99916604",
-            "phone" => "+65 9177724780",
-            "amount" => "20.00",
-            "currency" => "SGD",
-            "status" => "completed",
-            "reference_number" => "BSS2026_F5AEB4",
-            "hmac" => "397f266ddc37dfcda214f11804a43613d01981780ad2a57aee4c3ec5eac496e9"
-        ];
-
-        try {
+        try 
+        {
             $gateway = $this->getGateway($paymentMethod);
             
             Log::info('Verifying payment callback', [
@@ -139,16 +127,14 @@ class PaymentService
 
             $result = $gateway->verifyPayment($callbackData);
 
-            return $result; // TESTING - RETURN THE RESULT IMMEDIATELY
-
             // If payment is verified, update registrant status
             if ($result['verified']) {
                 $this->confirmPayment($result['reference_no'], $result);
             }
 
-            return $result;
-
-        } catch (\Exception $e) {
+        } 
+        catch (\Exception $e) 
+        {
             Log::error('Payment verification failed', [
                 'payment_method' => $paymentMethod,
                 'error' => $e->getMessage(),
@@ -183,11 +169,12 @@ class PaymentService
 
             // Prepare update data
             $updateData = [
-                'regCode' => $this->generateRegCode($registrant->programCode),
+                'regCode' => $this->generateRegCode($registrant->programme->programmeCode),
                 'paymentStatus' => 'paid',
                 'regStatus' => 'confirmed',
                 'payment_completed_at' => now(),
             ];
+            // dd($updateData);
 
             // Add bank transfer verification info if provided
             if (isset($paymentDetails['verified_by'])) {
@@ -208,7 +195,7 @@ class PaymentService
             }
 
             // Update registrant payment status
-            $registrant->update($updateData);
+            $mainRegistrant = $registrant->update($updateData);
 
             // Update group members if this is a group registration
             if ($registrant->groupRegistrationID) {
@@ -254,9 +241,23 @@ class PaymentService
                 'reference_no' => $referenceNo,
             ]);
 
+            // after the main registrant updated, update the promocode and promotion counters
+            if ($mainRegistrant) 
+            {
+                // if there is promocode, update and increment the usedCount field
+                if ($mainRegistrant->promocode) 
+                    $mainRegistrant->promocode->increment('usedCount');
+
+                // if there is promotion increment the counter field
+                if ($mainRegistrant->promotion)
+                    $mainRegistrant->promotion->increment('counter');
+            }
+
             return true;
 
-        } catch (\Exception $e) {
+        } 
+        catch (\Exception $e) 
+        {
             Log::error('Payment confirmation failed', [
                 'reference_no' => $referenceNo,
                 'error' => $e->getMessage(),
@@ -287,8 +288,8 @@ class PaymentService
             'customer_address' => $registrant->address ?? '',
             'contact_email' => $registrant->programme->contactEmail,
             'return_url' => route('payment.callback'),
-            'cancel_url' => route('registration.payment', ['confirmationCode' => $registrant->confirmationCode]),
-            'webhook_url' => 'https://29e57dff7ed1.ngrok-free.app/payment/webhook', //local ngrok url
+            'cancel_url' => route('registration.payment.v2', ['confirmationCode' => $registrant->confirmationCode]),
+            'webhook_url' => env('APP_URL') . '/payment/webhook',
         ], $additionalData);
     }
 

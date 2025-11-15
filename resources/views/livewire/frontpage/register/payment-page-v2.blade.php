@@ -1,45 +1,24 @@
 <div class="space-y-8">
-    @if($alertMessage)
-        <div class="{{ $alertType === 'error' ? 'bg-red-50 border-red-200 text-red-700' : ($alertType === 'success' ? 'bg-emerald-50 border-emerald-200 text-emerald-700' : 'bg-blue-50 border-blue-200 text-blue-700') }} border rounded-lg px-4 py-3">
-            <p class="text-sm font-medium">{{ $alertMessage }}</p>
-        </div>
-    @endif
-
     <div class="bg-white shadow-lg rounded-2xl overflow-hidden border border-slate-200">
         <div class="bg-gradient-to-r from-teal-500 to-teal-600 px-6 py-5">
-            <h1 class="text-white text-2xl font-semibold tracking-wide">
+            {{-- <h1 class="text-white text-2xl font-semibold tracking-wide">
                 Payment for {{ $registrant?->programme?->title }}
-            </h1>
-            <p class="text-teal-100 text-sm mt-1">
-                Confirmation Code: <span class="font-semibold">{{ $confirmationCode }}</span>
-            </p>
+            </h1> --}}
+            <div class="text-teal-100 flex flex-col">
+                <p class="font-normal text-sm">Confirmation Code:</p> 
+                <p class="font-semibold text-2xl drop-shadow">{{ $confirmationCode }}</p>
+            </div>
         </div>
 
         <div class="p-6 space-y-8">
             <div class="grid md:grid-cols-3 gap-6">
                 <div class="md:col-span-2 space-y-6">
-                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-5">
-                        <div class="flex items-center justify-between">
-                            <h2 class="text-lg font-semibold text-slate-800">Payment Status</h2>
-                            <span class="px-3 py-1 text-xs font-semibold rounded-full {{ $isPaid ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700' }}">
-                                {{ $isPaid ? 'Paid / Processing' : 'Pending Payment' }}
-                            </span>
-                        </div>
-                        <p class="text-sm text-slate-600 mt-3">
-                            @if($isPaid)
-                                We have received your payment. If you have any questions, please contact us with your confirmation code.
-                            @else
-                                Complete your payment to secure your registration. Choose a payment method below to proceed.
-                            @endif
-                        </p>
-                    </div>
-                    <div>
-                        <h3 class="text-lg tracking-wider uppercase font-bold text-slate-800 mt-4 bg-slate-100 p-3">Registration Summary</h3>
+                        <h3 class="text-lg tracking-wider uppercase font-bold text-slate-800 bg-slate-100 p-3">Registration Summary</h3>
                         {{-- add there the main registrant details --}}
                         <div class="bg-white">
                             <dl class="space-y-2 text-sm text-slate-600 p-4 border border-t-0 border-x-1 border-b border-slate-200 rounded-b-lg">
                                 @if($groupMembers->isNotEmpty())
-                                    <h3 class="text-md font-semibold text-slate-800 p-4 pb-0">Main Registrant Details</h3>
+                                    <h3 class="text-md font-semibold text-slate-800 mb-4">Main Registrant Details</h3>
                                 @endif
                                 <div class="flex justify-between">
                                     <dt>Name</dt>
@@ -69,22 +48,25 @@
                                 <ul class="space-y-3 text-sm text-slate-600 p-4 border border-t-0 border-x-1 border-b border-slate-200 rounded-b-lg">
                                     @foreach($groupMembers as $index => $member)
                                         <li class="flex md:flex-row flex-col md:justify-between justify-start">
-                                            <span>
-                                                <span>
+                                            <span class="md:text-right text-left">
+                                                <span class="md:text-sm text-lg font-semibold text-slate-800">
                                                     {{ '#'.($index + 1) }} {{ $member?->title }} {{ $member?->firstName }} {{ $member?->lastName }} 
                                                 </span>
                                                 @if($index == 0)
                                                     <span class="text-slate-500 italic font-semibold">(Main Registrant)</span>
                                                 @endif
                                             </span>
-                                            <span class="text-right">{{ $member?->email }}</span>
+                                            <span class="md:block hidden text-right">{{ $member?->contactNumber }}</span>
+                                            <span class="md:hidden block text-left ml-4">{{ $member?->contactNumber }}</span>
+                                            
+                                            <span class="md:block hidden text-right">{{ $member?->email }}</span>
+                                            <span class="md:hidden block text-left ml-4 italic">({{ $member?->email }})</span>
                                         </li>
                                     @endforeach
                                 </ul>
                             @endif
     
                         </div>
-                    </div>
                 </div>
                 <div class="md:col-span-1 space-y-6">
                     <div class="border border-slate-200 rounded-xl p-5 shadow-sm bg-slate-100">
@@ -167,96 +149,111 @@
                     </div>
                 </div>
             </div>
-
-            @if(!$isPaid)
-                <div class="space-y-4">
-                    <h3 class="text-lg tracking-wider uppercase font-bold text-slate-800">Choose a Payment Method</h3>
-
-                    @if(empty($paymentMethods))
-                        <div class="bg-amber-50 border border-amber-200 text-amber-700 rounded-lg px-4 py-3 text-sm">
-                            Payment options are currently unavailable. Please contact the organiser for assistance.
-                        </div>
-                    @else
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            @foreach($paymentMethods as $method)
-                                @if($method['key'] === 'hitpay')
-                                    <div class="border-2 border-slate-200 hover:bg-teal-50 hover:shadow-lg transition-all duration-300 rounded-lg p-6">
-                                        <div class="flex items-start">
-                                            <div class="flex-shrink-0 w-12 h-12 bg-[#7C2278] rounded-lg flex items-center justify-center">
-                                                <img src="{{ asset('images/PayNow.png') }}" alt="PayNow" class="w-8">
-                                            </div>
-                                            <div class="ml-4 flex-1">
-                                                <h3 class="text-lg font-semibold text-slate-800 mb-2">Credit/Debit via PayNow App</h3>
-                                                <p class="text-sm text-slate-600 mb-3">Pay securely with your card, PayNow, or e-wallets via HitPay</p>
-                                                
-                                                <!-- Error Message -->
-                                                @if($hitpayError)
-                                                    <div class="mb-3 bg-red-50 border border-red-200 rounded-lg p-3">
-                                                        <div class="flex">
-                                                            <svg class="h-5 w-5 text-red-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
-                                                            </svg>
-                                                            <p class="text-sm text-red-800">{{ $hitpayError }}</p>
-                                                        </div>
-                                                    </div>
-                                                @endif
-                                                
-                                                <button type="button" 
-                                                        wire:click="processHitPayPayment"
-                                                        wire:loading.attr="disabled"
-                                                        wire:target="processHitPayPayment"
-                                                        class="hover:-translate-y-0.5 hover:shadow-lg duration-300 transition-all flex items-center justify-center gap-2 w-full mt-4 bg-[#7C2278]/90 uppercase tracking-wider text-white py-3 px-6 rounded-lg font-semibold hover:bg-[#7C2278] disabled:hover:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed">
-                                                    <span wire:loading.remove wire:target="processHitPayPayment">Pay ${{ number_format($registrant->netAmount ?? 0, 2) }} with PayNow</span>
-                                                    <span wire:loading wire:target="processHitPayPayment" class="inline-flex items-center gap-2">
-                                                        <span>Processing...</span>
-                                                    </span>
-                                                </button>
-                                                <p class="text-[11px] text-slate-500 mt-2 text-center">Secured by HitPay with SSL encryption</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                @else
-                                    <div class="border-2 border-slate-200 rounded-lg p-6 hover:bg-teal-50 hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300">
-                                        <div class="flex items-start">
-                                            <div class="flex-shrink-0">
-                                                <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                                                    <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                                                    </svg>
-                                                </div>
-                                            </div>
-                                            <div class="ml-4 flex-1">
-                                                <h3 class="text-lg font-semibold text-slate-800 mb-2">Bank Transfer or Cheque Payment</h3>
-                                                <p class="text-sm text-slate-600">Transfer directly to our bank account</p>
-                                                <p class="text-sm text-slate-600 mb-3">Please use your registration code <strong>{{ $registrant?->confirmationCode }}</strong> as payment reference</p>
-                                                <button type="button" 
-                                                        wire:click="showBankTransferInstructions"
-                                                        wire:loading.attr="disabled"
-                                                        class="w-full bg-teal-600 text-white py-3 px-6 rounded-md font-semibold hover:bg-teal-700 transition-colors disabled:hover:bg-teal-600 disabled:opacity-50">
-                                                    <span wire:loading.remove>Check Bank Payment Instructions</span>
-                                                    <span wire:loading>Loading...</span>
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                @endif
-                            @endforeach
-                        </div>
-                        @if($selectedMethod === 'bank_transfer' && !empty($bankTransferInstructions))
-                            <div class="pt-4">
-                                <button
-                                    type="button"
-                                    wire:click="$set('showBankTransferModal', true)"
-                                    class="text-sm font-semibold text-teal-600 hover:text-teal-700 transition"
-                                >
-                                    View Bank Transfer Instructions
-                                </button>
-                            </div>
-                        @endif
-                    @endif
-                </div>
-            @endif
         </div>
+        @if(!$isPaid)
+        <div class="p-6">
+            <hr class="border-slate-400/60 border border-dashed" />
+            @if(!$isPaymentInitiated)
+                <br />
+                <br />
+                <h3 class="text-lg tracking-normal uppercase font-bold text-slate-800">
+                    {{ 'Choose a Payment Methods' }}
+                </h3>
+            @endif
+            <div class="space-y-4 mt-4">
+                @if($isPaymentInitiated)
+                    @php 
+                        $paymentOption = '';
+                        if($registrant->paymentOption === 'hitpay')
+                            $paymentOption = 'PayNow App';
+                        elseif($registrant->paymentOption === 'bank_transfer')
+                            $paymentOption = 'Bank Transfer or Cheque Payment';
+                    @endphp
+                    <div class="bg-amber-50 border border-amber-200 text-amber-700 rounded-lg px-4 py-3 text-sm">
+                        This registration has already initiated a payment via <strong>{{ $paymentOption }}</strong> and 
+                        is subject for verification. Please wait for the payment to be verfified. 
+                        Registration confirmation will be sent to the main registrant email address.
+                    </div>
+                @else
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        @foreach($paymentMethods as $method)
+                            @if($method['key'] === 'hitpay')
+                                <div class="border-2 border-slate-200 hover:border-slate-300 bg-slate-100 hover:bg-slate-200 hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300 rounded-lg p-6">
+                                    <div class="flex items-start">
+                                        <div class="flex-shrink-0 w-12 h-12 bg-[#7C2278] rounded-lg flex items-center justify-center">
+                                            <img src="{{ asset('images/PayNow.png') }}" alt="PayNow" class="w-8">
+                                        </div>
+                                        <div class="ml-4 flex-1">
+                                            <h3 class="text-lg font-semibold text-slate-800 mb-2">Credit/Debit via PayNow App</h3>
+                                            <p class="text-sm text-slate-600 mb-3">Pay securely with your card, PayNow, or e-wallets via HitPay</p>
+                                            
+                                            <!-- Error Message -->
+                                            @if($hitpayError)
+                                                <div class="mb-3 bg-red-50 border border-red-200 rounded-lg p-3">
+                                                    <div class="flex">
+                                                        <svg class="h-5 w-5 text-red-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                                                        </svg>
+                                                        <p class="text-sm text-red-800">{{ $hitpayError }}</p>
+                                                    </div>
+                                                </div>
+                                            @endif
+                                            
+                                            <button type="button" 
+                                                    wire:click="processHitPayPayment"
+                                                    wire:loading.attr="disabled"
+                                                    wire:target="processHitPayPayment"
+                                                    class="hover:-translate-y-0.5 hover:shadow-lg duration-300 transition-all flex items-center justify-center gap-2 w-full mt-4 bg-[#7C2278]/90 uppercase tracking-wider text-white py-3 px-6 rounded-lg font-semibold hover:bg-[#7C2278] disabled:hover:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed">
+                                                <span wire:loading.remove wire:target="processHitPayPayment">Pay ${{ number_format($registrant->netAmount ?? 0, 2) }} with PayNow</span>
+                                                <span wire:loading wire:target="processHitPayPayment" class="inline-flex items-center gap-2">
+                                                    <span>Processing...</span>
+                                                </span>
+                                            </button>
+                                            <p class="text-[11px] text-slate-500 mt-2 text-center">Secured by HitPay with SSL encryption</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            @else
+                                <div class="border-2 border-slate-200 hover:border-slate-300 bg-slate-100 hover:bg-slate-200 rounded-lg p-6 hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300">
+                                    <div class="flex items-start">
+                                        <div class="flex-shrink-0">
+                                            <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                                                <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                                                </svg>
+                                            </div>
+                                        </div>
+                                        <div class="ml-4 flex-1">
+                                            <h3 class="text-lg font-semibold text-slate-800 mb-2">Bank Transfer or Cheque Payment</h3>
+                                            <p class="text-sm text-slate-600 mb-3">Transfer directly to our bank account. Please use your registration code <strong>{{ $registrant?->confirmationCode }}</strong> as payment reference</p>
+                                            <button type="button" 
+                                                    wire:click="showBankTransferInstructions"
+                                                    wire:loading.attr="disabled"
+                                                    class="w-full bg-teal-600 hover:bg-teal-700 hover:-translate-y-0.5 hover:shadow-lg text-white py-3 px-6 rounded-md font-semibold transition-all duration-300 disabled:hover:bg-teal-600 disabled:opacity-50">
+                                                <span wire:loading.remove wire:target="showBankTransferInstructions">Check Bank Payment Instructions</span>
+                                                <span wire:loading wire:target="showBankTransferInstructions">Loading...</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
+                        @endforeach
+                    </div>
+                    @if($selectedMethod === 'bank_transfer' && !empty($bankTransferInstructions))
+                        <div class="pt-4">
+                            <button
+                                type="button"
+                                wire:click="$set('showBankTransferModal', true)"
+                                class="text-sm font-semibold text-teal-600 hover:text-teal-700 transition"
+                            >
+                                View Bank Transfer Instructions
+                            </button>
+                        </div>
+                    @endif
+                @endif
+            </div>
+        </div>
+        @endif
     </div>
 
     <div class="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-8">
@@ -374,6 +371,14 @@
                         class="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-teal-600 hover:text-teal-700 transition"
                     >
                         Close
+                    </button>
+                    {{-- add initiate payment button --}}
+                    <button
+                        type="button"
+                        wire:click="initiateBankTransferPayment"
+                        class="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-teal-600 hover:bg-teal-700 hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300 rounded-md"
+                    >
+                        Confirm
                     </button>
                 </div>
             </div>

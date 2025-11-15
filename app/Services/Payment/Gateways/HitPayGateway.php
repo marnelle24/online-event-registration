@@ -87,10 +87,11 @@ class HitPayGateway implements PaymentGatewayInterface
      */
     public function verifyPayment(array $callbackData): array
     {
-        try {
+        try 
+        {
             // HitPay sends HMAC signature for verification
             $hmacSignature = $callbackData['hmac'] ?? null;
-            
+
             if (!$hmacSignature) {
                 throw new \Exception('HMAC signature not found in callback');
             }
@@ -128,7 +129,9 @@ class HitPayGateway implements PaymentGatewayInterface
                 'raw_data' => $callbackData,
             ];
 
-        } catch (\Exception $e) {
+        }
+        catch (\Exception $e) 
+        {
             Log::error('HitPay payment verification error', [
                 'error' => $e->getMessage(),
                 'callback_data' => $callbackData,

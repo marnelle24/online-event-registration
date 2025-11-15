@@ -19,15 +19,15 @@ class PaymentPageV2 extends Component
 
     public bool $isPaid = false;
 
+    public bool $isPaymentInitiated = false;
+
+    public bool $isRegistrationConfirmed = false;
+
     public array $paymentMethods = [];
 
     public ?string $selectedMethod = null;
 
     public bool $loading = false;
-
-    public ?string $alertType = null;
-
-    public ?string $alertMessage = null;
 
     public array $bankTransferInstructions = [];
 
@@ -43,8 +43,6 @@ class PaymentPageV2 extends Component
 
     public function mount(string $confirmationCode): void
     {
-        $this->showBankTransferModal = true;
-
         $this->confirmationCode = $confirmationCode;
         $this->groupMembers = collect();
 
@@ -68,17 +66,9 @@ class PaymentPageV2 extends Component
         $this->selectedMethod = $method;
 
         if ($method === 'bank_transfer') 
-        {
             $this->processBankTransfer();
-        } 
         else 
-        {
             $this->initiatePayment();
-        }
-        // $this->bankTransferInstructions = [];
-        // $this->paymentResult = [];
-        // $this->alertType = null;
-        // $this->alertMessage = null;
     }
 
     protected function processBankTransfer(): void
@@ -105,55 +95,6 @@ class PaymentPageV2 extends Component
         $result = $paymentService->getBankDetails();
 
         $this->bankDetails = $result ?? [];
-    }
-
-    public function initiatePayment($paymentMethod = null): void
-    {
-        if (!$this->registrant || !$paymentMethod) {
-            return;
-        }
-        
-        $this->loading = true;
-        $this->alertType = null;
-        $this->alertMessage = null;
-        $this->bankTransferInstructions = [];
-        $this->paymentResult = [];
-
-        try {
-            $paymentService = new PaymentService();
-            $result = $paymentService->processPayment($this->registrant->fresh(), $paymentMethod);
-
-            $this->paymentResult = $result['data'] ?? [];
-
-            if ($result['success']) {
-                if ($paymentMethod === 'bank_transfer') {
-                    $this->bankTransferInstructions = $this->paymentResult['instructions'] ?? [];
-                    $this->alertType = 'info';
-                    $this->alertMessage = 'Bank transfer instructions have been generated. Please follow the steps below.';
-                    $this->showBankTransferModal = true;
-                } else {
-                    $this->alertType = 'success';
-                    $this->alertMessage = 'Payment initiated successfully.';
-
-                    if (!empty($this->paymentResult['redirect_url'])) 
-                    {
-                        $url = json_encode($this->paymentResult['redirect_url']);
-                        $this->js("window.location.href = {$url}");
-                        $this->alertMessage = 'Redirecting you to the payment gateway...';
-                    }
-                }
-            } else {
-                $this->alertType = 'error';
-                $this->alertMessage = $result['error'] ?? 'Payment processing failed.';
-            }
-        } catch (\Throwable $throwable) {
-            report($throwable);
-            $this->alertType = 'error';
-            $this->alertMessage = 'An unexpected error occurred while processing your payment. Please try again.';
-        } finally {
-            $this->loading = false;
-            $this->loadRegistrant();
-        }
     }
 
     public function closeBankTransferModal(): void
@@ -183,11 +124,28 @@ class PaymentPageV2 extends Component
             ];
 
             $gateway = $paymentService->getGateway('bank_transfer');
+
             $result = $gateway->initiatePayment($paymentData);
+
             $this->bankTransferInstructions = $result['instructions'] ?? [];
         }
 
         $this->showBankTransferModal = true;
+    }
+
+    public function initiateBankTransferPayment(): void
+    {
+        if (!$this->registrant) {
+            return;
+        }
+
+        $paymentService = new PaymentService();
+        $result = $paymentService->processPayment($this->registrant->fresh(), 'bank_transfer');
+        $this->paymentResult = $result['data'] ?? [];
+
+        if ($result['success']) {
+            $this->redirectRoute('registration.confirmation', ['confirmationCode' => $this->confirmationCode]);
+        }
     }
 
     protected function loadRegistrant(): void
@@ -210,8 +168,19 @@ class PaymentPageV2 extends Component
             return;
         }
 
+        // if the regisration is already confirmed, redirect to landing page
+        if ($registrant->regStatus === 'confirmed') 
+        {
+            abort(404, 'Registration already confirmed.');
+        //     $this->redirectRoute('programme.register.v2', ['programmeCode' => $registrant->programme->programmeCode]);
+        //     return;
+        }
+
+
         $this->registrant = $registrant;
         $this->isPaid = in_array( $registrant->paymentStatus, ['paid', 'group_member_paid', 'free'], true );
+        $this->isPaymentInitiated = $registrant->payment_initiated_at !== null ? true : false;
+        $this->isRegistrationConfirmed = $registrant->regStatus === 'confirmed' ? true : false;
 
         $this->groupMembers = $registrant->groupRegistrationID
             ? Registrant::where('groupRegistrationID', $registrant->groupRegistrationID)
@@ -247,8 +216,6 @@ class PaymentPageV2 extends Component
 
         $this->hitpayProcessing = true;
         $this->hitpayError = null;
-        $this->alertType = null;
-        $this->alertMessage = null;
 
         try {
             $paymentService = new PaymentService();

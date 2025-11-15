@@ -721,7 +721,7 @@ class ProgrammeRegisterV2 extends Component
 
     protected function generateRegCode(string $programmeCode): string
     {
-        $count = Registrant::where('programCode', $programmeCode)->count();
+        $count = Registrant::where('programCode', $programmeCode)->where('regStatus', 'confirmed')->count();
         $registrantNumber = $count + 1;
         $regCode = $programmeCode . '_' . str_pad($registrantNumber, 3, '0', STR_PAD_LEFT);
 

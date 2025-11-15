@@ -460,13 +460,11 @@ class RegistrantController extends Controller
             $paymentMethod = $this->detectPaymentMethod($request);
 
             if (!$paymentMethod) {
-                return redirect()->route('home')->with('error', 'Invalid payment callback');
+                return redirect()->route('registration.payment.v2', ['confirmationCode' => $confirmationCode])->with('error', 'Invalid payment callback');
             }
 
             $paymentService = new PaymentService();
             $result = $paymentService->verifyPaymentCallback($paymentMethod, $request->all());
-
-            dd($result); // TESTING - RETURN THE RESULT IMMEDIATELY
 
             if ($result['verified']) 
             {
@@ -484,7 +482,7 @@ class RegistrantController extends Controller
                 }
             }
 
-            return redirect()->route('home')->with('error', 'Payment verification failed');
+            return redirect()->route('registration.payment.v2', ['confirmationCode' => $registrant->confirmationCode])->with('error', 'Payment verification failed');
 
         } 
         catch (\Exception $e) 
@@ -494,7 +492,7 @@ class RegistrantController extends Controller
                 'request' => $request->all(),
             ]);
 
-            return redirect()->route('home')->with('error', 'Payment verification failed');
+            return redirect()->route('registration.payment.v2', ['confirmationCode' => $referenceNo])->with('error', 'Payment verification failed');
         }
     }
 
