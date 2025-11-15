@@ -45,11 +45,11 @@
             </div>
         @else
             <!-- Programmes Grid/Carousel -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6" wire:loading.class="opacity-50">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 md:gap-6 gap-4 md:px-0 px-6 justify-center items-center" wire:loading.class="opacity-50">
                 @foreach($programmes as $programme)
-                    <div class="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 overflow-hidden group">
+                    <div class="bg-white w-[350px] md:w-full rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 overflow-hidden group">
                         <!-- Programme Image -->
-                        <div class="relative h-48 bg-gradient-to-br from-teal-400 to-teal-600 overflow-hidden">
+                        <div class="relative h-60 md:h-54 bg-gradient-to-br from-teal-400 to-teal-600 overflow-hidden">
                             @if($programme->getFirstMediaUrl('thumbnail'))
                                 <img 
                                     src="{{ $programme->getFirstMediaUrl('thumbnail') }}" 
@@ -66,25 +66,11 @@
                                     </p>
                                 </div>
                             @endif
-                            
-                            <!-- Price Badge -->
-                            <div class="absolute top-3 right-3">
-                                @if($programme->active_promotion)
-                                    <div class="bg-red-500 text-white px-3 py-1 rounded-full text-sm font-bold shadow-lg">
-                                        {{ $programme->discounted_price }}
-                                        <span class="line-through text-white ml-1 text-sm">{{ $programme->formatted_price }}</span>
-                                    </div>
-                                @else
-                                    <div class="bg-white/90 backdrop-blur-sm text-slate-600 px-3 py-1 rounded-full text-sm font-bold shadow-lg">
-                                        {{ $programme->formatted_price }}
-                                    </div>
-                                @endif
-                            </div>
 
                             <!-- Category Badge -->
                             @if($programme->categories->isNotEmpty())
                                 <div class="absolute top-3 left-3">
-                                    <span class="bg-white/80 capitalize backdrop-blur-sm text-slate-700 px-2 py-1 rounded-full text-sm font-medium">
+                                    <span class="bg-white/80 capitalize backdrop-blur-sm text-slate-700 px-2 py-1 rounded-full text-xs font-medium">
                                         {{ $programme->categories->first()->name }}
                                     </span>
                                 </div>
@@ -94,21 +80,21 @@
                         <!-- Programme Content -->
                         <div class="p-6">
                             <!-- Title -->
-                            <h3 class="font-bold text-lg text-gray-800 mb-2 line-clamp-2 group-hover:text-teal-600 transition-colors duration-300">
+                            <h3 class="font-bold text-2xl md:text-xl text-slate-900 mb-2 line-clamp-2 group-hover:text-teal-600 transition-colors duration-300">
                                 {{ $programme->title }}
                             </h3>
 
                             <!-- Excerpt -->
                             @if($programme->excerpt)
-                                <p class="text-gray-600 text-sm mb-3 line-clamp-2">
-                                    {{ Str::words($programme->excerpt, 6, '...') }}
+                                <p class="text-slate-500 text-base mb-3 line-clamp-2">
+                                    {{ Str::words($programme->excerpt, 10, '...') }}
                                 </p>
                             @endif
 
                             <!-- Programme Details -->
                             <div class="space-y-2 mb-4">
                                 <!-- Date -->
-                                <div class="flex items-center text-sm text-gray-500">
+                                <div class="flex items-center text-base text-slate-800">
                                     <svg class="w-4 h-4 mr-2 text-teal-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3a1 1 0 011-1h6a1 1 0 011 1v4h3a1 1 0 011 1v9a1 1 0 01-1-1H5a1 1 0 01-1-1V8a1 1 0 011-1h3zM9 5h6v2H9V5zm0 4h6v8H9V9z"></path>
                                     </svg>
@@ -119,7 +105,7 @@
 
                                 <!-- Time -->
                                 @if($programme->startTime)
-                                    <div class="flex items-center text-sm text-gray-500">
+                                    <div class="flex items-center text-base text-slate-800">
                                         <svg class="w-4 h-4 mr-2 text-teal-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                         </svg>
@@ -129,14 +115,34 @@
 
                                 <!-- Location -->
                                 @if($programme->address)
-                                    <div class="flex items-center text-sm text-gray-500">
-                                        <svg class="w-4 h-4 mr-2 text-teal-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <div class="flex items-start text-base text-slate-800">
+                                        <svg class="w-4.5 h-4.5 mr-2 mt-1 text-teal-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
                                         </svg>
-                                        <span class="truncate capitalize">{{ $programme->location }}</span>
+                                        <span class="capitalize">{{ $programme->location }}</span>
                                     </div>
                                 @endif
+
+                                <div class="flex items-center text-base text-slate-800">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-2 text-teal-500">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                    </svg>
+
+                                    {{-- @if($programme->active_promotion)
+                                        <div class="flex items-center gap-1">
+                                            <span class="text-teal-800 font-bold text-lg">{{ $programme->discounted_price }}</span>
+                                            <span class="line-through text-teal-500 ml-1 text-lg">{{ $programme->formatted_price }}</span>
+                                        </div>
+                                    @else
+                                        <span class="text-teal-800 font-bold text-lg">
+                                            {{ $programme->formatted_price }}
+                                        </span>
+                                    @endif --}}
+                                    <span class="text-teal-800 font-bold text-lg">
+                                        {{ $programme->formatted_price }}
+                                    </span>
+                                </div>
                             </div>
 
                             <!-- Registration Status -->
@@ -149,7 +155,7 @@
                                         <strong>Fully Booked</strong> - Registration closed
                                     </div>
                                 @elseif($programme->limit)
-                                    <div class="flex items-center gap-1 bg-green-50 border border-green-200 text-green-700 px-3 py-2 rounded-lg text-sm">
+                                    <div class="flex items-center gap-1 bg-green-50 border border-green-600/70 text-green-700 px-3 py-2 rounded-lg text-sm">
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
                                         </svg>
