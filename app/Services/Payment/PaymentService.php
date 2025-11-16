@@ -85,6 +85,14 @@ class PaymentService
             // Update registrant with payment information
             $this->updateRegistrantPaymentInfo($registrant, $paymentMethod, $response);
 
+            Log::info('Payment processing successful', [
+                'registrant_id' => $registrant->id,
+                'confirmationCode' => $registrant->confirmationCode,
+                'payment_method' => $paymentMethod,
+                'amount' => $registrant->netAmount,
+                'response' => $response,
+            ]);
+
             return [
                 'success' => true,
                 'gateway' => $paymentMethod,
@@ -126,11 +134,28 @@ class PaymentService
             ]);
 
             $result = $gateway->verifyPayment($callbackData);
-
+            
             // If payment is verified, update registrant status
-            if ($result['verified']) {
-                $this->confirmPayment($result['reference_no'], $result);
+            if ($result['verified'] && !empty($result['reference_no'])) 
+            {
+                Log::info('Payment verification successful', [  
+                    'payment_method' => $paymentMethod,
+                    'reference_no' => $result['reference_no'],
+                    'result' => $result,
+                ]);
+
+                $confirmed = $this->confirmPayment($result['reference_no'], $result);
+
+                Log::info('Payment confirmation successful', [
+                    'payment_method' => $paymentMethod,
+                    'reference_no' => $result['reference_no'],
+                    'result' => $result,
+                    'confirmed' => $confirmed,
+                ]);
+
             }
+
+            return $result;
 
         } 
         catch (\Exception $e) 
@@ -174,17 +199,12 @@ class PaymentService
                 'regStatus' => 'confirmed',
                 'payment_completed_at' => now(),
             ];
-            // dd($updateData);
 
-            // Add bank transfer verification info if provided
-            if (isset($paymentDetails['verified_by'])) {
-                $updateData['payment_verified_by'] = $paymentDetails['verified_by'];
-            }
-
-            if (isset($paymentDetails['verified_at'])) {
-                $updateData['payment_verified_at'] = $paymentDetails['verified_at'];
-            }
-
+            $updateData['payment_verified_by'] = isset($paymentDetails['verified_by']) ? $paymentDetails['verified_by'] : $registrant->paymentOption.'_api_system';
+            $updateData['payment_verified_at'] = isset($paymentDetails['verified_at']) ? $paymentDetails['verified_at'] : now();
+            $updateData['approvedDate'] = isset($paymentDetails['approvedDate']) ? $paymentDetails['approvedDate'] : now();
+            $updateData['approvedBy'] = isset($paymentDetails['approvedBy']) ? $paymentDetails['approvedBy'] : $registrant->paymentOption.'_api_system';
+            $updateData['confirmedBy'] = isset($paymentDetails['confirmedBy']) ? $paymentDetails['confirmedBy'] : $registrant->paymentOption.'_api_system';
             // Merge payment metadata
             if (!empty($paymentDetails)) {
                 $existingMetadata = $registrant->payment_metadata ?? [];
@@ -215,6 +235,11 @@ class PaymentService
                         'payment_gateway' => $registrant->payment_gateway,
                         'payment_transaction_id' => $registrant->payment_transaction_id,
                         'payment_completed_at' => now(),
+                        'payment_verified_at' => now(),
+                        'payment_verified_by' => $registrant->paymentOption.'_api_system',
+                        'approvedDate' => now(),
+                        'approvedBy' => $registrant->paymentOption.'_api_system',
+                        'confirmedBy' => $registrant->paymentOption.'_api_system',
                         'payment_metadata' => array_merge($member->payment_metadata ?? [], [
                             'group_payment_confirmed' => true,
                             'main_registrant_ref' => $referenceNo,
@@ -251,10 +276,16 @@ class PaymentService
                 // if there is promotion increment the counter field
                 if ($mainRegistrant->promotion)
                     $mainRegistrant->promotion->increment('counter');
+
+                // create an email send job to send the email to the registrant
+                EmailSendJob::dispatch($mainRegistrant->email, 'payment_confirmed', $mainRegistrant);
+                // update the $register->emailStatus to true
+
+                $mainRegistrant->emailStatus = true;
+                $mainRegistrant->save();
             }
 
             return true;
-
         } 
         catch (\Exception $e) 
         {
@@ -287,9 +318,8 @@ class PaymentService
             'customer_phone' => $registrant->contactNumber,
             'customer_address' => $registrant->address ?? '',
             'contact_email' => $registrant->programme->contactEmail,
-            'return_url' => route('payment.callback'),
-            'cancel_url' => route('registration.payment.v2', ['confirmationCode' => $registrant->confirmationCode]),
-            'webhook_url' => env('APP_URL') . '/payment/webhook',
+            'redirect_url' => route('payment.callback'),
+            'webhook_url' => route('payment.webhook'),
         ], $additionalData);
     }
 

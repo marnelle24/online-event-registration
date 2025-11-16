@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Middleware\VerifyCsrfToken;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ProgrammeController;
@@ -36,7 +37,10 @@ Route::get('/registration/confirmation/{confirmationCode}', [RegistrantControlle
 
 // Payment routes
 Route::get('/payment/callback', [RegistrantController::class, 'paymentCallback'])->name('payment.callback');
-Route::post('/payment/webhook', [RegistrantController::class, 'paymentWebhook'])->name('payment.webhook');
+// Webhook must not be protected by CSRF, or external providers (HitPay, etc.) will get 419 responses
+Route::post('/payment/webhook', [RegistrantController::class, 'paymentWebhook'])
+    ->withoutMiddleware([VerifyCsrfToken::class])
+    ->name('payment.webhook');
 
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])->group(function () {
 

@@ -27,6 +27,8 @@ class AppServiceProvider extends ServiceProvider
         // Check for various tunnel services
         $isTunnelConfigured = $appUrl && (
             str_contains($appUrl, 'ngrok-free.app') || 
+            str_contains($appUrl, 'ngrok-free.dev') ||
+            str_contains($appUrl, 'ngrok.io') ||
             str_contains($appUrl, 'localhost.run') ||
             str_contains($appUrl, 'lhr.life')
         );
@@ -44,6 +46,8 @@ class AppServiceProvider extends ServiceProvider
             $isRequestFromTunnel = $appUrlHost && (
                 $requestHost === $appUrlHost ||
                 str_contains($requestHost, 'ngrok-free.app') ||
+                str_contains($requestHost, 'ngrok-free.dev') ||
+                str_contains($requestHost, 'ngrok.io') ||
                 str_contains($requestHost, 'localhost.run') ||
                 str_contains($requestHost, 'lhr.life')
             );

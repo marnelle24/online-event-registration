@@ -413,12 +413,16 @@ class RegistrantController extends Controller
                 ], 400);
             }
 
+            // check if the payment
+
             $paymentService = new PaymentService();
             $result = $paymentService->processPayment(
                 $registrant, 
                 $request->payment_method,
                 $request->only(['card_token', 'payment_token']) // Additional data for specific gateways
             );
+
+            dd($result);
 
             if ($result['success']) {
                 return response()->json([
@@ -454,35 +458,104 @@ class RegistrantController extends Controller
      */
     public function paymentCallback(Request $request)
     {
+        // Try to get a reference number / confirmation code from the callback payload
+        // For HitPay, this is typically "reference_number"
+        $referenceNo = $request->get('reference_number')
+            ?? $request->get('reference')
+            ?? $request->get('referenceNo')
+            ?? $request->get('confirmationCode');
+
         try 
         {
             // Determine payment method from request
             $paymentMethod = $this->detectPaymentMethod($request);
 
-            if (!$paymentMethod) {
-                return redirect()->route('registration.payment.v2', ['confirmationCode' => $confirmationCode])->with('error', 'Invalid payment callback');
+            $paymentService = new PaymentService();
+
+            // Special handling for HitPay browser callback:
+            // - We treat this as a UX redirect only
+            // - Actual secure verification is done via the webhook (with HMAC)
+            if ($paymentMethod === 'hitpay') {
+                $status = $request->get('status');
+
+                // HitPay typically uses "completed" or "success" for successful payments
+                if (in_array($status, ['completed', 'success'])) 
+                {
+                    if ($referenceNo) 
+                    {
+                        $registrant = Registrant::where('payment_transaction_id', $referenceNo)
+                            ->orWhere('confirmationCode', $referenceNo)
+                            ->first();
+
+                        if ($registrant) 
+                        {
+                            // At this point the webhook should (or will) confirm the payment.
+                            // We simply bring the user to the confirmation page.
+                            return redirect()
+                                ->route('registration.confirmation', ['confirmationCode' => $registrant->confirmationCode])
+                                ->with('success', 'Payment completed. Your registration will be confirmed shortly.');
+                        }
+                    }
+                }
+
+                // If status is not successful or registrant not found, send back to payment page
+                if ($referenceNo) {
+                    return redirect()
+                        ->route('registration.payment.v2', ['confirmationCode' => $referenceNo])
+                        ->with('error', 'Payment was not completed or could not be verified. Please try again.');
+                }
+
+                return redirect()
+                    ->route('frontpage')
+                    ->with('error', 'Payment was not completed or could not be verified.');
             }
 
-            $paymentService = new PaymentService();
+            if (!$paymentMethod) {
+                // Fallback: if we have a reference/confirmation code, send user back to payment page
+                if ($referenceNo) {
+                    return redirect()
+                        ->route('registration.payment.v2', ['confirmationCode' => $referenceNo])
+                        ->with('error', 'Invalid payment callback');
+                }
+
+                // If we have no reference at all, send to home
+                return redirect()
+                    ->route('frontpage')
+                    ->with('error', 'Invalid payment callback');
+            }
+
+            // Default flow for other gateways (if used): verify via PaymentService
             $result = $paymentService->verifyPaymentCallback($paymentMethod, $request->all());
 
             if ($result['verified']) 
             {
-                $referenceNo = $result['reference_no'];
+                $referenceNo = $result['reference_no'] ?? $referenceNo;
 
-                $registrant = Registrant::where('paymentReferenceNo', $referenceNo)
-                    ->orWhere('confirmationCode', $referenceNo)
-                    ->first();
+                if ($referenceNo) {
+                    $registrant = Registrant::where('paymentReferenceNo', $referenceNo)
+                        ->orWhere('confirmationCode', $referenceNo)
+                        ->first();
 
-                if ($registrant) 
-                {
-                    return redirect()
-                        ->route('registration.confirmation', ['confirmationCode' => $registrant->confirmationCode])
-                        ->with('success', 'Payment successful! Your registration is confirmed.');
+                    if ($registrant) 
+                    {
+                        return redirect()
+                            ->route('registration.confirmation', ['confirmationCode' => $registrant->confirmationCode])
+                            ->with('success', 'Payment successful! Your registration is confirmed.');
+                    }
                 }
             }
 
-            return redirect()->route('registration.payment.v2', ['confirmationCode' => $registrant->confirmationCode])->with('error', 'Payment verification failed');
+            // If verification failed or registrant not found, send back to payment page using reference
+            if ($referenceNo) {
+                return redirect()
+                    ->route('registration.payment.v2', ['confirmationCode' => $referenceNo])
+                    ->with('error', 'Payment verification failed');
+            }
+
+            // Final fallback
+            return redirect()
+                ->route('frontpage')
+                ->with('error', 'Payment verification failed');
 
         } 
         catch (\Exception $e) 
@@ -492,7 +565,16 @@ class RegistrantController extends Controller
                 'request' => $request->all(),
             ]);
 
-            return redirect()->route('registration.payment.v2', ['confirmationCode' => $referenceNo])->with('error', 'Payment verification failed');
+            // Use the best reference we have to send user back to payment page
+            if ($referenceNo) {
+                return redirect()
+                    ->route('registration.payment.v2', ['confirmationCode' => $referenceNo])
+                    ->with('error', 'Payment verification failed');
+            }
+
+            return redirect()
+                ->route('frontpage')
+                ->with('error', 'Payment verification failed');
         }
     }
 

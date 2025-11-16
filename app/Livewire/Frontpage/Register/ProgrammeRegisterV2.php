@@ -91,15 +91,15 @@ class ProgrammeRegisterV2 extends Component
             'promocodeId' => null,
             'registrationType' => $user ? 'user' : 'guest',
             'title' => $user ? $user->title : 'Mr',
-            'firstName' => $user->firstname ?? 'Marnelle',
-            'lastName' => $user->lastname ?? 'Apat',
-            'nric' => '1234',
-            'email' => $user->email ?? 'marnelle.apat@biblesociety.sg',
+            'firstName' => $user->firstname ?? '',
+            'lastName' => $user->lastname ?? '',
+            'nric' => '',
+            'email' => $user->email ?? '',
             'country' => '+65',
-            'contactNumber' => '9177724780',
-            'address' => 'Arcenas Street',
-            'city' => 'Singapore',
-            'postalCode' => '059100',
+            'contactNumber' => '',
+            'address' => '',
+            'city' => '',
+            'postalCode' => '',
         ];
 
         $this->stepOrder = $this->buildStepOrder();
@@ -198,15 +198,15 @@ class ProgrammeRegisterV2 extends Component
 
         $this->groupMembers[] = [
             'title' => 'Mr',
-            'firstName' => 'member2-marnelle',
-            'lastName' => 'member2-Apat',
-            'nric' => '1234',
-            'email' => 'marnelle.apat@biblesociety.sg',
-            'contactNumber' => '9177724780',
+            'firstName' => '',
+            'lastName' => '',
+            'nric' => '',
+            'email' => '',
+            'contactNumber' => '',
             'country' => '+65',
-            'address' => 'Arcenas Street-member',
-            'city' => 'Singapore',
-            'postalCode' => '059100-member',
+            'address' => '',
+            'city' => '',
+            'postalCode' => '',
             'showDetails' => true,
         ];
     }

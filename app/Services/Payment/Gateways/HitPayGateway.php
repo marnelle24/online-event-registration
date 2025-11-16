@@ -30,6 +30,7 @@ class HitPayGateway implements PaymentGatewayInterface
      */
     public function initiatePayment(array $paymentData): array
     {
+
         try 
         {
             $response = Http::withHeaders([
@@ -43,7 +44,7 @@ class HitPayGateway implements PaymentGatewayInterface
                 'currency' => $paymentData['currency'],
                 'purpose' => $paymentData['description'],
                 'reference_number' => $paymentData['confirmationCode'],
-                'redirect_url' => $paymentData['return_url'],
+                'redirect_url' => $paymentData['redirect_url'],
                 'webhook' => $paymentData['webhook_url'],
                 'name' => $paymentData['customer_name'],
                 'phone' => $paymentData['customer_phone'],
@@ -54,7 +55,7 @@ class HitPayGateway implements PaymentGatewayInterface
             {
                 $data = $response->json();
 
-                return [
+                $paymentResponse = [
                     'status' => 'initiated',
                     'data' => $data,
                     'reference_no' => $data['reference_number'] ?? $paymentData['confirmationCode'],
@@ -63,6 +64,12 @@ class HitPayGateway implements PaymentGatewayInterface
                     'redirect_url' => $data['redirect_url'] ?? null,
                     'expires_at' => $data['expiry_date'] ?? null,
                 ];
+
+                Log::info('HitPay payment initialization successful', [
+                    'data' => $paymentResponse,
+                ]);
+
+                return $paymentResponse;
             }
 
             throw new \Exception('HitPay payment initialization failed: ' . $response->body());
@@ -110,7 +117,15 @@ class HitPayGateway implements PaymentGatewayInterface
             $calculatedHmac = hash_hmac('sha256', $dataString, config('services.hitpay.salt'));
 
             // Verify HMAC
-            if (!hash_equals($calculatedHmac, $hmacSignature)) {
+            if (!hash_equals($calculatedHmac, $hmacSignature)) 
+            {
+                Log::error('Invalid HMAC signature', [
+                    'calculated_hmac' => $calculatedHmac,
+                    'hmac_signature' => $hmacSignature,
+                    'data_to_verify' => $dataToVerify,
+                    'data_string' => $dataString,
+                ]);
+
                 throw new \Exception('Invalid HMAC signature');
             }
 
@@ -118,6 +133,16 @@ class HitPayGateway implements PaymentGatewayInterface
             $status = $callbackData['status'] ?? '';
             
             $verified = in_array($status, ['completed', 'success']);
+
+            Log::info('HitPay payment verification successful', [
+                'verified' => $verified,
+                'status' => $status,
+                'reference_no' => $callbackData['reference_number'] ?? null,
+                'payment_id' => $callbackData['payment_id'] ?? null,
+                'amount' => $callbackData['amount'] ?? null,
+                'currency' => $callbackData['currency'] ?? null,
+                'raw_data' => $callbackData,
+            ]);
 
             return [
                 'verified' => $verified,
