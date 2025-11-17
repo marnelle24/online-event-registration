@@ -88,6 +88,9 @@ class HitPayGateway implements PaymentGatewayInterface
 
     /**
      * Verify HitPay payment callback
+     * 
+     * NOTE: HMAC verification is set aside for future update.
+     * Currently using API verification by fetching payment request status.
      *
      * @param array $callbackData
      * @return array
@@ -96,62 +99,44 @@ class HitPayGateway implements PaymentGatewayInterface
     {
         try 
         {
-            // HitPay sends HMAC signature for verification
-            $hmacSignature = $callbackData['hmac'] ?? null;
+            Log::info('HitPay webhook verification started', [
+                'callback_data' => $callbackData,
+            ]);
 
-            if (!$hmacSignature) {
-                throw new \Exception('HMAC signature not found in callback');
+            // Extract payment_request_id from webhook
+            $paymentRequestId = $callbackData['payment_request_id'] ?? null;
+
+            if (!$paymentRequestId) {
+                throw new \Exception('payment_request_id not found in webhook callback');
             }
 
-            // Remove hmac from data for verification
-            $dataToVerify = $callbackData;
-            unset($dataToVerify['hmac']);
+            // Get payment request from HitPay API to verify payment status
+            $paymentRequest = $this->getPaymentRequestById($paymentRequestId);
 
-            // Sort data alphabetically by key
-            ksort($dataToVerify);
-
-            // Create data string
-            $dataString = implode('', array_values($dataToVerify));
-
-            // Calculate HMAC
-            $calculatedHmac = hash_hmac('sha256', $dataString, config('services.hitpay.salt'));
-
-            // Verify HMAC
-            if (!hash_equals($calculatedHmac, $hmacSignature)) 
-            {
-                Log::error('Invalid HMAC signature', [
-                    'calculated_hmac' => $calculatedHmac,
-                    'hmac_signature' => $hmacSignature,
-                    'data_to_verify' => $dataToVerify,
-                    'data_string' => $dataString,
-                ]);
-
-                throw new \Exception('Invalid HMAC signature');
-            }
-
-            // Check payment status
-            $status = $callbackData['status'] ?? '';
-            
+            // Check payment status from API response
+            $status = $paymentRequest['status'] ?? '';
             $verified = in_array($status, ['completed', 'success']);
 
-            Log::info('HitPay payment verification successful', [
+            Log::info('HitPay payment verification via API', [
                 'verified' => $verified,
                 'status' => $status,
-                'reference_no' => $callbackData['reference_number'] ?? null,
-                'payment_id' => $callbackData['payment_id'] ?? null,
-                'amount' => $callbackData['amount'] ?? null,
-                'currency' => $callbackData['currency'] ?? null,
-                'raw_data' => $callbackData,
+                'payment_request_id' => $paymentRequestId,
+                'reference_no' => $paymentRequest['reference_number'] ?? $callbackData['reference_number'] ?? null,
+                'payment_id' => $paymentRequest['id'] ?? $callbackData['payment_id'] ?? null,
+                'amount' => $paymentRequest['amount'] ?? $callbackData['amount'] ?? null,
+                'currency' => $paymentRequest['currency'] ?? $callbackData['currency'] ?? null,
             ]);
 
             return [
                 'verified' => $verified,
                 'status' => $status,
-                'reference_no' => $callbackData['reference_number'] ?? null,
-                'payment_id' => $callbackData['payment_id'] ?? null,
-                'amount' => $callbackData['amount'] ?? null,
-                'currency' => $callbackData['currency'] ?? null,
-                'raw_data' => $callbackData,
+                'reference_no' => $paymentRequest['reference_number'] ?? $callbackData['reference_number'] ?? null,
+                'payment_id' => $paymentRequest['id'] ?? $callbackData['payment_id'] ?? null,
+                'payment_request_id' => $paymentRequestId,
+                'amount' => $paymentRequest['amount'] ?? $callbackData['amount'] ?? null,
+                'currency' => $paymentRequest['currency'] ?? $callbackData['currency'] ?? null,
+                'raw_data' => $paymentRequest,
+                'webhook_data' => $callbackData,
             ];
 
         }
@@ -160,12 +145,57 @@ class HitPayGateway implements PaymentGatewayInterface
             Log::error('HitPay payment verification error', [
                 'error' => $e->getMessage(),
                 'callback_data' => $callbackData,
+                'trace' => $e->getTraceAsString(),
             ]);
 
             return [
                 'verified' => false,
                 'error' => $e->getMessage(),
             ];
+        }
+    }
+
+    /**
+     * Get payment request by payment_request_id from HitPay API
+     *
+     * @param string $paymentRequestId
+     * @return array
+     */
+    public function getPaymentRequestById(string $paymentRequestId): array
+    {
+        $response = null;
+        
+        try {
+            Log::info('Fetching payment request from HitPay API', [
+                'payment_request_id' => $paymentRequestId,
+            ]);
+
+            $response = Http::withHeaders([
+                'X-BUSINESS-API-KEY' => $this->apiKey,
+            ])->get("{$this->apiUrl}/payment-requests/{$paymentRequestId}");
+
+            if ($response->successful()) {
+                $data = $response->json();
+                
+                Log::info('Payment request retrieved successfully', [
+                    'payment_request_id' => $paymentRequestId,
+                    'status' => $data['status'] ?? 'unknown',
+                    'reference_number' => $data['reference_number'] ?? null,
+                ]);
+
+                return $data;
+            }
+
+            throw new \Exception('Failed to retrieve payment request: ' . $response->body());
+
+        } catch (\Exception $e) {
+            Log::error('HitPay get payment request error', [
+                'error' => $e->getMessage(),
+                'payment_request_id' => $paymentRequestId,
+                'response_body' => $response ? $response->body() : null,
+            ]);
+
+            throw $e;
         }
     }
 

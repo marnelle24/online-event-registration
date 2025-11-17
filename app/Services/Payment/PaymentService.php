@@ -9,6 +9,8 @@ use App\Services\Payment\Gateways\HitPayGateway;
 use App\Services\Payment\Gateways\PayPalGateway;
 use App\Services\Payment\Gateways\StripeGateway;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\RegistrationConfirmedMail;
 
 class PaymentService
 {
@@ -205,14 +207,34 @@ class PaymentService
             $updateData['approvedDate'] = isset($paymentDetails['approvedDate']) ? $paymentDetails['approvedDate'] : now();
             $updateData['approvedBy'] = isset($paymentDetails['approvedBy']) ? $paymentDetails['approvedBy'] : $registrant->paymentOption.'_api_system';
             $updateData['confirmedBy'] = isset($paymentDetails['confirmedBy']) ? $paymentDetails['confirmedBy'] : $registrant->paymentOption.'_api_system';
-            // Merge payment metadata
-            if (!empty($paymentDetails)) {
-                $existingMetadata = $registrant->payment_metadata ?? [];
-                $updateData['payment_metadata'] = array_merge($existingMetadata, [
-                    'confirmation_details' => $paymentDetails,
-                    'confirmed_at' => now()->toIso8601String(),
-                ]);
+            
+            // Merge payment metadata with payment status and details
+            $existingMetadata = $registrant->payment_metadata ?? [];
+            $metadataUpdate = [
+                'confirmed_at' => now()->toIso8601String(),
+            ];
+            
+            // Store payment status from verification result
+            if (isset($paymentDetails['status'])) {
+                $metadataUpdate['payment_status'] = $paymentDetails['status'];
             }
+            
+            // Store payment request ID if available
+            if (isset($paymentDetails['payment_request_id'])) {
+                $metadataUpdate['payment_request_id'] = $paymentDetails['payment_request_id'];
+            }
+            
+            // Store payment ID if available
+            if (isset($paymentDetails['payment_id'])) {
+                $metadataUpdate['payment_id'] = $paymentDetails['payment_id'];
+            }
+            
+            // Store all confirmation details
+            if (!empty($paymentDetails)) {
+                $metadataUpdate['confirmation_details'] = $paymentDetails;
+            }
+            
+            $updateData['payment_metadata'] = array_merge($existingMetadata, $metadataUpdate);
 
             // Update registrant payment status
             $mainRegistrant = $registrant->update($updateData);
@@ -270,19 +292,38 @@ class PaymentService
             if ($mainRegistrant) 
             {
                 // if there is promocode, update and increment the usedCount field
-                if ($mainRegistrant->promocode) 
-                    $mainRegistrant->promocode->increment('usedCount');
+                if ($registrant->promocode) 
+                    $registrant->promocode->increment('usedCount');
 
                 // if there is promotion increment the counter field
-                if ($mainRegistrant->promotion)
-                    $mainRegistrant->promotion->increment('counter');
+                if ($registrant->promotion)
+                    $registrant->promotion->increment('counter');
 
-                // create an email send job to send the email to the registrant
-                EmailSendJob::dispatch($mainRegistrant->email, 'payment_confirmed', $mainRegistrant);
-                // update the $register->emailStatus to true
+                // Send confirmation email
+                try {
+                    // Reload registrant with all relationships for email
+                    $registrantWithRelations = Registrant::with(['programme.ministry', 'promocode', 'promotion'])
+                        ->find($registrant->id);
 
-                $mainRegistrant->emailStatus = true;
-                $mainRegistrant->save();
+                    if ($registrantWithRelations) {
+                        Mail::to($registrantWithRelations->email)->send(new RegistrationConfirmedMail($registrantWithRelations));
+                        
+                        // Update email status
+                        $registrantWithRelations->emailStatus = true;
+                        $registrantWithRelations->save();
+
+                        Log::info('Registration confirmation email sent', [
+                            'registrant_id' => $registrant->id,
+                            'email' => $registrantWithRelations->email,
+                        ]);
+                    }
+                } catch (\Exception $e) {
+                    // Log email error but don't fail the payment confirmation
+                    Log::error('Failed to send registration confirmation email', [
+                        'registrant_id' => $registrant->id,
+                        'error' => $e->getMessage(),
+                    ]);
+                }
             }
 
             return true;

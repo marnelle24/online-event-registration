@@ -587,31 +587,59 @@ class RegistrantController extends Controller
     public function paymentWebhook(Request $request)
     {
         try {
-            // Determine payment method from request
-            $paymentMethod = $this->detectPaymentMethod($request);
-            
+            Log::info('Webhook received', [
+                'headers' => $request->headers->all(),
+                'payload' => $request->all(),
+            ]);
+
+            /**
+             * Determine payment method from request
+             * Temporarily, Hard-code the method type
+             * */ 
+
+            #$paymentMethod = $this->detectPaymentMethod($request);
+            $paymentMethod = 'hitpay';
+
             if (!$paymentMethod) {
-                return response()->json(['error' => 'Invalid webhook'], 400);
+                Log::warning('Could not determine payment method from webhook');
+                return response()->json(['error' => 'Invalid webhook - unknown payment method'], 400);
             }
 
             $paymentService = new PaymentService();
             $result = $paymentService->verifyPaymentCallback($paymentMethod, $request->all());
 
-            Log::info('Payment webhook received', [
+            Log::info('Webhook verification complete', [
                 'payment_method' => $paymentMethod,
                 'verified' => $result['verified'] ?? false,
-                'result' => $result,
+                'status' => $result['status'] ?? null,
+                'reference_no' => $result['reference_no'] ?? null,
+                'payment_request_id' => $result['payment_request_id'] ?? null,
             ]);
 
-            return response()->json(['success' => true]);
+            // Return appropriate response based on verification result
+            if ($result['verified']) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Webhook processed successfully',
+                ], 200);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'error' => $result['error'] ?? 'Payment verification failed',
+                ], 400);
+            }
 
         } catch (\Exception $e) {
             Log::error('Payment webhook error', [
                 'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
                 'request' => $request->all(),
             ]);
 
-            return response()->json(['error' => 'Webhook processing failed'], 500);
+            return response()->json([
+                'success' => false,
+                'error' => 'Webhook processing failed: ' . $e->getMessage(),
+            ], 500);
         }
     }
 
@@ -705,8 +733,14 @@ class RegistrantController extends Controller
     protected function detectPaymentMethod(Request $request): ?string
     {
         // Check for HitPay
-        if ($request->has('hmac') || $request->has('reference')) {
-            return 'hitpay';
+        $hitpayPayload = $request->get('payload') ?? $request->get('data');
+
+        if ($hitpayPayload) 
+        {
+            $hitpayPayload = json_decode($hitpayPayload, true);
+            if ($hitpayPayload['hmac']) {
+                return 'hitpay';
+            }
         }
 
         // Check for Stripe

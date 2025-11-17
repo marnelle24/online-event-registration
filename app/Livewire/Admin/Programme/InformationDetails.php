@@ -4,6 +4,7 @@ namespace App\Livewire\Admin\Programme;
 
 use Livewire\Component;
 use App\Models\Programme;
+use Masmerise\Toaster\Toaster;
 
 class InformationDetails extends Component
 {
@@ -31,6 +32,30 @@ class InformationDetails extends Component
     {
         $this->showEditDescription = !$this->showEditDescription;
         $this->description = $this->programme->description;
+    }
+
+    public function updateExcerpt()
+    {
+        $this->programme->update([
+            'excerpt' => $this->excerpt
+        ]);
+        
+        $this->showEdit = false;
+        $this->programme->refresh();
+        
+        Toaster::success('Excerpt updated successfully.');
+    }
+
+    public function updateDescription()
+    {
+        $this->programme->update([
+            'description' => $this->description
+        ]);
+        
+        $this->showEditDescription = false;
+        $this->programme->refresh();
+        
+        Toaster::success('Description updated successfully.');
     }
 
     public function updatedProgramme($value)

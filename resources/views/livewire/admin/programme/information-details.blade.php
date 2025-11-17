@@ -26,7 +26,7 @@
                 disabled
                 placeholder="Enter the excerpt for this programme"
                 name="excerpt"
-                class="disabled:opacity-50 disabled:cursor-not-allowed text-slate-700 disabled:bg-slate-200 w-full min-h-[100px] focus:ring-0 flex items-center rounded-md bg-slate-100 border border-solid border-neutral-400/70 px-3 py-2 text-base font-normal text-surface">{{old('excerpt', 'This is the excerpt for this programme')}}
+                class="disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-slate-200 focus:ring-0 rounded-md bg-slate-100 border border-solid px-3 py-2 flex items-center w-full min-h-[100px] border-neutral-400/70 text-base font-normal text-surface">{{old('excerpt', 'This is the excerpt for this programme')}}
             </textarea>
         @else
             @php($excerptLength = strlen($excerpt ?? ''))
@@ -37,7 +37,7 @@
                 placeholder="Excerpt"
                 name="excerpt"
                 maxlength="300"
-                class="{{$excerptClass}} w-full min-h-[100px] focus:ring-0 flex items-center rounded-md bg-slate-50 border border-solid px-3 py-2 text-base font-normal text-surface">{{old('excerpt', 'This is the excerpt for this programme')}}
+                class="{{$excerptClass}} w-full min-h-[100px] disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-slate-200 focus:ring-0 rounded-md bg-slate-100 border border-solid border-neutral-400/70 focus:border-neutral-400 px-3 py-2 flex items-center text-base font-normal text-surface">{{old('excerpt', 'This is the excerpt for this programme')}}
             </textarea>
             <em class="text-slate-500 italic pt-2 text-sm flex justify-between">
                 <span class="text-slate-500">
@@ -52,7 +52,7 @@
             </em>
             <div class="flex gap-3 items-center justify-end">
                 <svg 
-                    wire:click="updateExcerpt('excerpt', '{{$excerpt}}'), toogleShowEdit" 
+                    wire:click="updateExcerpt" 
                     wire:confirm="Are you sure to make this changes?"
                     xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 cursor-pointer hover:scale-110 duration-300 stroke-success">
                     <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
@@ -89,7 +89,7 @@
                 placeholder="Description"
                 disabled
                 name="description"
-                class="ck-content w-full min-h-[100px] disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-slate-200 focus:ring-0 flex items-center rounded-md bg-slate-100 border border-solid px-3 py-2 text-base font-normal text-surface">{{old('description', 'This is the description for this programme')}}
+                class="ck-content w-full min-h-[100px] disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-slate-200 focus:ring-0 rounded-md bg-slate-100 border border-solid px-3 py-2 flex items-center text-base font-normal text-surface">{{old('description', 'This is the description for this programme')}}
             </textarea>
         @else
             <textarea
@@ -97,12 +97,12 @@
                 rows="6"
                 placeholder="Description"
                 name="description"
-                class="ck-content w-full min-h-[100px] disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-slate-200 focus:ring-0 flex items-center rounded-md bg-slate-100 border border-solid border-neutral-400/70 focus:border-neutral-400 px-3 py-2 text-base font-normal text-surface">{{old('description', 'This is the description for this programme')}}
+                class="ck-content w-full min-h-[100px] disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-slate-200 focus:ring-0 rounded-md bg-slate-100 border border-solid border-neutral-400/70 focus:border-neutral-400 px-3 py-2 flex items-center text-base font-normal text-surface">{{old('description', 'This is the description for this programme')}}
             </textarea>
             @if($showEditDescription)
                 <div class="flex gap-3 items-center justify-end mt-2">
                     <svg 
-                        wire:click="updateDescription('description', '{{$description}}'), toogleShowEditDescription" 
+                        wire:click="updateDescription" 
                         wire:confirm="Are you sure to make this changes?"
                         xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 cursor-pointer hover:scale-110 duration-300 stroke-success">
                         <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
