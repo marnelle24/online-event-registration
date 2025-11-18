@@ -10,6 +10,14 @@
     <!-- Categories Section -->
     <div class="mb-8">
         <div class="flex flex-wrap justify-center gap-2">
+            <button  wire:click="selectCategory('all')"
+                class="capitalize group px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ease-in-out transform hover:scale-105
+                    {{ $selectedCategoryId == 'all' 
+                        ? 'bg-teal-600 text-white shadow-lg' 
+                        : 'bg-white text-slate-600 shadow border border-slate-600 hover:bg-teal-100/70 hover:border-slate-500' }}"
+            >
+                All
+            </button>
             @foreach($categories as $category)
                 <button 
                     wire:click="selectCategory({{ $category->id }})"
@@ -45,17 +53,17 @@
             </div>
         @else
             <!-- Programmes Grid/Carousel -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 md:gap-6 gap-4 md:px-0 px-6 justify-center items-center" wire:loading.class="opacity-50">
+            <div class="grid grid-cols-1 md:grid-cols-3 md:gap-6 gap-4 md:px-0 px-6 justify-center items-start">
                 @foreach($programmes as $programme)
-                    <div class="bg-white w-[350px] md:w-full rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 overflow-hidden group">
+                    <div class="bg-white w-[350px] md:w-full rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5 group">
                         <!-- Programme Image -->
-                        <div class="relative h-60 md:h-54 bg-gradient-to-br from-teal-400 to-teal-600 overflow-hidden">
+                        <div class="relative h-60 md:h-54 bg-gradient-to-br rounded-t-xl from-teal-400 to-teal-600 overflow-hidden">
                             @if($programme->getFirstMediaUrl('programme'))
                                 <img 
                                     src="{{ $programme->getFirstMediaUrl('programme') }}" 
                                     alt="{{ $programme->title }}"
-                                    class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                                >
+                                    class="w-full h-full object-cover"
+                                />
                             @else
                                 <div class="flex items-center justify-center h-full text-white">
                                     <p class="text-6xl font-normal rounded-full text-white/60 drop-shadow text-center tracking-widest">
@@ -66,7 +74,7 @@
 
                             <!-- Category Badge -->
                             @if($programme->categories->isNotEmpty())
-                                <div class="absolute top-3 left-3">
+                                <div class="absolute bottom-3 left-3">
                                     <span class="bg-white/80 capitalize backdrop-blur-sm text-slate-700 px-2 py-1 rounded-full text-xs font-medium">
                                         {{ $programme->categories->first()->name }}
                                     </span>
@@ -78,7 +86,7 @@
                         <div class="p-6">
                             <!-- Title -->
                             <h3 class="font-bold text-2xl md:text-xl text-slate-900 mb-2 line-clamp-2 group-hover:text-teal-600 transition-colors duration-300">
-                                {{ $programme->title }}
+                                {{ Str::words($programme->title, 4, '...') }}
                             </h3>
 
                             <!-- Excerpt -->
@@ -187,7 +195,7 @@
         @endif
 
         <!-- Loading Overlay -->
-        <div wire:loading class="absolute inset-0 bg-white/75 flex items-center justify-center z-10">
+        <div wire:loading class="flex items-center justify-center">
             <div class="flex items-center space-x-3">
                 <svg class="animate-spin h-8 w-8 text-teal-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>

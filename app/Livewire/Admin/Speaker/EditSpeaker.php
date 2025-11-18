@@ -131,24 +131,38 @@ class EditSpeaker extends Component
             ]);
 
             // Handle thumbnail upload
-            if ($this->thumbnail) {
+            if ($this->thumbnail) 
+            {
+                \Log::info('Uploading thumbnail...');
                 // Clear existing media first
                 $this->speaker->clearMediaCollection('speaker');
+                \Log::info('Thumbnail cleared successfully!');
                 // Add new media
                 $this->speaker->addMedia($this->thumbnail->getRealPath())
                     ->usingFileName($this->thumbnail->getClientOriginalName())
                     ->toMediaCollection('speaker');
+                \Log::info('Thumbnail uploaded successfully!');
+            } 
+            else 
+            {
+                \Log::info('No thumbnail uploaded!');
             }
 
             sleep(1);
 
-            if ($updated) {
+            if ($updated) 
+            {
                 Toaster::success('Speaker updated successfully!');
                 $this->show = false;
                 $this->dispatch('updatedSpeaker')->to('admin.speaker.all-speaker');
-            } else {
+                \Log::info('Speaker updated successfully!');
+            } 
+            else 
+            {
                 Toaster::error('Error updating speaker!');
+                \Log::error('Error updating speaker!');
             }
+            
         } catch (\Exception $e) {
             \Log::error('Error updating speaker: ' . $e->getMessage());
             Toaster::error('Error updating speaker: ' . $e->getMessage());

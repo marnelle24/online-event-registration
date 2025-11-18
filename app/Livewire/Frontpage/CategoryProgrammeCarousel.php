@@ -32,20 +32,22 @@ class CategoryProgrammeCarousel extends Component
         }
     }
 
-    public function selectCategory($categoryId)
+    public function selectCategory($categoryId = 'all')
     {
         $this->selectedCategoryId = $categoryId;
-        $this->loadProgrammes();
+        
+        if ($categoryId == 'all') {
+            $this->loadProgrammes();
+        } else {
+            $this->updateProgrammesList($categoryId);
+        }
     }
 
     public function loadProgrammes()
     {
         if ($this->selectedCategoryId) 
         {
-            $this->programmes = Programme::whereHas('categories', function ($query) {
-                $query->where('categories.id', $this->selectedCategoryId);
-            })
-            ->with(['categories', 'speakers', 'ministry'])
+            $this->programmes = Programme::with(['categories', 'speakers', 'ministry'])
             ->where('publishable', true)
             ->where('searchable', true)
             ->where('status', 'published')
@@ -57,6 +59,21 @@ class CategoryProgrammeCarousel extends Component
         {
             $this->programmes = collect();
         }
+    }
+
+    // update the programmes list based on the selected category id
+    public function updateProgrammesList($categoryId)
+    {
+        // find the  programmes from the list of programmes loaded in $this->programmes where the category is based on the selected category id
+        $this->programmes = Programme::whereHas('categories', function ($query) use ($categoryId) {
+            $query->where('categories.id', $categoryId);
+        })->with(['categories', 'speakers', 'ministry'])
+            ->where('publishable', true)
+            ->where('searchable', true)
+            ->where('status', 'published')
+            ->orderBy('startDate', 'asc')
+            ->limit(6)
+            ->get();
     }
 
     public function render()

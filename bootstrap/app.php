@@ -12,6 +12,9 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
+        // Add TrustNgrokProxies middleware early for signed URL validation
+        $middleware->prepend(\App\Http\Middleware\TrustNgrokProxies::class);
+        
         $middleware->alias([
             'admin' => \App\Http\Middleware\AdminMiddleware::class,
             'user' => \App\Http\Middleware\UserMiddleware::class,

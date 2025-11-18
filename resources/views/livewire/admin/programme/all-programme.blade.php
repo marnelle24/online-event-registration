@@ -129,8 +129,8 @@
                                             </div>
                                         @endif
                                         <div class="rounded-lg">
-                                            @if($programme->getFirstMediaUrl('thumbnail'))
-                                                <img src="{{ $programme->getFirstMediaUrl('thumbnail') }}" alt="{{ $programme->title }}" class="w-16 h-16 rounded-lg object-cover border border-slate-300">
+                                            @if($programme->getFirstMediaUrl('programme'))
+                                                <img src="{{ $programme->getFirstMediaUrl('programme') }}" alt="{{ $programme->title }}" class="w-16 h-16 rounded-lg object-cover border border-slate-300">
                                             @else
                                                 <div class="w-16 h-16 rounded-lg bg-slate-200 border border-slate-300 flex items-center justify-center">
                                                     <span class="text-sm font-medium text-slate-600">

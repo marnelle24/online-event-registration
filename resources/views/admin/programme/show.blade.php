@@ -1,8 +1,15 @@
 @section('title', $programme->title)
 <x-app-layout>
     <div class="flex md:flex-row flex-col gap-4">
-        @dump($programme->getFirstMediaUrl('thumbnail'))
-        <img src="{{$programme->thumbnail}}" alt="{{$programme->title}}" class="lg:rounded-lg object-cover bg-center rounded-tl-md rounded-tr-md lg:w-60 w-full h-48 border border-zinc-400 shadow-md" />
+        @if($programme->getFirstMediaUrl('programme'))
+            <img src="{{$programme->getFirstMediaUrl('programme') }}" alt="{{$programme->title}}" class="lg:rounded-lg object-cover bg-center rounded-tl-md rounded-tr-md lg:w-60 w-full h-48 border border-zinc-400 shadow-md" />
+        @else
+            <div class="lg:rounded-lg object-cover bg-center rounded-tl-md rounded-tr-md lg:w-60 w-full h-48 bg-slate-200 border border-zinc-400 shadow-md flex items-center justify-center">
+                <span class="text-4xl tracking-widest font-medium text-slate-400">
+                    {{ \App\Helpers\Helper::getInitials($programme->title) }}
+                </span>
+            </div>
+        @endif
         <div>
             <h1 class="text-2xl text-slate-600 font-bold">{{$programme->title}}</h1>
             <table class="my-4">

@@ -204,25 +204,37 @@ class AddProgramme extends Component
             ]);
 
             // Handle thumbnail upload
-            if ($this->thumbnail) {
+            if ($this->thumbnail) 
+            {
+                \Log::info('Uploading thumbnail...');
                 $programme->addMedia($this->thumbnail->getRealPath())
                     ->usingFileName($this->thumbnail->getClientOriginalName())
                     ->toMediaCollection('programme');
+                \Log::info('Thumbnail uploaded successfully!');
+            } 
+            else 
+            {
+                \Log::info('No thumbnail uploaded!');
             }
 
             sleep(1);
 
-            if ($programme) {
+            if ($programme) 
+            {
                 Toaster::success('Programme created successfully!');
                 $this->resetForm();
                 $this->dispatch('newAddedProgramme');
+                \Log::info('Programme created successfully!');
                 return redirect()->route('admin.programmes.show', $programme->programmeCode);
-
             } 
-            else {
+            else 
+            {
+                \Log::error('Error creating programme!');
                 Toaster::error('Error creating programme!');
             }
-        } catch (\Exception $e) {
+        } 
+        catch (\Exception $e) 
+        {
             \Log::error('Error creating programme: ' . $e->getMessage());
             Toaster::error('Error creating programme: ' . $e->getMessage());
         }

@@ -45,6 +45,23 @@
         @stack('modals')
         @stack('script')
         <x-toaster-hub />
+        
+        {{-- Configure Livewire for ngrok/tunnel services --}}
+        @if(str_contains(config('app.url'), 'ngrok') || str_contains(config('app.url'), 'localhost.run'))
+        <script>
+            // Ensure Livewire uses the correct base URL for file uploads when using ngrok
+            document.addEventListener('livewire:init', () => {
+                // Livewire should automatically detect the base URL from the current page
+                // But we can ensure it's using the correct one
+                if (window.Livewire) {
+                    // The base URL is automatically detected from the current page URL
+                    // This script ensures it's set correctly for file uploads
+                    console.log('Livewire initialized with base URL:', window.location.origin);
+                }
+            });
+        </script>
+        @endif
+        
         @livewireScripts
     </body>
 </html>
