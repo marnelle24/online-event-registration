@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 
-class ProgrammeRegisterV2 extends Component
+class ProgrammeRegister extends Component
 {
     public Programme $programme;
 
@@ -392,7 +392,7 @@ class ProgrammeRegisterV2 extends Component
             $redirectUrl = route('registration.confirmation', ['confirmationCode' => $confirmationCode]);
 
             if ($netAmount > 0 && !$this->programme->allowPreRegistration) {
-                $redirectUrl = route('registration.payment.v2', ['confirmationCode' => $confirmationCode]);
+                $redirectUrl = route('registration.payment', ['confirmationCode' => $confirmationCode]);
             }
 
             return redirect()->to($redirectUrl);

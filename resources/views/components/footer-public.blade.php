@@ -1,4 +1,4 @@
-<footer class="bg-gradient-to-tl from-teal-600 via-teal-700 to-teal-900 text-white/80">
+<footer class="bg-gradient-to-tl from-teal-600 via-teal-700 to-teal-900 text-white/80 no-print">
     <div class="max-w-6xl mx-auto px-4 pt-12 xl:pb-5 pb-12">
         <div class="grid lg:grid-cols-4 md:grid-cols-2 gap-8 py-5">
             <div>

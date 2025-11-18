@@ -9,7 +9,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Validation\Rule;
 use Livewire\Component;
 
-class PaymentPageV2 extends Component
+class PaymentPage extends Component
 {
     public string $confirmationCode;
 
@@ -54,7 +54,7 @@ class PaymentPageV2 extends Component
 
     public function render(): View
     {
-        return view('livewire.frontpage.register.payment-page-v2');
+        return view('livewire.frontpage.register.payment-page');
     }
 
     public function selectMethod(string $method): void
@@ -172,8 +172,6 @@ class PaymentPageV2 extends Component
         if ($registrant->regStatus === 'confirmed') 
         {
             abort(404, 'Registration already confirmed.');
-        //     $this->redirectRoute('programme.register.v2', ['programmeCode' => $registrant->programme->programmeCode]);
-        //     return;
         }
 
 

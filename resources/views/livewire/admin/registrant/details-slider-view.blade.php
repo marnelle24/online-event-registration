@@ -1,4 +1,4 @@
-<div x-data="{ show: false, showToolTip: false }" class="relative">
+<div x-cloak x-data="{ show: false, showToolTip: false }" class="relative">
     <button 
         @click="show = true"
         @mouseover="showToolTip = true" 

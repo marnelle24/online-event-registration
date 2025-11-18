@@ -66,15 +66,15 @@
                                         @if ($registrant->regStatus == 'unpaid')
                                             <p class="inline-flex rounded-full bg-danger px-3 py-1 text-sm font-medium text-danger">Unpaid</p>
                                         @elseif ($registrant->regStatus == 'pending')
-                                            <p class="inline-flex rounded-full bg-warning px-3 py-1 text-sm font-medium text-warning">Pending</p>
+                                            <p class="inline-flex rounded-full bg-yellow-100 text-yellow-800 border-yellow-600 px-3 py-1 text-sm font-medium">Pending</p>
                                         @else
-                                            <p class="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-sm font-medium text-success">Paid</p>
+                                            <p class="inline-flex rounded-full bg-green-100 text-green-800 border-green-600 px-3 py-1 text-sm font-medium">Paid</p>
                                         @endif
                                     </td>
                                     <td class="border-b border-[#eee] px-4 py-5">
                                         <div class="flex items-center space-x-3.5 justify-end">
                                             @livewire('admin.registrant.details-slider-view', ['registrant' => $registrant], key($registrant->id))
-                                            @livewire('admin.registrant.payment-slider-view', ['registrant' => $registrant], key($registrant->id))
+                                            {{-- @livewire('admin.registrant.payment-slider-view', ['registrant' => $registrant], key($registrant->id)) --}}
                                         </div>
                                     </td>
                                 </tr>

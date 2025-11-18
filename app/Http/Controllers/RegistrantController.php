@@ -13,61 +13,61 @@ use Illuminate\Support\Facades\Log;
 
 class RegistrantController extends Controller
 {
+    // public function register(Request $request, $programmeCode)
+    // {
+    //     $programme = Programme::where('programmeCode', $programmeCode)
+    //         ->with('promotions')
+    //         ->first();
+        
+    //     if (!$programme) {
+    //         abort(404);
+    //     }
+
+        
+    //     $promotionParameter = $request->query('promotion');
+    //     $selectedPromotion = null;
+
+    //     if ($promotionParameter) {
+    //         $selectedPromotion = $this->resolveSelectedPromotion($programme, $promotionParameter);
+
+    //         if ($selectedPromotion) {
+    //             $promotionParameter = Str::slug($selectedPromotion->title, ' ');
+    //         } else {
+    //             $promotionParameter = null;
+    //         }
+    //     }
+
+    //     $promotionForRegister = $selectedPromotion;
+        
+    //     // Get authenticated user data if available
+    //     $user = auth()->user();
+        
+    //     // Check if there are active promocodes for this programme
+    //     $hasActivePromocodes = $programme->promocodes()
+    //         ->where('isActive', true)
+    //         ->where(function($query) {
+    //             $now = now();
+    //             $query->whereNull('startDate')
+    //                   ->orWhere(function($q) use ($now) {
+    //                       $q->where('startDate', '<=', $now)
+    //                         ->where(function($q2) use ($now) {
+    //                             $q2->whereNull('endDate')
+    //                                ->orWhere('endDate', '>=', $now);
+    //                         });
+    //                   });
+    //         })
+    //         ->exists();
+        
+    //     return view('pages.programme-register')
+    //         ->with('programme', $programme)
+    //         ->with('programmeCode', $programmeCode)
+    //         ->with('user', $user)
+    //         ->with('hasActivePromocodes', $hasActivePromocodes)
+    //         ->with('promotionForRegister', $promotionForRegister)
+    //         ->with('selectedPromotionParam', $promotionParameter);
+    // }
+
     public function register(Request $request, $programmeCode)
-    {
-        $programme = Programme::where('programmeCode', $programmeCode)
-            ->with('promotions')
-            ->first();
-        
-        if (!$programme) {
-            abort(404);
-        }
-
-        
-        $promotionParameter = $request->query('promotion');
-        $selectedPromotion = null;
-
-        if ($promotionParameter) {
-            $selectedPromotion = $this->resolveSelectedPromotion($programme, $promotionParameter);
-
-            if ($selectedPromotion) {
-                $promotionParameter = Str::slug($selectedPromotion->title, ' ');
-            } else {
-                $promotionParameter = null;
-            }
-        }
-
-        $promotionForRegister = $selectedPromotion;
-        
-        // Get authenticated user data if available
-        $user = auth()->user();
-        
-        // Check if there are active promocodes for this programme
-        $hasActivePromocodes = $programme->promocodes()
-            ->where('isActive', true)
-            ->where(function($query) {
-                $now = now();
-                $query->whereNull('startDate')
-                      ->orWhere(function($q) use ($now) {
-                          $q->where('startDate', '<=', $now)
-                            ->where(function($q2) use ($now) {
-                                $q2->whereNull('endDate')
-                                   ->orWhere('endDate', '>=', $now);
-                            });
-                      });
-            })
-            ->exists();
-        
-        return view('pages.programme-register')
-            ->with('programme', $programme)
-            ->with('programmeCode', $programmeCode)
-            ->with('user', $user)
-            ->with('hasActivePromocodes', $hasActivePromocodes)
-            ->with('promotionForRegister', $promotionForRegister)
-            ->with('selectedPromotionParam', $promotionParameter);
-    }
-
-    public function registerV2(Request $request, $programmeCode)
     {
         $programme = Programme::where('programmeCode', $programmeCode)
             ->with('promotions')
@@ -109,7 +109,7 @@ class RegistrantController extends Controller
             })
             ->exists();
 
-        return view('pages.programme-register-v2', [
+        return view('pages.programme-register', [
             'programme' => $programme,
             'programmeCode' => $programmeCode,
             'user' => $user,
@@ -313,38 +313,38 @@ class RegistrantController extends Controller
         ]);
     }
 
+    // public function payment($confirmationCode)
+    // {
+    //     $registrant = Registrant::where('confirmationCode', $confirmationCode)->firstOrFail();
+        
+    //     // Load related data
+    //     $registrant->load('programme', 'promocode');
+        
+    //     // Verify this is a paid event
+    //     if ($registrant->netAmount <= 0) {
+    //         return redirect()->route('registration.confirmation', ['confirmationCode' => $confirmationCode]);
+    //     }
+        
+    //     // Check if payment is already completed
+    //     $isPaid = in_array($registrant->paymentStatus, ['paid', 'group_member_paid', 'free']);
+        
+    //     // Get group members if this is a group registration (always return collection)
+    //     $groupMembers = collect();
+    //     if ($registrant->groupRegistrationID) {
+    //         $groupMembers = Registrant::where('groupRegistrationID', $registrant->groupRegistrationID)
+    //             ->where('confirmationCode', '=', $confirmationCode)
+    //             ->orderBy('id', 'asc')
+    //             ->get();
+    //     }
+
+    //     return view('pages.registration-payment', [
+    //         'registrant' => $registrant,
+    //         'groupMembers' => $groupMembers,
+    //         'isPaid' => $isPaid
+    //     ]);
+    // }
+
     public function payment($confirmationCode)
-    {
-        $registrant = Registrant::where('confirmationCode', $confirmationCode)->firstOrFail();
-        
-        // Load related data
-        $registrant->load('programme', 'promocode');
-        
-        // Verify this is a paid event
-        if ($registrant->netAmount <= 0) {
-            return redirect()->route('registration.confirmation', ['confirmationCode' => $confirmationCode]);
-        }
-        
-        // Check if payment is already completed
-        $isPaid = in_array($registrant->paymentStatus, ['paid', 'group_member_paid', 'free']);
-        
-        // Get group members if this is a group registration (always return collection)
-        $groupMembers = collect();
-        if ($registrant->groupRegistrationID) {
-            $groupMembers = Registrant::where('groupRegistrationID', $registrant->groupRegistrationID)
-                ->where('confirmationCode', '=', $confirmationCode)
-                ->orderBy('id', 'asc')
-                ->get();
-        }
-
-        return view('pages.registration-payment', [
-            'registrant' => $registrant,
-            'groupMembers' => $groupMembers,
-            'isPaid' => $isPaid
-        ]);
-    }
-
-    public function paymentV2($confirmationCode)
     {
         $registrant = Registrant::with(['programme', 'promocode'])
             ->where('confirmationCode', $confirmationCode)
@@ -354,7 +354,7 @@ class RegistrantController extends Controller
             return redirect()->route('registration.confirmation', ['confirmationCode' => $confirmationCode]);
         }
 
-        return view('pages.registration-payment-v2', [
+        return view('pages.registration-payment', [
             'confirmationCode' => $confirmationCode,
         ]);
     }
@@ -364,8 +364,8 @@ class RegistrantController extends Controller
         $registrant = Registrant::where('confirmationCode', $confirmationCode)->firstOrFail();
         
         // Load related data
-        $registrant->load('programme', 'promocode');
-        
+        $registrant->load('programme', 'promocode', 'promotion');
+
         // Get group members if this is a group registration (always return collection)
         $groupMembers = collect();
         if ($registrant->groupRegistrationID) {
@@ -414,15 +414,12 @@ class RegistrantController extends Controller
             }
 
             // check if the payment
-
             $paymentService = new PaymentService();
             $result = $paymentService->processPayment(
                 $registrant, 
                 $request->payment_method,
                 $request->only(['card_token', 'payment_token']) // Additional data for specific gateways
             );
-
-            dd($result);
 
             if ($result['success']) {
                 return response()->json([
@@ -475,7 +472,8 @@ class RegistrantController extends Controller
             // Special handling for HitPay browser callback:
             // - We treat this as a UX redirect only
             // - Actual secure verification is done via the webhook (with HMAC)
-            if ($paymentMethod === 'hitpay') {
+            if ($paymentMethod === 'hitpay') 
+            {
                 $status = $request->get('status');
 
                 // HitPay typically uses "completed" or "success" for successful payments
@@ -501,7 +499,7 @@ class RegistrantController extends Controller
                 // If status is not successful or registrant not found, send back to payment page
                 if ($referenceNo) {
                     return redirect()
-                        ->route('registration.payment.v2', ['confirmationCode' => $referenceNo])
+                        ->route('registration.payment', ['confirmationCode' => $referenceNo])
                         ->with('error', 'Payment was not completed or could not be verified. Please try again.');
                 }
 
@@ -514,7 +512,7 @@ class RegistrantController extends Controller
                 // Fallback: if we have a reference/confirmation code, send user back to payment page
                 if ($referenceNo) {
                     return redirect()
-                        ->route('registration.payment.v2', ['confirmationCode' => $referenceNo])
+                        ->route('registration.payment', ['confirmationCode' => $referenceNo])
                         ->with('error', 'Invalid payment callback');
                 }
 
@@ -548,7 +546,7 @@ class RegistrantController extends Controller
             // If verification failed or registrant not found, send back to payment page using reference
             if ($referenceNo) {
                 return redirect()
-                    ->route('registration.payment.v2', ['confirmationCode' => $referenceNo])
+                    ->route('registration.payment', ['confirmationCode' => $referenceNo])
                     ->with('error', 'Payment verification failed');
             }
 
@@ -568,7 +566,7 @@ class RegistrantController extends Controller
             // Use the best reference we have to send user back to payment page
             if ($referenceNo) {
                 return redirect()
-                    ->route('registration.payment.v2', ['confirmationCode' => $referenceNo])
+                    ->route('registration.payment', ['confirmationCode' => $referenceNo])
                     ->with('error', 'Payment verification failed');
             }
 
@@ -596,8 +594,7 @@ class RegistrantController extends Controller
              * Determine payment method from request
              * Temporarily, Hard-code the method type
              * */ 
-
-            #$paymentMethod = $this->detectPaymentMethod($request);
+            // $paymentMethod = $this->detectPaymentMethod($request);
             $paymentMethod = 'hitpay';
 
             if (!$paymentMethod) {
@@ -732,15 +729,9 @@ class RegistrantController extends Controller
      */
     protected function detectPaymentMethod(Request $request): ?string
     {
-        // Check for HitPay
-        $hitpayPayload = $request->get('payload') ?? $request->get('data');
-
-        if ($hitpayPayload) 
+        if ($request->has('payment_method')) 
         {
-            $hitpayPayload = json_decode($hitpayPayload, true);
-            if ($hitpayPayload['hmac']) {
-                return 'hitpay';
-            }
+            return $request->payment_method;
         }
 
         // Check for Stripe

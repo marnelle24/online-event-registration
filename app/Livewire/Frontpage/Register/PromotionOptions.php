@@ -18,7 +18,7 @@ class PromotionOptions extends Component
     {
         $this->programme = $programme;
         // $this->defaultRegisterUrl = route('programme.register', $this->programme->programmeCode);
-        $this->defaultRegisterUrl = route('programme.register.v2', $this->programme->programmeCode);
+        $this->defaultRegisterUrl = route('programme.register', $this->programme->programmeCode);
 
         $now = now();
 

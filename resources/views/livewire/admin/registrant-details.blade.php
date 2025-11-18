@@ -181,7 +181,7 @@
                             </div>
 
                             <div>
-                                <label class="block text-sm text-slate-500 mb-1">Original Price</label>
+                                <label class="block text-sm text-slate-500 mb-1">Standard Price</label>
                                 <p class="text-slate-800 text-md font-medium">${{ number_format($registrant->price, 2) }}</p>
                             </div>
 
@@ -191,24 +191,32 @@
                             </div>
                         </div>
 
-                        @if($registrant->promocode || $registrant->promotion)
-                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                            {{-- @dump($registrant->promocode) --}}
+
+                            @if($registrant->promocode)
                                 <div>
-                                    <label class="block text-sm text-slate-500 mb-1">Discount Amount</label>
-                                    <p class="text-green-600 text-md font-medium">-${{ number_format($registrant->discountAmount, 2) }}</p>
+                                    <label class="block text-sm text-slate-500 mb-1">Applied Promocode</label>
+                                    <span class="px-3 py-1 text-xs rounded-full border text-md font-medium bg-green-100 text-green-800 border-green-600">{{ $registrant->promocode->promocode }}</span>
                                 </div>
+                            @endif
+                            @if($registrant->promotion)
                                 <div>
-                                    <label class="block text-sm text-slate-500 mb-1">Applied Discount</label>
-                                    @if($registrant->promocode)
-                                        <p class="text-slate-800 text-md font-medium">Promocode: {{ $registrant->promocode->code }}</p>
-                                    @elseif($registrant->promotion)
-                                        <p class="text-slate-800 text-md font-medium">Promotion: {{ $registrant->promotion->title }}</p>
-                                    @else
-                                        <p class="text-slate-800 text-md font-medium">Manual Adjustment</p>
-                                    @endif
+                                    <label class="block text-sm text-slate-500 mb-1">Applied Promotion</label>
+                                    <span class="px-3 py-1 text-xs rounded-full border text-md font-medium bg-green-100 text-green-800 border-green-600">{{ $registrant->promotion->title ?? 'Test Promotion' }}</span>
                                 </div>
-                            </div>
-                        @endif
+                            @endif
+                            {{-- <div>
+                                <label class="block text-sm text-slate-500 mb-1">Applied Discount</label>
+                                @if($registrant->promocode)
+                                    <p class="text-slate-800 text-md font-medium">Promocode: {{ $registrant->promocode->code }}</p>
+                                @elseif($registrant->promotion)
+                                    <p class="text-slate-800 text-md font-medium">Promotion: {{ $registrant->promotion->title }}</p>
+                                @else
+                                    <p class="text-slate-800 text-md font-medium">Manual Adjustment</p>
+                                @endif
+                            </div> --}}
+                        </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                             @if($registrant->paymentReferenceNo)

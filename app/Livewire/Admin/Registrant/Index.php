@@ -23,7 +23,7 @@ class Index extends Component
                 $query->orWhere('email', 'like', "%{$this->search}%");
             })
             ->latest('created_at')
-            ->paginate(2);
+            ->paginate(10);
         return view('livewire.admin.registrant.index', [
             'registrants' => $registrants
         ]);

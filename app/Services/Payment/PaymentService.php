@@ -71,7 +71,7 @@ class PaymentService
             $gateway = $this->getGateway($paymentMethod);
 
             // Prepare payment data
-            $paymentData = $this->preparePaymentData($registrant, $additionalData);
+            $paymentData = $this->preparePaymentData($registrant, $paymentMethod, $additionalData);
 
             // Log payment attempt
             Log::info('Processing payment', [
@@ -183,7 +183,6 @@ class PaymentService
      */
     public function confirmPayment(string $referenceNo, array $paymentDetails = []): bool
     {
-        
         try {
             $registrant = Registrant::where('confirmationCode', $referenceNo)->first();
 
@@ -346,7 +345,7 @@ class PaymentService
      * @param array $additionalData
      * @return array
      */
-    protected function preparePaymentData(Registrant $registrant, array $additionalData = []): array
+    protected function preparePaymentData(Registrant $registrant, string $paymentMethod,  array $additionalData = []): array
     {
         return array_merge([
             'registrant_id' => $registrant->id,
@@ -359,8 +358,8 @@ class PaymentService
             'customer_phone' => $registrant->contactNumber,
             'customer_address' => $registrant->address ?? '',
             'contact_email' => $registrant->programme->contactEmail,
-            'redirect_url' => route('payment.callback'),
-            'webhook_url' => route('payment.webhook'),
+            'redirect_url' => route('payment.callback') . '?payment_method=' . $paymentMethod,
+            'webhook_url' => route('payment.webhook') . '?payment_method=' . $paymentMethod,
         ], $additionalData);
     }
 

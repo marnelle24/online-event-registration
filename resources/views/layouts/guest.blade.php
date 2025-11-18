@@ -30,6 +30,18 @@
             html {
                 scroll-behavior: smooth;
             }
+            @media print {
+                .no-print {
+                    display: none !important;
+                }
+                body {
+                    background: white !important;
+                }
+                .print-container {
+                    box-shadow: none !important;
+                    border: none !important;
+                }
+            }
         </style>
 
         <!-- Styles -->
@@ -86,7 +98,7 @@
                     }
                 }"
                 :class="{ 'md:h-20': isFixed && !isMobile, 'h-0': !isFixed || isMobile }"
-                class="transition-all duration-500 ease-in-out"
+                class="transition-all duration-500 ease-in-out no-print"
             ></div>
         @endif
         <main>

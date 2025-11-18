@@ -1,6 +1,17 @@
 @section('title', '404 - Page Not Found')
 <x-guest-layout>
     <div class="relative min-h-screen bg-gradient-to-b from-white via-teal-100 to-teal-100/30">
+        @if (session('error'))
+            <br />
+            <br />
+            <div class="max-w-2xl mx-auto text-center">
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                    <span class="block sm:inline">{{ session('error') }}</span>
+                </div>
+            </div>
+            <br />
+            <br />
+        @endif
         <div class="max-w-2xl mx-auto text-center">
             <!-- 404 Number -->
             <div class="mb-8">
