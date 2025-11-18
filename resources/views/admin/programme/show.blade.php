@@ -1,6 +1,7 @@
 @section('title', $programme->title)
 <x-app-layout>
     <div class="flex md:flex-row flex-col gap-4">
+        @dump($programme->getFirstMediaUrl('thumbnail'))
         <img src="{{$programme->thumbnail}}" alt="{{$programme->title}}" class="lg:rounded-lg object-cover bg-center rounded-tl-md rounded-tr-md lg:w-60 w-full h-48 border border-zinc-400 shadow-md" />
         <div>
             <h1 class="text-2xl text-slate-600 font-bold">{{$programme->title}}</h1>
@@ -87,7 +88,6 @@
         @endforeach
     </div>
     <div class="flex gap-4 w-full md:mb-0 mb-12">
-        {{-- <hr class="border border-zinc-500/70" /> --}}
 
         @if(request('p') === 'dashboard' || !request('p'))
             @livewire('admin.programme.dashboard.overview', ['programmeId' => $programme->id], key('programme-dashboard-overview-'.$programme->id))

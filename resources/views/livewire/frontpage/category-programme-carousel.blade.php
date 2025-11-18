@@ -50,17 +50,14 @@
                     <div class="bg-white w-[350px] md:w-full rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 overflow-hidden group">
                         <!-- Programme Image -->
                         <div class="relative h-60 md:h-54 bg-gradient-to-br from-teal-400 to-teal-600 overflow-hidden">
-                            @if($programme->getFirstMediaUrl('thumbnail'))
+                            @if($programme->getFirstMediaUrl('programme'))
                                 <img 
-                                    src="{{ $programme->getFirstMediaUrl('thumbnail') }}" 
+                                    src="{{ $programme->getFirstMediaUrl('programme') }}" 
                                     alt="{{ $programme->title }}"
                                     class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                                 >
                             @else
                                 <div class="flex items-center justify-center h-full text-white">
-                                    {{-- <svg class="w-16 h-16 opacity-50" fill="currentColor" viewBox="0 0 24 24">
-                                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-                                    </svg> --}}
                                     <p class="text-6xl font-normal rounded-full text-white/60 drop-shadow text-center tracking-widest">
                                         {{ Helper::getInitials($programme->title) }}
                                     </p>

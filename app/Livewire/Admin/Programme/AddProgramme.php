@@ -207,7 +207,7 @@ class AddProgramme extends Component
             if ($this->thumbnail) {
                 $programme->addMedia($this->thumbnail->getRealPath())
                     ->usingFileName($this->thumbnail->getClientOriginalName())
-                    ->toMediaCollection('thumbnail');
+                    ->toMediaCollection('programme');
             }
 
             sleep(1);

@@ -15,8 +15,9 @@ class ProgrammeController extends Controller
     public function show($programmeCode)
     {
         $programme = Programme::where('programmeCode', $programmeCode)->firstOrFail();
-        $programme['thumbnail'] = $programme->getFirstMediaUrl('thumbnail');
+        $programme['programme'] = $programme->getFirstMediaUrl('programme');
         $programme['banner'] = $programme->getFirstMediaUrl('banner');
+
         return view('admin.programme.show', compact('programme'));
     }
 
