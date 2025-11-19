@@ -31,6 +31,7 @@ class SettingsSection extends Component
     public $hybridDetails;
     public bool $isHybridMode = false;
     public $hybridPlatformDetails;
+    public $price;
 
 
     public function mount()
@@ -55,6 +56,7 @@ class SettingsSection extends Component
         $this->groupRegistrationFee = $this->programme->groupRegistrationFee;
         $this->hybridPlatformDetails = $this->programme->hybridPlatformDetails;
         $this->isHybridMode = $this->programme->isHybridMode ?? false;
+        $this->price = $this->programme->price;
     }
 
     public function toogleAllowBreakoutSession()
@@ -245,9 +247,15 @@ class SettingsSection extends Component
         // dump($colName, $model);
         $isUpdated = $this->programme->update([$colName => $model]);
         if($isUpdated)
+        {
             Toaster::success('Programme information changed successfully.');
+            \Log::info('Programme information changed successfully.', ['colName' => $colName, 'model' => $model, 'user' => auth()->user()->name]);
+        }
         else
+        {
             Toaster::error('Something\'s wrong, please try again later.');
+            \Log::error('Something\'s wrong, please try again later.', ['colName' => $colName, 'model' => $model, 'user' => auth()->user()->name]);
+        }
 
         $this->render();
     }

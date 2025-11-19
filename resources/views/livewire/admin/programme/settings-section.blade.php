@@ -9,6 +9,54 @@
             </p>
             <div class="overflow-x-auto">
                 <table class="w-full table-auto">
+
+                    {{-- Admin Fee --}}
+                    <tr class="border border-slate-400 p-4">
+                        <td class="p-4">
+                            Programme Standard Price <span class="italic text-xs text-slate-500">(SGD)</span>
+                            <p class="text-xs italic text-slate-500 text-left leading-4">
+                                The standard price for the programme. 
+                                This will be the standard pricing by default and displayed to the public.
+                            </p>
+                        </td>
+                        <td x-cloak x-data="{showEdit:false, showToolTip:false}" class="p-4 flex md:justify-start justify-end">
+                            <div class="relative" x-show="!showEdit">
+                                <p class="flex gap-2 items-center uppercase">
+                                    {{ $programme->price > 0 ? '$ '.number_format($programme->price, 2) : 'Free' }}
+                                    <svg 
+                                        @mouseover="showToolTip=true" 
+                                        @mouseleave="showToolTip=false"
+                                        @click="showEdit=true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="stroke-slate-600/50 hover:stroke-blue-600 cursor-pointer hover:scale-110 duration-300 h-5 w-5">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+                                    </svg>
+                                </p>
+                                <div x-show="showToolTip" x-transition class="absolute top-6 -right-2 transition-all duration-300 ease-in-out hover:opacity-100 hover:translate-y-0 bg-slate-800 text-white text-xs rounded px-2 py-1 shadow-lg z-50">
+                                    Edit
+                                </div>
+                            </div>
+                            <div x-show="showEdit" class="flex">
+                                <input 
+                                    type="number"
+                                    wire:model.live.debounce.500ms="price"
+                                    step="0.10" 
+                                    class="group w-1/2 rounded-md border border-slate-400 focus:ring-0 focus:border-slate-600 outline-none" 
+                                    placeholder="SGD 0.00" 
+                                />
+                                <div class="flex gap-3 items-center">
+                                    <svg 
+                                        wire:click="updateProgrammeInfo('price', {{$price}}), showEdit=false" 
+                                        wire:confirm="Are you sure to make this changes?"
+                                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 cursor-pointer hover:scale-110 duration-300 stroke-success">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                                    </svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" @click="showEdit=false" class="w-6 h-6 cursor-pointer hover:scale-110 duration-300 stroke-red-500 hover:stroke-red-700">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    
                     {{-- Invitation Only --}}
                     <tr class="border border-slate-400 p-4">
                         <td class="p-4">

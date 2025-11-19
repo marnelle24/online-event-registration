@@ -125,7 +125,7 @@
                                     <div class="relative flex items-start gap-3">
                                         @if($programme->active_promotion)
                                             <div class="absolute top-0 -left-2 bg-green-500 text-white text-[10px] font-bold px-2 py-1 rounded-full shadow-md animate-bounce">
-                                                {{ $programme->active_promotion->title }}
+                                                {{ $programme->active_promotion->count() . ' ' . ($programme->active_promotion->count() > 1 ? 'Promotions' : 'Promotion') }}
                                             </div>
                                         @endif
                                         <div class="rounded-lg">
@@ -200,11 +200,9 @@
                                 </td>
                                 <td class="p-4">
                                     <div class="flex flex-col">
+                                        <span class="text-sm text-slate-400">{{ $programme->formatted_price }}</span>
                                         @if($programme->active_promotion)
-                                            <span class="text-sm line-through text-slate-400">{{ $programme->formatted_price }}</span>
-                                            <span class="text-sm font-semibold text-green-500">{{ $programme->discounted_price }}</span>
-                                        @else
-                                            <span class="text-sm font-semibold">{{ $programme->formatted_price }}</span>
+                                            <span class="text-[10px] font-normal text-green-500 text-nowrap">{{ $programme->active_promotion->count() . ' ' . ($programme->active_promotion->count() > 1 ? 'promotions' : 'promotion') }}</span>
                                         @endif
                                     </div>
                                 </td>
