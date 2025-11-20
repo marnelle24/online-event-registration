@@ -111,7 +111,7 @@ class ProgrammeRegister extends Component
     {
         $countryService = new CountryService();
         $countries = $countryService->getCountryPhoneCodeAndFlag();
-        return view('livewire.frontpage.register.programme-register-v2', [
+        return view('livewire.frontpage.register.programme-register', [
             'countries' => $countries
         ]);
     }

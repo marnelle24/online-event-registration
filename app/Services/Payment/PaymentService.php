@@ -193,21 +193,36 @@ class PaymentService
                 return false;
             }
 
-            // Prepare update data
-            $updateData = [
-                'regCode' => $this->generateRegCode($registrant->programme->programmeCode),
-                'paymentStatus' => 'paid',
-                'regStatus' => 'confirmed',
-                'payment_completed_at' => now(),
-            ];
+            // Check if payment is already confirmed AND email already sent to prevent duplicate processing
+            if ($registrant->paymentStatus === 'paid' && $registrant->regStatus === 'confirmed' && $registrant->emailStatus) {
+                Log::info('Payment already confirmed and email already sent, skipping duplicate processing', [
+                    'registrant_id' => $registrant->id,
+                    'confirmationCode' => $registrant->confirmationCode,
+                    'reference_no' => $referenceNo,
+                ]);
+                return true;
+            }
 
-            $updateData['payment_verified_by'] = isset($paymentDetails['verified_by']) ? $paymentDetails['verified_by'] : $registrant->paymentOption.'_api_system';
-            $updateData['payment_verified_at'] = isset($paymentDetails['verified_at']) ? $paymentDetails['verified_at'] : now();
-            $updateData['approvedDate'] = isset($paymentDetails['approvedDate']) ? $paymentDetails['approvedDate'] : now();
-            $updateData['approvedBy'] = isset($paymentDetails['approvedBy']) ? $paymentDetails['approvedBy'] : $registrant->paymentOption.'_api_system';
-            $updateData['confirmedBy'] = isset($paymentDetails['confirmedBy']) ? $paymentDetails['confirmedBy'] : $registrant->paymentOption.'_api_system';
+            // Prepare update data (only update payment status if not already confirmed)
+            $isAlreadyConfirmed = $registrant->paymentStatus === 'paid' && $registrant->regStatus === 'confirmed';
             
-            // Merge payment metadata with payment status and details
+            $updateData = [];
+            if (!$isAlreadyConfirmed) {
+                $updateData = [
+                    'regCode' => $this->generateRegCode($registrant->programme->programmeCode),
+                    'paymentStatus' => 'paid',
+                    'regStatus' => 'confirmed',
+                    'payment_completed_at' => now(),
+                ];
+                
+                $updateData['payment_verified_by'] = isset($paymentDetails['verified_by']) ? $paymentDetails['verified_by'] : $registrant->paymentOption.'_api_system';
+                $updateData['payment_verified_at'] = isset($paymentDetails['verified_at']) ? $paymentDetails['verified_at'] : now();
+                $updateData['approvedDate'] = isset($paymentDetails['approvedDate']) ? $paymentDetails['approvedDate'] : now();
+                $updateData['approvedBy'] = isset($paymentDetails['approvedBy']) ? $paymentDetails['approvedBy'] : $registrant->paymentOption.'_api_system';
+                $updateData['confirmedBy'] = isset($paymentDetails['confirmedBy']) ? $paymentDetails['confirmedBy'] : $registrant->paymentOption.'_api_system';
+            }
+            
+            // Merge payment metadata with payment status and details (always update metadata)
             $existingMetadata = $registrant->payment_metadata ?? [];
             $metadataUpdate = [
                 'confirmed_at' => now()->toIso8601String(),
@@ -233,9 +248,10 @@ class PaymentService
                 $metadataUpdate['confirmation_details'] = $paymentDetails;
             }
             
+            // Always update metadata to store latest webhook confirmation
             $updateData['payment_metadata'] = array_merge($existingMetadata, $metadataUpdate);
 
-            // Update registrant payment status
+            // Update registrant
             $mainRegistrant = $registrant->update($updateData);
 
             // Update group members if this is a group registration
@@ -298,13 +314,13 @@ class PaymentService
                 if ($registrant->promotion)
                     $registrant->promotion->increment('counter');
 
-                // Send confirmation email
+                // Send confirmation email only if not already sent
                 try {
                     // Reload registrant with all relationships for email
                     $registrantWithRelations = Registrant::with(['programme.ministry', 'promocode', 'promotion'])
                         ->find($registrant->id);
 
-                    if ($registrantWithRelations) {
+                    if ($registrantWithRelations && !$registrantWithRelations->emailStatus) {
                         Mail::to($registrantWithRelations->email)->send(new RegistrationConfirmedMail($registrantWithRelations));
                         
                         // Update email status
@@ -312,6 +328,11 @@ class PaymentService
                         $registrantWithRelations->save();
 
                         Log::info('Registration confirmation email sent', [
+                            'registrant_id' => $registrant->id,
+                            'email' => $registrantWithRelations->email,
+                        ]);
+                    } else if ($registrantWithRelations && $registrantWithRelations->emailStatus) {
+                        Log::info('Registration confirmation email already sent, skipping duplicate', [
                             'registrant_id' => $registrant->id,
                             'email' => $registrantWithRelations->email,
                         ]);
@@ -454,7 +475,9 @@ class PaymentService
     private function generateRegCode($programmeCode)
     {
         // Count existing registrants for this programme
-        $count = Registrant::where('programCode', $programmeCode)->count();
+        $count = Registrant::where('programCode', $programmeCode)
+            ->where('regStatus', 'confirmed')
+            ->count();
         
         // Increment to get the current registrant number
         $registrantNumber = $count + 1;

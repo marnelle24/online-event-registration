@@ -2,7 +2,17 @@
 <x-guest-layout>
     <div class="relative min-h-screen bg-gradient-to-b from-white via-teal-100/70 to-white/30 py-8 md:py-12">
         <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            
+            {{-- @if(session('success'))
+                <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
+                    <p class="text-green-700">{{ session('success') }}</p>
+                </div>
+            @endif --}}
+            @if(session('error'))
+                <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+                    <p class="text-red-700">{{ session('error') }}</p>
+                </div>
+            @endif
+            {{-- @dump($registrant) --}}
             <!-- Official Receipt Container -->
             <div class="bg-white print-container rounded-lg shadow-xl border border-slate-500 overflow-hidden">
                 <!-- Receipt Header -->
@@ -390,5 +400,48 @@
                 }, 500);
             }
         });
+
+        // Poll for payment status updates if payment is still pending
+        @if($registrant->paymentStatus !== 'paid' && $registrant->netAmount > 0)
+        (function() {
+            const confirmationCode = '{{ $registrant->confirmationCode }}';
+            const statusCheckUrl = '{{ route("api.registration.payment-status", ["confirmationCode" => $registrant->confirmationCode]) }}';
+            let pollCount = 0;
+            const maxPolls = 30; // Poll for up to 30 times (30 seconds)
+            const pollInterval = 1000; // Check every 1 second
+            
+            const pollPaymentStatus = function() {
+                if (pollCount >= maxPolls) {
+                    console.log('Stopped polling: maximum attempts reached');
+                    return;
+                }
+                
+                pollCount++;
+                
+                fetch(statusCheckUrl)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success && data.isPaid) {
+                            // Payment has been confirmed, reload the page to show updated status
+                            console.log('Payment confirmed, reloading page...');
+                            window.location.reload();
+                        } else if (pollCount < maxPolls) {
+                            // Continue polling
+                            setTimeout(pollPaymentStatus, pollInterval);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error checking payment status:', error);
+                        // Continue polling even on error (network issues, etc.)
+                        if (pollCount < maxPolls) {
+                            setTimeout(pollPaymentStatus, pollInterval);
+                        }
+                    });
+            };
+            
+            // Start polling after a short delay (give webhook time to process)
+            setTimeout(pollPaymentStatus, 2000);
+        })();
+        @endif
     </script>
 </x-guest-layout>

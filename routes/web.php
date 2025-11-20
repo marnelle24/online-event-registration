@@ -38,6 +38,7 @@ Route::get('/programme/{programmeCode}', [ProgrammeController::class, 'publicSho
 Route::get('/programme/{programmeCode}/register', [RegistrantController::class, 'register'])->name('programme.register');
 Route::get('/registration/payment/{confirmationCode}', [RegistrantController::class, 'payment'])->name('registration.payment');
 Route::get('/registration/confirmation/{confirmationCode}', [RegistrantController::class, 'confirmation'])->name('registration.confirmation');
+Route::get('/api/registration/{confirmationCode}/payment-status', [RegistrantController::class, 'checkPaymentStatus'])->name('api.registration.payment-status');
 
 // Payment routes
 Route::get('/payment/callback', [RegistrantController::class, 'paymentCallback'])->name('payment.callback');

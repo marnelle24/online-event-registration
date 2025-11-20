@@ -3,7 +3,7 @@
 <x-guest-layout>
     <div class="relative min-h-screen bg-gradient-to-b from-white via-teal-100/70 to-white/30 py-12">
         <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
-            <livewire:frontpage.register.programme-register-v2
+            <livewire:frontpage.register.programme-register
                 :programme-id="$programme->id"
                 :programme-code="$programmeCode"
                 :has-active-promocodes="$hasActivePromocodes"

@@ -313,37 +313,6 @@ class RegistrantController extends Controller
         ]);
     }
 
-    // public function payment($confirmationCode)
-    // {
-    //     $registrant = Registrant::where('confirmationCode', $confirmationCode)->firstOrFail();
-        
-    //     // Load related data
-    //     $registrant->load('programme', 'promocode');
-        
-    //     // Verify this is a paid event
-    //     if ($registrant->netAmount <= 0) {
-    //         return redirect()->route('registration.confirmation', ['confirmationCode' => $confirmationCode]);
-    //     }
-        
-    //     // Check if payment is already completed
-    //     $isPaid = in_array($registrant->paymentStatus, ['paid', 'group_member_paid', 'free']);
-        
-    //     // Get group members if this is a group registration (always return collection)
-    //     $groupMembers = collect();
-    //     if ($registrant->groupRegistrationID) {
-    //         $groupMembers = Registrant::where('groupRegistrationID', $registrant->groupRegistrationID)
-    //             ->where('confirmationCode', '=', $confirmationCode)
-    //             ->orderBy('id', 'asc')
-    //             ->get();
-    //     }
-
-    //     return view('pages.registration-payment', [
-    //         'registrant' => $registrant,
-    //         'groupMembers' => $groupMembers,
-    //         'isPaid' => $isPaid
-    //     ]);
-    // }
-
     public function payment($confirmationCode)
     {
         $registrant = Registrant::with(['programme', 'promocode'])
@@ -368,13 +337,14 @@ class RegistrantController extends Controller
 
         // Get group members if this is a group registration (always return collection)
         $groupMembers = collect();
-        if ($registrant->groupRegistrationID) {
+        if ($registrant->groupRegistrationID) 
+        {
             $groupMembers = Registrant::where('groupRegistrationID', $registrant->groupRegistrationID)
                 ->where('confirmationCode', '=', $confirmationCode)
                 ->orderBy('id', 'asc')
                 ->get();
         }
-        
+
         return view('pages.registration-confirmation', [
             'registrant' => $registrant,
             'groupMembers' => $groupMembers
@@ -487,8 +457,32 @@ class RegistrantController extends Controller
 
                         if ($registrant) 
                         {
-                            // At this point the webhook should (or will) confirm the payment.
-                            // We simply bring the user to the confirmation page.
+                            // Wait a short time and check if webhook has already processed the payment
+                            // This helps avoid showing outdated data on the confirmation page
+                            $maxWaitTime = 5; // Maximum seconds to wait
+                            $checkInterval = 0.5; // Check every 0.5 seconds
+                            $waited = 0;
+                            
+                            while ($waited < $maxWaitTime) {
+                                // Refresh the registrant from database
+                                $registrant->refresh();
+                                
+                                // If payment status has been updated by webhook, proceed immediately
+                                if ($registrant->paymentStatus === 'paid') {
+                                    Log::info('Payment status already updated by webhook', [
+                                        'confirmationCode' => $registrant->confirmationCode,
+                                        'waited' => $waited,
+                                    ]);
+                                    break;
+                                }
+                                
+                                // Wait before next check
+                                usleep($checkInterval * 1000000); // Convert to microseconds
+                                $waited += $checkInterval;
+                            }
+                            
+                            // At this point, either webhook has processed or we've waited long enough
+                            // The confirmation page will poll for updates if still pending
                             return redirect()
                                 ->route('registration.confirmation', ['confirmationCode' => $registrant->confirmationCode])
                                 ->with('success', 'Payment completed. Your registration will be confirmed shortly.');
@@ -497,9 +491,25 @@ class RegistrantController extends Controller
                 }
 
                 // If status is not successful or registrant not found, send back to payment page
-                if ($referenceNo) {
+                if ($referenceNo) 
+                {
+                    // update the registrant payment related fields to null and return to payment page
+                    $registrant = Registrant::where('payment_transaction_id', $referenceNo)->first();
+                    if ($registrant) 
+                    {
+                        $registrant->update([
+                            'paymentOption' => null,
+                            'payment_gateway' => null,
+                            'payment_transaction_id' => null,
+                            'payment_metadata' => null,
+                            'payment_verified_by' => null,
+                            'payment_verified_at' => null,
+                            'payment_initiated_at' => null,
+                            'payment_completed_at' => null,
+                        ]);
+                    }
                     return redirect()
-                        ->route('registration.payment', ['confirmationCode' => $referenceNo])
+                        ->route('registration.payment', ['confirmationCode' => $registrant->confirmationCode])
                         ->with('error', 'Payment was not completed or could not be verified. Please try again.');
                 }
 
@@ -669,6 +679,32 @@ class RegistrantController extends Controller
                 'success' => false,
                 'message' => 'Failed to load payment methods',
             ], 500);
+        }
+    }
+
+    /**
+     * Check payment status for a registrant (for polling)
+     *
+     * @param string $confirmationCode
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function checkPaymentStatus($confirmationCode)
+    {
+        try {
+            $registrant = Registrant::where('confirmationCode', $confirmationCode)->firstOrFail();
+            
+            return response()->json([
+                'success' => true,
+                'paymentStatus' => $registrant->paymentStatus,
+                'regStatus' => $registrant->regStatus,
+                'isPaid' => $registrant->paymentStatus === 'paid' || $registrant->netAmount <= 0,
+                'payment_completed_at' => $registrant->payment_completed_at?->toIso8601String(),
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to check payment status',
+            ], 404);
         }
     }
 
