@@ -42,11 +42,9 @@
         <div class="hidden sm:block">
             <h3 class="text-xl font-thin uppercase tracking-widest ">
                 Administrator Area
-                @if(env('APP_URL') == 'http://127.0.0.1:8000')
-                    <span class="text-xs capitalize tracking-normal text-red-500">
-                        (Note: Upload feature is temporarily disabled. Image attached to any upload field will not be uploaded.)
-                    </span>
-                @endif
+                <span class="text-xs capitalize tracking-normal text-red-500">
+                    (Note: Upload feature is temporarily disabled for non-localhost domains. Image attached to any upload field will not be uploaded.)
+                </span>
             </h3>
         </div>
 

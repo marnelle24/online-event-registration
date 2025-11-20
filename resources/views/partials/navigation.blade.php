@@ -124,13 +124,15 @@
                 >
                     Login
                 </a>
-                <a 
-                    href="{{ route('register') }}" 
+                <button
+                    type="button"
+                    href="{{ route('frontpage') }}" 
+                    disabled 
                     :class="{ 'px-4 py-1.5 text-xs': isFixed && !isMobile, 'px-5 py-2 text-xs': !isFixed || isMobile }"
-                    class="hover:bg-transparent uppercase tracking-wider bg-teal-700/80 border border-teal-700/80 text-white drop-shadow-sm rounded-full shadow-md hover:text-teal-600 hover:bg-teal-2 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 ease-in-out"
+                    class="hover:bg-transparent disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-wider bg-teal-700/80 border border-teal-700/80 text-white drop-shadow-sm rounded-full shadow-md hover:text-teal-600 hover:bg-teal-2 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 ease-in-out"
                 >
                     Sign Up
-                </a>
+                </button>
             @endguest
         </div>
     </div>
@@ -207,8 +209,10 @@
                     </svg>
                     <span class="text-xs mt-1 group-hover:text-teal-200 group-hover:-translate-y-0.5 duration-300">Login</span>
                 </a>
-                <a href="{{ route('register') }}" class="flex flex-col items-center text-white group">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="group-hover:-translate-y-0.5 duration-300 group-hover:stroke-teal-300 stroke-white h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <a href="{{ route('frontpage') }}" 
+                    disabled="true" 
+                    class="flex flex-col items-center text-white group">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="disabled:opacity-50 disabled:cursor-not-allowed group-hover:-translate-y-0.5 duration-300 group-hover:stroke-teal-300 stroke-white h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
                     </svg>
                     <span class="text-xs mt-1 group-hover:text-teal-200 group-hover:-translate-y-0.5 duration-300">Sign Up</span>

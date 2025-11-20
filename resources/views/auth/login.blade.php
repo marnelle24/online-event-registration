@@ -1,3 +1,4 @@
+@section('title', 'Login - Streams Of Life')
 <x-guest-layout>
 
     <!-- ====== Forms Section Start -->
@@ -79,7 +80,7 @@
                         </div>
                         <p class="font-thin text-sm">
                             Don’t have any account?
-                            <a href="{{ route('register') }}" class="text-primary">Sign Up</a>
+                            <a href="{{ route('redirect-to-frontpage') }}" class="text-primary">Sign Up</a>
                         </p>
                     </div>
                 </form>

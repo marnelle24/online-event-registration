@@ -7,6 +7,12 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ProgrammeController;
 use App\Http\Controllers\RegistrantController;
 
+
+//create a rediection to frontpage when opening /register route
+Route::get('/register', function () {
+    return redirect()->route('frontpage');
+})->name('redirect-to-frontpage');
+
 //public routes
 Route::get('/', function () {
     return view('pages/front-page');
