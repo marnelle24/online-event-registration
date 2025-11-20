@@ -28,10 +28,10 @@
                 >
                     {{ $category->name }}
                     @if($category->programmes->count() > 0)
-                        <span class="ml-2 px-2 py-1 text-xs rounded-full 
+                        <span class="ml-2 px-2 py-1 text-sm font-bold rounded-full 
                             {{ $selectedCategoryId == $category->id 
-                                ? 'bg-white text-slate-600' 
-                                : 'border border-slate-600 bg-teal-100 text-gray-600 group-hover:bg-white hover:border-slate-500' }}">
+                                ? 'text-teal-50 rounded-full bg-teal-200/30' 
+                                : 'text-gray-600 group-hover:bg-white' }}">
                             {{ $category->programmes->count() }}
                         </span>
                     @endif

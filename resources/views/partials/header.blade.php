@@ -40,7 +40,14 @@
         </a>
         </div>
         <div class="hidden sm:block">
-            <h3 class="text-xl font-thin uppercase tracking-widest ">Administrator Area</h3>
+            <h3 class="text-xl font-thin uppercase tracking-widest ">
+                Administrator Area
+                @if(env('APP_URL') == 'http://127.0.0.1:8000')
+                    <span class="text-xs capitalize tracking-normal text-red-500">
+                        (Note: Upload feature is temporarily disabled. Image attached to any upload field will not be uploaded.)
+                    </span>
+                @endif
+            </h3>
         </div>
 
         <div class="flex items-center gap-3 2xsm:gap-7">
